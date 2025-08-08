@@ -221,16 +221,16 @@ const ItemInfo: React.FC<ItemInfoProps> = ({ orders: propOrders }) => {
     }
   }, [propOrders]);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      window.updateFilteredOrders = updateFilteredOrders;
-    }
-  }, []);
-
   // ===== EVENT HANDLERS =====
   const updateFilteredOrders = useCallback((newOrders: Order[]) => {
     setFilteredOrders(newOrders);
   }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.updateFilteredOrders = updateFilteredOrders;
+    }
+  }, [updateFilteredOrders]);
 
   const getStatusTagClass = useCallback((status: string) => {
     return statusClasses[status.toLowerCase() as keyof typeof statusClasses] || 'tag is-success';

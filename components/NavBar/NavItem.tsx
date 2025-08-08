@@ -52,7 +52,7 @@ const NavItem = () => {
     };
   }, [activeDropdown, calculateDropdownPosition]);
 
-  const renderDropdownItem = useCallback((link: NavLink, index: number) => {
+  const renderDropdownItem = useCallback((link: NavLink) => {
     const isTools = link.label === 'Tools';
     
     return (
@@ -105,7 +105,7 @@ const NavItem = () => {
     const field = DROPDOWN_FIELDS[link.label as keyof typeof DROPDOWN_FIELDS];
     const isActive = pathname === link.href;
     
-    if (field) return renderDropdownItem(link, index);
+    if (field) return renderDropdownItem(link);
 
     return (
       <Link 
