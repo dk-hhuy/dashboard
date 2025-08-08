@@ -1,0 +1,138 @@
+/* ===== ITEM INFO COMPONENT STYLES ===== */
+
+/* ===== TABLE STYLES ===== */
+
+.tableContainer {
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto;
+  overflow-y: visible;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.tableContainer table,
+.tableContainer .table,
+.isFlexIsFlexDirectionColumn > .tableContainer {
+  margin: 0;
+  width: 100%;
+  min-width: 800px;
+}
+
+/* Table row hover effects */
+.table tbody tr {
+  transition: transform 0.2s ease, background-color 0.15s ease;
+}
+
+.table tbody tr:hover,
+.hoveredRow {
+  background-color: #808080 !important;
+}
+
+/* ===== IMAGE STYLES ===== */
+
+.imageHover {
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.imageHover:hover {
+  transform: scale(1.1);
+  z-index: 10;
+  position: relative;
+}
+
+.thumb {
+  position: relative;
+  display: inline-block;
+}
+
+.thumb40 { 
+  width: 40px; 
+  height: 40px; 
+}
+
+.thumb30 { 
+  width: 30px; 
+  height: 30px; 
+}
+
+/* ===== STATUS TAG COLORS ===== */
+
+.tagHasBackgroundGrey {
+  background-color: #7a7a7a;
+}
+
+.tagHasBackgroundPrimary {
+  background-color: #3273dc;
+}
+
+.tagHasBackgroundBlack {
+  background-color: #000000;
+}
+
+.tagHasBackgroundWarning {
+  background-color: #ffdd57;
+}
+
+.tagHasTextWhite {
+  color: #ffffff;
+}
+
+.tagHasTextBlack {
+  color: #000000;
+}
+
+/* ===== COMPONENT LAYOUT ===== */
+
+.componentContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+@media (max-width: 1024px) {
+  .tableContainer {
+    margin: 0;
+  }
+  
+  .componentContainer {
+    padding: 0 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .tableContainer {
+    margin: 0;
+  }
+  
+  .componentContainer {
+    padding: 0 0.25rem;
+  }
+  
+  .tableContainer table,
+  .tableContainer .table {
+    min-width: 600px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tableContainer {
+    margin: 0;
+  }
+  
+  .componentContainer {
+    padding: 0 0.125rem;
+  }
+  
+  .tableContainer table,
+  .tableContainer .table {
+    min-width: 500px;
+  }
+} 

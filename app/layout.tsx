@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Providers from "../components/Providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,22 +18,20 @@ export const metadata: Metadata = {
   description: "ALUFFM Dashboard",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="en">
-      <head>
-        <link
-          href="https://fonts.googleapis.com/icon?family=Material+Icons"
-          rel="stylesheet"
-        />
-      </head>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+const RootLayout = ({ children }: { children: React.ReactNode }) => (
+  <html lang="en">
+    <head>
+      <link
+        href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        rel="stylesheet"
+      />
+    </head>
+    <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <Providers>
         {children}
-      </body>
-    </html>
-  );
-}
+      </Providers>
+    </body>
+  </html>
+);
+
+export default RootLayout;
