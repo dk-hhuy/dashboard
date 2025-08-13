@@ -178,7 +178,7 @@ const SearchOrder: React.FC<SearchOrderProps> = ({ onFilterChange }) => {
 
   // ===== RENDER =====
   return (
-    <div className="box has-background-white">
+    <div className="box has-background-white is-fullwidth has-shadow mb-0" style={{ border: '1px solid #dbdbdb', borderBottom: 'none', borderTop: 'none' }}>
       <div className="is-flex is-align-items-center" style={{ 
         gap: '0.5rem',
         width: '100%',

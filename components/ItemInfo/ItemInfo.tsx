@@ -264,22 +264,10 @@ const ItemInfo: React.FC<ItemInfoProps> = ({ orders: propOrders }) => {
 
   // ===== RENDER =====
   return (
-    <div className="px-4">
-      <motion.div 
-        className="box has-background-white"
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        style={{ 
-          margin: 0, 
-          width: '100%', 
-          overflowX: 'auto',
-          overflowY: 'visible'
-        }}
-      >
+    <div className="pt-0">
+      <div className="box has-background-white is-fullwidth has-shadow" style={{ border: '1px solid #dbdbdb', borderTop: 'none' }}>
         <div className="table-container">
-          <table className="table is-fullwidth is-bordered has-background-white" style={{ minWidth: '800px' }}>
+          <table className="table is-fullwidth is-striped is-hoverable is-bordered">
             <thead>
               <tr className="has-background-white">
                 <th className="has-background-white has-text-black">ALL ORDERS</th>
@@ -321,7 +309,7 @@ const ItemInfo: React.FC<ItemInfoProps> = ({ orders: propOrders }) => {
             </tbody>
           </table>
         </div>
-      </motion.div>
+      </div>
       
       <TableResult 
         currentPage={currentPage}

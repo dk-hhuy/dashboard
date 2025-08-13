@@ -61,33 +61,39 @@ const Home = () => {
         <NavBar />
         
         <div className="mt-6">
-          <div className="box has-background-white">
-            <div className="level is-mobile">
-              <div className="level-left">
-                <motion.h4
-                  className="title is-4 mb-0 has-text-black"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true, amount: 0.6 }}
-                  transition={{ duration: 0.4 }}
-                >
-                  ALUFFM DASHBOARD
-                </motion.h4>
-                <div className="level-item ml-4">
-                  <FilterTable />
+          <div className="container is-fluid">
+            <div className="columns is-gapless">
+              <div className="column">
+                <div className="box has-background-white has-shadow mb-0" style={{ border: '1px solid #dbdbdb', borderBottom: 'none' }}>
+                  <div className="level is-mobile">
+                    <div className="level-left">
+                      <motion.h4
+                        className="title is-4 mb-0 has-text-black"
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true, amount: 0.6 }}
+                        transition={{ duration: 0.4 }}
+                      >
+                        ALUFFM DASHBOARD
+                      </motion.h4>
+                      <div className="level-item ml-4">
+                        <FilterTable />
+                      </div>
+                    </div>
+                    <div className="level-right">
+                      <div className="level-item">
+                        <ShowChart />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="level-right">
-                <div className="level-item">
-                  <ShowChart />
-                </div>
+                
+                <SearchOrder onFilterChange={handleSearchFilterChange} />
+                <ItemInfo orders={filteredOrders} />
               </div>
             </div>
           </div>
-          <SearchOrder onFilterChange={handleSearchFilterChange} />
         </div>
-        
-        <ItemInfo orders={filteredOrders} />
       </div>
     </ProtectedRoute>
   );

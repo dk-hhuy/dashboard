@@ -1,5 +1,15 @@
 @import 'bulma/css/bulma.css';
 
+/* Global font-size override */
+html, body {
+  font-size: 12px !important;
+}
+
+/* Ensure all text elements inherit the smaller font size */
+body, p, span, div, h1, h2, h3, h4, h5, h6, a, button, input, select, textarea, label {
+  font-size: inherit;
+}
+
 /* Navbar responsive styles - chỉ giữ những gì Bulma không hỗ trợ */
 @media (max-width: 1023px) {
   /* Đảm bảo dropdown hover hoạt động trên mobile/tablet */
