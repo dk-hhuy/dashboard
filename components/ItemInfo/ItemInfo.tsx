@@ -8,7 +8,6 @@ import { motion } from 'framer-motion';
 import { orders, statusClasses, Order, LineItem } from '../../constants';
 import { calculateOrderTotalCost, calculateOrderTotalQuantity } from '../../lib/utils';
 import TableResult from '../TableResult';
-import styles from './ItemInfo.module.css';
 
 // ===== TYPES =====
 interface ItemInfoProps {
@@ -17,8 +16,6 @@ interface ItemInfoProps {
 
 // ===== CONSTANTS =====
 const ITEMS_PER_PAGE = 10;
-const HOVER_ANIMATION = { x: -10 };
-const ANIMATION_TRANSITION = { duration: 0.2, ease: "easeInOut" as const };
 
 // ===== HELPER COMPONENTS =====
 const HoverZoomModal = React.memo(({ src, isVisible }: { src: string; isVisible: boolean }) => {
@@ -61,16 +58,12 @@ HoverZoomModal.displayName = 'HoverZoomModal';
 // ===== TABLE ROW COMPONENTS =====
 const OrderHeaderRow = React.memo(function OrderHeaderRow({
   order,
-  textClass,
-  emptyCellClass,
   getStatusTagClass,
   isHovered,
   onMouseEnter,
   onMouseLeave,
 }: {
   order: Order;
-  textClass: string;
-  emptyCellClass: string;
   getStatusTagClass: (status: string) => string;
   isHovered: boolean;
   onMouseEnter: () => void;
@@ -81,25 +74,25 @@ const OrderHeaderRow = React.memo(function OrderHeaderRow({
 
   return (
     <motion.tr
-      className={`${emptyCellClass} ${isHovered ? styles.hoveredRow : ''}`}
+      className={`has-background-white ${isHovered ? 'has-background-light' : ''}`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      animate={isHovered ? HOVER_ANIMATION : { x: 0 }}
-      transition={ANIMATION_TRANSITION}
+      animate={isHovered ? { x: -10 } : { x: 0 }}
+      transition={{ duration: 0.2, ease: "easeInOut" }}
     >
-      <td>
+      <td className="has-background-white has-text-black">
         <label className="checkbox">
-          <input type="checkbox" className="mr-1" />
-          <strong className={textClass}>{order.orderId}</strong>
+          <input type="checkbox" />
+          <strong className="has-text-black">{order.orderId}</strong>
         </label>
       </td>
-      <td><span className={getStatusTagClass(order.status)}>{order.status}</span></td>
-      <td><strong className={textClass}>{order.lineItems.length} items</strong></td>
-      <td><strong className={textClass}><span>{totalQuantity}</span></strong></td>
-      <td><strong className={textClass}>${totalCost.toFixed(2)}</strong></td>
-      <td><strong className={textClass}>{order.shippingAddress}</strong></td>
-      <td></td>
-      <td><strong><span className={textClass}>{order.createdAt}</span></strong></td>
+      <td className="has-background-white has-text-black"><span className={getStatusTagClass(order.status)}>{order.status}</span></td>
+      <td className="has-background-white has-text-black"><strong className="has-text-black">{order.lineItems.length} items</strong></td>
+      <td className="has-background-white has-text-black"><strong className="has-text-black">{totalQuantity}</strong></td>
+      <td className="has-background-white has-text-black"><strong className="has-text-black">${totalCost.toFixed(2)}</strong></td>
+      <td className="has-background-white has-text-black"><strong className="has-text-black">{order.shippingAddress}</strong></td>
+      <td className="has-background-white has-text-black"></td>
+      <td className="has-background-white has-text-black"><strong className="has-text-black">{order.createdAt}</strong></td>
     </motion.tr>
   );
 });
@@ -108,9 +101,6 @@ const LineItemRow = React.memo(function LineItemRow({
   orderId,
   item,
   itemIndex,
-  contentCellClass,
-  emptyCellClass,
-  textClass,
   isHovered,
   onMouseEnter,
   onMouseLeave,
@@ -120,9 +110,6 @@ const LineItemRow = React.memo(function LineItemRow({
   orderId: string;
   item: LineItem;
   itemIndex: number;
-  contentCellClass: string;
-  emptyCellClass: string;
-  textClass: string;
   isHovered: boolean;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
@@ -131,22 +118,25 @@ const LineItemRow = React.memo(function LineItemRow({
 }) {
   const parsedCost = useMemo(() => parseFloat(item.cost.replace('$', '')).toFixed(2), [item.cost]);
 
-  const renderImage = (src: string, alt: string, size: number, className: string) => (
+  const renderImage = (src: string, alt: string, size: number) => (
     <div 
-      className={`thumb thumb-${size} ${className}`}
+      className="image image-hover is-flex is-align-items-center"
       onMouseEnter={() => onImageHover(src)}
       onMouseLeave={onImageLeave}
+      style={{ 
+        width: `${size}px`, 
+        height: `${size}px`,
+        cursor: 'pointer',
+        display: 'inline-block',
+        marginRight: '0.5rem'
+      }}
     >
       <Image 
         src={src} 
         alt={alt} 
         width={size}
         height={size}
-        style={{ 
-          objectFit: 'contain',
-          width: '100%',
-          height: '100%'
-        }} 
+        className="image"
       />
     </div>
   );
@@ -154,32 +144,32 @@ const LineItemRow = React.memo(function LineItemRow({
   return (
     <motion.tr
       key={`${orderId}-${itemIndex}`}
-      className={isHovered ? styles.hoveredRow : ''}
+      className={`has-background-white ${isHovered ? 'has-background-light' : ''}`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      animate={isHovered ? HOVER_ANIMATION : { x: 0 }}
-      transition={ANIMATION_TRANSITION}
+      animate={isHovered ? { x: -10 } : { x: 0 }}
+      transition={{ duration: 0.2, ease: "easeInOut" }}
     >
-      <td className={emptyCellClass}></td>
-      <td className={emptyCellClass}></td>
-      <td className={contentCellClass}><span className={textClass}>{item.itemId}</span></td>
-      <td className={contentCellClass}><span className={textClass}>{item.quantity}</span></td>
-      <td className={contentCellClass}><span className={textClass}>${parsedCost}</span></td>
-      <td className={contentCellClass}>
-        <div className={textClass}>
-          <div className={textClass}>
-            Carrier: {item.carrier} | {' '}
-            <Link href={`/items/${item.trackingNo}`}>
-              {item.trackingNo}
-            </Link>
-          </div>
+      <td className="has-background-white has-text-black"></td>
+      <td className="has-background-white has-text-black"></td>
+      <td className="has-background-white has-text-black"><span className="has-text-black">{item.itemId}</span></td>
+      <td className="has-background-white has-text-black"><span className="has-text-black">{item.quantity}</span></td>
+      <td className="has-background-white has-text-black"><span className="has-text-black">${parsedCost}</span></td>
+      <td className="has-background-white has-text-black">
+        <div className="has-text-black">
+          Carrier: {item.carrier} | {' '}
+          <Link href={`/items/${item.trackingNo}`} className="has-text-black">
+            {item.trackingNo}
+          </Link>
         </div>
       </td>
-      <td className={contentCellClass}><span className={textClass}>SKU: {item.sku}</span></td>
-      <td className={emptyCellClass}>
-        <div className="is-flex is-align-items-center">
-          {item.images?.double && renderImage(item.images.double, 'double', 40, `${styles.imageHover} mr-2`)}
-          {item.images?.love && renderImage(item.images.love, 'love', 30, styles.imageHover)}
+      <td className="has-background-white has-text-black"><span className="has-text-black">SKU: {item.sku}</span></td>
+      <td className="has-background-white has-text-black">
+        <div className="level is-mobile">
+          <div className="level-left">
+            {item.images?.double && renderImage(item.images.double, 'double', 40)}
+            {item.images?.love && renderImage(item.images.love, 'love', 30)}
+          </div>
         </div>
       </td>
     </motion.tr>
@@ -188,11 +178,6 @@ const LineItemRow = React.memo(function LineItemRow({
 
 // ===== MAIN COMPONENT =====
 const ItemInfo: React.FC<ItemInfoProps> = ({ orders: propOrders }) => {
-  // ===== CONSTANTS =====
-  const emptyCellClass = "has-background-white";
-  const contentCellClass = "has-background-grey-lighter";
-  const textClass = "has-text-black";
-
   // ===== STATE MANAGEMENT =====
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredOrders, setFilteredOrders] = useState(propOrders || orders);
@@ -221,6 +206,16 @@ const ItemInfo: React.FC<ItemInfoProps> = ({ orders: propOrders }) => {
     }
   }, [propOrders]);
 
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (window.imageHoverTimeout) {
+        clearTimeout(window.imageHoverTimeout);
+        window.imageHoverTimeout = null;
+      }
+    };
+  }, []);
+
   // ===== EVENT HANDLERS =====
   const updateFilteredOrders = useCallback((newOrders: Order[]) => {
     setFilteredOrders(newOrders);
@@ -237,10 +232,25 @@ const ItemInfo: React.FC<ItemInfoProps> = ({ orders: propOrders }) => {
   }, []);
 
   const handleImageHover = useCallback((src: string) => {
-    setHoveredImage(src);
+    // Clear any existing timeout
+    if (window.imageHoverTimeout) {
+      clearTimeout(window.imageHoverTimeout);
+    }
+    
+    // Set a small delay to prevent flickering
+    window.imageHoverTimeout = setTimeout(() => {
+      setHoveredImage(src);
+    }, 100);
   }, []);
 
   const handleImageLeave = useCallback(() => {
+    // Clear timeout if exists
+    if (window.imageHoverTimeout) {
+      clearTimeout(window.imageHoverTimeout);
+      window.imageHoverTimeout = null;
+    }
+    
+    // Clear image immediately
     setHoveredImage(null);
   }, []);
 
@@ -252,71 +262,65 @@ const ItemInfo: React.FC<ItemInfoProps> = ({ orders: propOrders }) => {
     setHoveredOrderId(null);
   }, []);
 
-  // ===== RENDER FUNCTIONS =====
-  const renderTableHeader = () => (
-    <thead>
-      <tr className="has-background-grey-lighter">
-        <th className="has-background-grey-lighter has-text-black">ALL ORDERS</th>
-        <th className="has-background-grey-lighter has-text-black">STATUS</th>
-        <th className="has-background-grey-lighter has-text-black">LINE ITEMS</th>
-        <th className="has-background-grey-lighter has-text-black">QUANTITY</th>
-        <th className="has-background-grey-lighter has-text-black">TOTAL COST</th>
-        <th className="has-background-grey-lighter has-text-black">SHIPPING ADDRESS</th>
-        <th className="has-background-grey-lighter has-text-black">DETAILS</th>
-        <th className="has-background-grey-lighter has-text-black">CREATED AT</th>
-      </tr>
-    </thead>
-  );
-
-  const renderOrderRows = () => (
-    displayOrders.map((order) => (
-      <React.Fragment key={order.orderId}>
-        <OrderHeaderRow
-          order={order}
-          textClass={textClass}
-          emptyCellClass={emptyCellClass}
-          getStatusTagClass={getStatusTagClass}
-          isHovered={hoveredOrderId === order.orderId}
-          onMouseEnter={() => handleOrderHover(order.orderId)}
-          onMouseLeave={handleOrderLeave}
-        />
-        
-        {order.lineItems.map((item: LineItem, itemIndex: number) => (
-          <LineItemRow
-            key={`${order.orderId}-${itemIndex}`}
-            orderId={order.orderId}
-            item={item}
-            itemIndex={itemIndex}
-            contentCellClass={contentCellClass}
-            emptyCellClass={emptyCellClass}
-            textClass={textClass}
-            isHovered={hoveredOrderId === order.orderId}
-            onMouseEnter={() => handleOrderHover(order.orderId)}
-            onMouseLeave={handleOrderLeave}
-            onImageHover={handleImageHover}
-            onImageLeave={handleImageLeave}
-          />
-        ))}
-      </React.Fragment>
-    ))
-  );
-
   // ===== RENDER =====
   return (
-    <div className={styles.componentContainer}>
+    <div className="px-4">
       <motion.div 
-        className={styles.tableContainer}
+        className="box has-background-white"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
+        style={{ 
+          margin: 0, 
+          width: '100%', 
+          overflowX: 'auto',
+          overflowY: 'visible'
+        }}
       >
-        <table className="table is-fullwidth is-bordered mb-0">
-          {renderTableHeader()}
-          <tbody>
-            {renderOrderRows()}
-          </tbody>
-        </table>
+        <div className="table-container">
+          <table className="table is-fullwidth is-bordered has-background-white" style={{ minWidth: '800px' }}>
+            <thead>
+              <tr className="has-background-white">
+                <th className="has-background-white has-text-black">ALL ORDERS</th>
+                <th className="has-background-white has-text-black">STATUS</th>
+                <th className="has-background-white has-text-black">LINE ITEMS</th>
+                <th className="has-background-white has-text-black">QUANTITY</th>
+                <th className="has-background-white has-text-black">TOTAL COST</th>
+                <th className="has-background-white has-text-black">SHIPPING ADDRESS</th>
+                <th className="has-background-white has-text-black">DETAILS</th>
+                <th className="has-background-white has-text-black">CREATED AT</th>
+              </tr>
+            </thead>
+            <tbody>
+              {displayOrders.map((order) => (
+                <React.Fragment key={order.orderId}>
+                  <OrderHeaderRow
+                    order={order}
+                    getStatusTagClass={getStatusTagClass}
+                    isHovered={hoveredOrderId === order.orderId}
+                    onMouseEnter={() => handleOrderHover(order.orderId)}
+                    onMouseLeave={handleOrderLeave}
+                  />
+                  
+                  {order.lineItems.map((item: LineItem, itemIndex: number) => (
+                    <LineItemRow
+                      key={`${order.orderId}-${itemIndex}`}
+                      orderId={order.orderId}
+                      item={item}
+                      itemIndex={itemIndex}
+                      isHovered={hoveredOrderId === order.orderId}
+                      onMouseEnter={() => handleOrderHover(order.orderId)}
+                      onMouseLeave={handleOrderLeave}
+                      onImageHover={handleImageHover}
+                      onImageLeave={handleImageLeave}
+                    />
+                  ))}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </motion.div>
       
       <TableResult 

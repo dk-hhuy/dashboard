@@ -3,7 +3,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { orderStatus, orders, Order } from '../../constants';
-import styles from './FilterTable.module.css';
 
 const FilterTable = () => {
   const handleFilter = (status: string) => {
@@ -18,40 +17,56 @@ const FilterTable = () => {
   };
 
   return (
-    <div className={styles.filterTableWrapper}>
-      <div className={styles.filterTableContainer}>
-      {orderStatus.map((status) => {
-          const leftButtonStyle = {
-            backgroundColor: status.color.background,
-            color: status.color.text,
-            border: 'none'
-          };
-          
-        const rightButtonStyle = { 
-            backgroundColor: status.color.background,
-            color: status.color.text,
-            border: `1px solid ${status.color.background}`,
-            borderLeft: 'none'
-        };
-        
-        return (
-            <motion.div 
-              initial={{ opacity: 0, y: -50 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              transition={{ duration: 0.4 }}
-              key={status.label} 
-              className="buttons has-addons mr-1 mb-0" 
-              onClick={() => handleFilter(status.label)}
-            >
-            <button className="button is-small has-background-grey-dark has-text-white" style={leftButtonStyle}>
-              {status.label}
-            </button>
-            <button className="button is-small" style={rightButtonStyle}>
-              {status.value}
-            </button>
+    <div className="level is-mobile is-hidden-touch">
+      <div className="level-left">
+        {orderStatus.map((status) => (
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            key={status.label}
+            className="level-item mr-2"
+          >
+            <div className="tags has-addons">
+              <span
+                className="tag is-dark"
+                style={{
+                  cursor: 'pointer'
+                }}
+                onClick={() => handleFilter(status.label)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleFilter(status.label);
+                  }
+                }}
+              >
+                {status.label}
+              </span>
+              <span
+                className="tag"
+                style={{
+                  background: status.color.background,
+                  color: status.color.text,
+                  cursor: 'pointer'
+                }}
+                onClick={() => handleFilter(status.label)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleFilter(status.label);
+                  }
+                }}
+              >
+                {status.value}
+              </span>
+            </div>
           </motion.div>
-        );
-      })}
+        ))}
       </div>
     </div>
   );

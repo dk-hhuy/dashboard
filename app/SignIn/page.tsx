@@ -65,13 +65,8 @@ const SignIn = () => {
         <div className="container">
           <div className="columns is-centered">
             <div className="column is-5">
-              <div className="box" style={{
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
-                borderRadius: '12px',
-                border: '2px solid #f0f0f0',
-                backgroundColor: '#ffffff'
-              }}>
-                <h1 className="title has-text-centered mb-5 has-text-black">Sign In</h1>
+              <div className="box has-shadow">
+                <h1 className="title has-text-centered mb-5 has-text-white">Sign In</h1>
                 
                 {/* Demo credentials */}
                 <div className="notification is-info is-light mb-4">

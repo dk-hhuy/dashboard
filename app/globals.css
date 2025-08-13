@@ -1,378 +1,94 @@
 @import 'bulma/css/bulma.css';
 
-/* ===== GLOBAL STYLES ===== */
-html, body {
-  background-color: white !important;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  min-height: 100vh;
-}
-
-/* ===== NAVBAR STYLES ===== */
-
-/* Base navbar colors */
-.navbar .navbar-item,
-.navbar .navbar-item a,
-.navbar .navbar-item span,
-.navbar .navbar-link:not(.toolsLink),
-.navbar .navbar-link:not(.toolsLink) a,
-.navbar .navbar-link:not(.toolsLink) span {
-  color: #000000 !important;
-}
-
-/* Hover states for non-Tools items */
-.navbar .navbar-item:hover,
-.navbar .navbar-item:hover a,
-.navbar .navbar-item:hover span,
-.navbar .navbar-link:not(.toolsLink):hover,
-.navbar .navbar-link:not(.toolsLink):hover a,
-.navbar .navbar-link:not(.toolsLink):hover span {
-  color: #000000 !important;
-  background-color: #e8e8e8 !important;
-}
-
-/* ===== TOOLS NAVIGATION ===== */
-
-/* Tools color - all elements */
-.navbar .toolsNavItem *,
-.navbar .toolsNavItem .navbar-link,
-.navbar .toolsNavItem .navbar-link .icon,
-.navbar .toolsNavItem .navbar-link span,
-.navbar .toolsNavItem .navbar-link .material-icons,
-.navbar .navbar-item.has-dropdown.toolsNavItem .navbar-link,
-.navbar .navbar-item.has-dropdown.toolsNavItem .navbar-link .icon,
-.navbar .navbar-item.has-dropdown.toolsNavItem .navbar-link span,
-.navbar .navbar-item.has-dropdown.toolsNavItem .navbar-link .material-icons,
-.tools-navbar-link,
-.tools-navbar-link .icon,
-.tools-navbar-link span,
-.tools-navbar-link .material-icons,
-.tools-navbar-icon,
-.tools-navbar-icon .material-icons,
-.tools-navbar-text {
-  color: #ff6b35 !important;
-}
-
-/* Tools dropdown arrow */
-.navbar .navbar-item.has-dropdown.toolsNavItem .navbar-link::after,
-.navbar .navbar-item.has-dropdown.toolsNavItem .navbar-link:hover::after {
-  border: 0.375em solid transparent !important;
-  border-top-color: #ff6b35 !important;
-  border-bottom: 0 !important;
-}
-
-/* ===== DROPDOWN STYLES ===== */
-
-/* Dropdown container */
-.navbar-dropdown {
-  background-color: white !important;
-  border: 1px solid #e8e8e8 !important;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
-  display: none;
-  padding: 0 !important;
-  margin: 0 !important;
-  text-align: left !important;
-}
-
-/* Dropdown items base styles */
-.navbar-dropdown .navbar-item,
-.navbar-dropdown a.navbar-item,
-.navbar-dropdown a,
-.navbar .navbar-dropdown .navbar-item {
-  color: #000000 !important;
-  background-color: white !important;
-  padding: 0.5rem 0.75rem !important;
-  margin: 0 !important;
-  text-align: left !important;
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  gap: 0.5rem !important;
-  width: 100% !important;
-  border: none !important;
-  transition: color 0.2s ease;
-  cursor: pointer !important;
-}
-
-/* Dropdown hover states - unified */
-.navbar-dropdown .navbar-item:hover,
-.navbar-dropdown a.navbar-item:hover,
-.navbar-dropdown a:hover,
-.navbar .navbar-dropdown .navbar-item:hover,
-.navbar .navbar-item.has-dropdown .navbar-dropdown .navbar-item:hover,
-.navbar .navbar-item.has-dropdown .navbar-dropdown a.navbar-item:hover,
-.navbar .navbar-item.has-dropdown .navbar-dropdown a:hover,
-.navbar-dropdown .dropdown-item:hover,
-.navbar .navbar-item.has-dropdown .navbar-dropdown .dropdown-item:hover,
-html body .navbar .navbar-item.has-dropdown .navbar-dropdown .navbar-item:hover,
-html body .navbar .navbar-item.has-dropdown .navbar-dropdown a.navbar-item:hover,
-html body .navbar .navbar-item.has-dropdown .navbar-dropdown a:hover,
-html body .navbar .navbar-item.has-dropdown .navbar-dropdown .dropdown-item:hover,
-html body .navbar-dropdown .navbar-item:hover,
-html body .navbar-dropdown a.navbar-item:hover,
-html body .navbar-dropdown a:hover,
-html body .navbar-dropdown .dropdown-item:hover {
-  color: #2563eb !important;
-}
-
-/* Force white background for non-hover states */
-.navbar .navbar-item.has-dropdown .navbar-dropdown,
-.navbar .navbar-item.has-dropdown .navbar-dropdown *,
-.navbar .navbar-item.has-dropdown .navbar-dropdown .navbar-item:not(:hover),
-.navbar .navbar-item.has-dropdown .navbar-dropdown a.navbar-item:not(:hover),
-.navbar .navbar-item.has-dropdown .navbar-dropdown a:not(:hover),
-.navbar .navbar-item.has-dropdown .navbar-dropdown .dropdown-item:not(:hover) {
-  background-color: white !important;
-}
-
-/* Force left alignment for all dropdown items */
-html body .navbar .navbar-item.has-dropdown .navbar-dropdown .navbar-item,
-html body .navbar .navbar-item.has-dropdown .navbar-dropdown a.navbar-item,
-html body .navbar .navbar-item.has-dropdown .navbar-dropdown a,
-html body .navbar .navbar-item.has-dropdown .navbar-dropdown .dropdown-item,
-html body .navbar-dropdown .navbar-item,
-html body .navbar-dropdown a.navbar-item,
-html body .navbar-dropdown a,
-html body .navbar-dropdown .dropdown-item {
-  justify-content: flex-start !important;
-  text-align: left !important;
-}
-
-/* Force blue color for icons and text on hover - unified */
-html body .navbar .navbar-item.has-dropdown .navbar-dropdown .navbar-item:hover .icon,
-html body .navbar .navbar-item.has-dropdown .navbar-dropdown a.navbar-item:hover .icon,
-html body .navbar .navbar-item.has-dropdown .navbar-dropdown a:hover .icon,
-html body .navbar .navbar-item.has-dropdown .navbar-dropdown .dropdown-item:hover .icon,
-html body .navbar-dropdown .navbar-item:hover .icon,
-html body .navbar-dropdown a.navbar-item:hover .icon,
-html body .navbar-dropdown a:hover .icon,
-html body .navbar-dropdown .dropdown-item:hover .icon,
-html body .navbar .navbar-item.has-dropdown .navbar-dropdown .navbar-item:hover span,
-html body .navbar .navbar-item.has-dropdown .navbar-dropdown a.navbar-item:hover span,
-html body .navbar .navbar-item.has-dropdown .navbar-dropdown a:hover span,
-html body .navbar .navbar-item.has-dropdown .navbar-dropdown .dropdown-item:hover span,
-html body .navbar-dropdown .navbar-item:hover span,
-html body .navbar-dropdown a.navbar-item:hover span,
-html body .navbar-dropdown a:hover span,
-html body .navbar-dropdown .dropdown-item:hover span {
-  color: #2563eb !important;
-}
-
-/* Override tools navigation colors on hover */
-html body .navbar .toolsNavItem .navbar-dropdown .dropdown-item:hover,
-html body .navbar .toolsNavItem .navbar-dropdown .dropdown-item:hover *,
-html body .navbar .toolsNavItem .navbar-dropdown .dropdown-item:hover .icon,
-html body .navbar .toolsNavItem .navbar-dropdown .dropdown-item:hover span,
-html body .navbar .toolsNavItem .navbar-dropdown .dropdown-item:hover .material-icons {
-  color: #2563eb !important;
-}
-
-/* ===== USER DROPDOWN STYLES ===== */
-.navbar .navbar-end .navbar-dropdown .navbar-item {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  gap: 0.75rem !important;
-  min-width: 200px !important;
-  width: 100% !important;
-  padding: 0.75rem 1rem !important;
-  position: relative !important;
-  box-sizing: border-box !important;
-  color: #000000 !important;
-  background-color: white !important;
-  border: none !important;
-  text-decoration: none !important;
-  transition: color 0.2s ease;
-  cursor: pointer !important;
-}
-
-.navbar .navbar-end .navbar-dropdown .navbar-item:hover {
-  color: #2563eb !important;
-}
-
-.navbar .navbar-end .navbar-dropdown .navbar-item .icon {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex-shrink: 0 !important;
-  color: #000000 !important;
-  margin-right: 0 !important;
-  width: 20px !important;
-  height: 20px !important;
-  line-height: 1 !important;
-  min-width: 20px !important;
-  flex: 0 0 auto !important;
-}
-
-.navbar .navbar-end .navbar-dropdown .navbar-item:hover .icon {
-  color: #2563eb !important;
-}
-
-.navbar .navbar-end .navbar-dropdown .navbar-item span {
-  display: inline-block !important;
-  line-height: 1 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-  flex: 1 1 auto !important;
-}
-
-/* ===== NAVBAR LAYOUT ===== */
-
-/* Overflow handling */
-.navbar,
-.navbar-menu {
-  overflow: visible !important;
-  width: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-.navbar-start {
-  overflow: visible !important;
-  overflow-x: auto !important;
-  white-space: nowrap !important;
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
-}
-
-.navbar-start::-webkit-scrollbar {
-  display: none !important;
-}
-
-.navbar-end {
-  overflow: visible !important;
-  flex-shrink: 0 !important;
-}
-
-/* Navbar items alignment */
-.navbar-item,
-.navbar-link {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 0.5rem !important;
-  white-space: nowrap !important;
-  cursor: pointer !important;
-}
-
-.navbar-item .icon,
-.navbar-link .icon {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex-shrink: 0 !important;
-}
-
-.navbar-item span,
-.navbar-link span {
-  display: inline-block !important;
-  white-space: nowrap !important;
-}
-
-/* Logo styling */
-.navbar-brand {
-  flex-shrink: 0 !important;
-  min-width: 120px !important;
-}
-
-.navbar-brand img {
-  max-width: 100% !important;
-  height: auto !important;
-}
-
-/* ===== RESPONSIVE DESIGN ===== */
-
-@media (max-width: 1024px) {
-  .navbar-brand {
-    min-width: 70px !important;
+/* Navbar responsive styles - chỉ giữ những gì Bulma không hỗ trợ */
+@media (max-width: 1023px) {
+  /* Đảm bảo dropdown hover hoạt động trên mobile/tablet */
+  .navbar-item.has-dropdown.is-hoverable .navbar-dropdown {
+    display: none !important;
   }
   
-  .navbar-start {
-    max-width: calc(100% - 160px) !important;
-    margin-right: 0.5rem !important;
+  .navbar-item.has-dropdown.is-hoverable:hover .navbar-dropdown {
+    display: block !important;
   }
   
-  .navbar-end {
-    min-width: 140px !important;
+  /* Custom vị trí dropdown mobile */
+  .navbar-brand .navbar-item.has-dropdown .navbar-dropdown {
+    position: absolute !important;
+    top: 100% !important;
+    left: auto !important;
+    right: 0 !important;
+    width: auto !important;
+    min-width: 200px !important;
+    z-index: 30 !important;
   }
 }
 
-@media (max-width: 768px) {
-  .navbar-brand {
-    min-width: 60px !important;
+@media (min-width: 1024px) {
+  /* Đảm bảo dropdown hover hoạt động trên desktop */
+  .navbar-item.has-dropdown.is-hoverable .navbar-dropdown {
+    display: none !important;
   }
   
-  .navbar-start {
-    max-width: calc(100% - 140px) !important;
-    margin-right: 0.25rem !important;
+  .navbar-item.has-dropdown.is-hoverable:hover .navbar-dropdown {
+    display: block !important;
   }
   
-  .navbar-end {
-    min-width: 120px !important;
+  /* Custom vị trí dropdown desktop */
+  .navbar-end .navbar-item.has-dropdown .navbar-dropdown {
+    position: absolute !important;
+    top: 100% !important;
+    left: auto !important;
+    right: 0 !important;
+    width: auto !important;
+    min-width: 200px !important;
+    z-index: 30 !important;
   }
 }
 
-@media (max-width: 480px) {
-  .navbar-brand {
-    min-width: 50px !important;
-  }
-  
-  .navbar-start {
-    max-width: calc(100% - 120px) !important;
-    margin-right: 0.125rem !important;
-  }
-  
-  .navbar-end {
-    min-width: 100px !important;
-  }
+/* Image hover effect - Bulma không có sẵn */
+.image-hover {
+  transition: transform 0.3s ease;
 }
 
-/* ===== TABLE CONTAINER ===== */
-
-.table-container.mt-4 {
-  width: 100% !important;
-  margin: 2rem 0 0 0 !important;
-  padding: 0 1rem !important;
-  box-sizing: border-box !important;
+.image-hover:hover {
+  transform: scale(1.1);
+  z-index: 10;
 }
 
-.table-container.mt-4 .has-background-white {
-  width: 100% !important;
-  margin: 0 !important;
-  box-sizing: border-box !important;
-  border: 1px solid #e8e8e8 !important;
+/* Modal positioning - Bulma không can thiệp z-index & vị trí */
+.modal.is-active {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 9999 !important;
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  padding: 20px !important;
+  border-radius: 8px !important;
+  max-width: 80vw !important;
+  max-height: 80vh !important;
 }
 
-.table-container.mt-4 + div {
-  margin-top: 0 !important;
+/* Custom scrollbar - Bulma không hỗ trợ */
+.box .is-flex {
+  scrollbar-width: thin;
+  scrollbar-color: #b5b5b5 #f5f5f5;
 }
 
-/* Responsive table container */
-@media (max-width: 1024px) {
-  .table-container.mt-4 {
-    margin: 1.5rem 0 0 0 !important;
-    padding: 0 0.5rem !important;
-  }
+.box .is-flex::-webkit-scrollbar {
+  height: 8px;
 }
 
-@media (max-width: 768px) {
-  .table-container.mt-4 {
-    margin: 1rem 0 0 0 !important;
-    padding: 0 0.25rem !important;
-  }
+.box .is-flex::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  border-radius: 4px;
 }
 
-@media (max-width: 480px) {
-  .table-container.mt-4 {
-    margin: 0.75rem 0 0 0 !important;
-    padding: 0 0.125rem !important;
-  }
+.box .is-flex::-webkit-scrollbar-thumb {
+  background: #b5b5b5;
+  border-radius: 4px;
+}
+
+.box .is-flex::-webkit-scrollbar-thumb:hover {
+  background: #888;
 }

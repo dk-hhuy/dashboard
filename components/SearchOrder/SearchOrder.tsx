@@ -4,7 +4,6 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { formUrlQuery, removeKeysFromUrlQuery } from '@jsmastery/utils';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { orders, Order } from '../../constants';
-import styles from './SearchOrder.module.css';
 
 // ===== TYPES =====
 interface SearchOrderProps {
@@ -177,103 +176,134 @@ const SearchOrder: React.FC<SearchOrderProps> = ({ onFilterChange }) => {
     }, CLEAR_DELAY);
   }, [router]);
 
-  // ===== RENDER FUNCTIONS =====
-  const renderSearchInput = () => (
-    <div className={styles.searchInputWrapper}>
-      <div className={styles.searchInputGroup}>
-        <div className={styles.searchIconInput}>
-          <i className="material-icons">search</i>
-        </div>
-        <input
-          type="text"
-          placeholder="Keywords: order number, line item, tracking"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className={styles.searchInput}
-        />
-      </div>
-    </div>
-  );
-
-  const renderStatusFilter = () => (
-    <div className={styles.statusFilterWrapper}>
-      <div className={styles.statusLabel}>Status</div>
-      <select 
-        value={statusQuery} 
-        onChange={(e) => setStatusQuery(e.target.value)}
-        className={styles.statusSelect}
-      >
-        {STATUS_OPTIONS.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-
-  const renderDateFilter = () => (
-    <div className={styles.dateRangeWrapper}>
-      <div className={styles.timeLabelGroup}>
-        <div className={styles.calendarIcon}>
-          <i className="material-icons">calendar_today</i>
-        </div>
-        <div className={styles.timeLabelText}>Time</div>
-      </div>
-      
-      <div className={styles.navLabelGroup}>
-        <input
-          type="date"
-          value={fromDateQuery}
-          onChange={(e) => setFromDateQuery(e.target.value)}
-          className={styles.dateInput}
-          placeholder="From date"
-        />
-        <div className={styles.dateSeparator}>-</div>
-        <input
-          type="date"
-          value={toDateQuery}
-          onChange={(e) => setToDateQuery(e.target.value)}
-          className={styles.dateInput}
-          placeholder="To date"
-        />
-        <button
-          className={styles.navButton}
-          onClick={(e) => handleDateChange(e, 'prev')}
-        >
-          <i className="material-icons">chevron_left</i>
-        </button>
-        <button
-          className={styles.navButton}
-          onClick={(e) => handleDateChange(e, 'next')}
-        >
-          <i className="material-icons">chevron_right</i>
-        </button>
-      </div>
-    </div>
-  );
-
-  const renderSearchButton = () => (
-    <button
-      onClick={hasActiveFilters ? handleClearAll : undefined}
-      className={`${styles.searchButton} ${hasActiveFilters ? styles.isDanger : ''}`}
-    >
-      <div className={styles.searchIcon}>
-        <i className="material-icons">
-          {hasActiveFilters ? 'clear' : 'search'}
-        </i>
-      </div>
-      {hasActiveFilters ? 'Clear All' : 'Search'}
-    </button>
-  );
-
   // ===== RENDER =====
   return (
-    <div className={styles.searchOrderContainer}>
-      {renderSearchInput()}
-      {renderStatusFilter()}
-      {renderDateFilter()}
-      {renderSearchButton()}
+    <div className="box has-background-white">
+      <div className="is-flex is-align-items-center" style={{ 
+        gap: '0.5rem',
+        width: '100%',
+        overflowX: 'auto',
+        paddingBottom: '0.5rem'
+      }}>
+        {/* Search Input */}
+        <div style={{ flex: '2', minWidth: '250px', flexShrink: 0 }}>
+          <div className="field">
+            <div className="control has-icons-left">
+              <input
+                type="text"
+                placeholder="Keywords: order number, line item, tracking"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="input has-background-white has-text-black"
+              />
+              <span className="icon is-left">
+                <i className="material-icons">search</i>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Status Filter */}
+        <div style={{ flex: '0 0 140px', minWidth: '140px', flexShrink: 0 }}>
+          <div className="field">
+            <div className="control">
+              <div className="select is-fullwidth">
+                <select 
+                  value={statusQuery} 
+                  onChange={(e) => setStatusQuery(e.target.value)}
+                  className="has-background-white has-text-black"
+                >
+                  {STATUS_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Date Filter */}
+        <div style={{ flex: '3', minWidth: '600px', flexShrink: 0 }}>
+          <div className="field">
+            <div className="control">
+              <div className="field has-addons" style={{ width: '100%' }}>
+                <div className="control" style={{ flex: '0 0 auto' }}>
+                  <span className="button is-static has-background-white has-text-black">
+                    <span className="icon">
+                      <i className="material-icons">calendar_today</i>
+                    </span>
+                    <span>Time</span>
+                  </span>
+                </div>
+                <div className="control" style={{ flex: '1' }}>
+                  <input
+                    type="date"
+                    value={fromDateQuery}
+                    onChange={(e) => setFromDateQuery(e.target.value)}
+                    className="input has-background-white has-text-black"
+                    placeholder="From date"
+                    style={{ width: '100%' }}
+                  />
+                </div>
+                <div className="control" style={{ flex: '0 0 auto' }}>
+                  <span className="button is-static has-background-white has-text-black">-</span>
+                </div>
+                <div className="control" style={{ flex: '1' }}>
+                  <input
+                    type="date"
+                    value={toDateQuery}
+                    onChange={(e) => setToDateQuery(e.target.value)}
+                    className="input has-background-white has-text-black"
+                    placeholder="To date"
+                    style={{ width: '100%' }}
+                  />
+                </div>
+                <div className="control" style={{ flex: '0 0 auto' }}>
+                  <button
+                    className="button has-background-white has-text-black"
+                    onClick={(e) => handleDateChange(e, 'prev')}
+                  >
+                    <span className="icon">
+                      <i className="material-icons">chevron_left</i>
+                    </span>
+                  </button>
+                </div>
+                <div className="control" style={{ flex: '0 0 auto' }}>
+                  <button
+                    className="button has-background-white has-text-black"
+                    onClick={(e) => handleDateChange(e, 'next')}
+                  >
+                    <span className="icon">
+                      <i className="material-icons">chevron_right</i>
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Search Button */}
+        <div style={{ flex: '0 0 120px', minWidth: '120px', flexShrink: 0 }}>
+          <div className="field">
+            <div className="control">
+              <button
+                onClick={hasActiveFilters ? handleClearAll : undefined}
+                className={`button is-fullwidth ${hasActiveFilters ? 'is-danger' : 'is-primary'}`}
+              >
+                <span className="icon">
+                  <i className="material-icons">
+                    {hasActiveFilters ? 'clear' : 'search'}
+                  </i>
+                </span>
+                <span>{hasActiveFilters ? 'Clear All' : 'Search'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import NavBar from '../NavBar';
 import ProtectedRoute from '../ProtectedRoute';
-import styles from './Profile.module.css';
 
 // ===== TYPES =====
 interface Notifications {
@@ -30,11 +29,6 @@ interface EditData {
   socialLinks: SocialLinks;
 }
 
-// ===== CONSTANTS =====
-const ICON_COLOR = '#3273dc';
-const TITLE_COLOR = '#000';
-const SUBTITLE_COLOR = '#666';
-
 // ===== HELPER COMPONENTS =====
 const InfoItem = ({ 
   icon, 
@@ -53,53 +47,107 @@ const InfoItem = ({
   fieldName?: string;
   onEditChange?: (value: string) => void;
 }) => (
-  <div className={styles.infoItem}>
-    <div className={styles.infoHeader}>
-      <span className="icon" style={{ color: ICON_COLOR }}>
-        <i className="material-icons" style={{ color: ICON_COLOR }}>{icon}</i>
-      </span>
-      <label className={styles.infoLabel}>{label}</label>
+  <div className="box has-background-white has-radius has-shadow">
+    <div className="level is-mobile">
+      <div className="level-left">
+        <div className="level-item">
+          <span className="icon has-text-primary">
+            <i className="material-icons">{icon}</i>
+          </span>
+        </div>
+        <div className="level-item">
+          <label className="has-text-black has-text-weight-semibold is-size-7 is-uppercase">{label}</label>
+        </div>
+      </div>
     </div>
     {isTag && !isEditing ? (
-      <span className={`tag is-small ${styles.tagSmall} ${value === 'Yes' ? 'is-info' : 'is-success'}`}>
+      <span className={`tag is-small ${value === 'Yes' ? 'is-info' : 'is-success'}`}>
         {value || 'Not provided'}
       </span>
     ) : isEditing && fieldName ? (
       <input 
-        className={styles.input} 
+        className="input has-background-white" 
         type="text" 
         value={value || ''} 
         onChange={(e) => onEditChange(e.target.value)} 
         placeholder={`Enter ${label.toLowerCase()}`} 
       />
     ) : (
-      <p className={styles.infoValue}>{value || 'Not provided'}</p>
+      <p className="has-text-black has-text-weight-medium mb-0">{value || 'Not provided'}</p>
     )}
   </div>
 );
 
 const StatsItem = ({ label, value }: { label: string; value?: string | number }) => (
-  <div className={styles.statsItem}>
-    <label className={styles.statsLabel}>{label}</label>
-    <p className={styles.statsValue}>{value || '0'}</p>
+  <div className="box has-background-white has-radius has-shadow">
+    <label className="has-text-black has-text-weight-semibold is-size-7 is-uppercase">{label}</label>
+    <p className="has-text-black has-text-weight-semibold is-size-5">{value || '0'}</p>
   </div>
 );
 
 const NotificationItem = ({ notifications }: { notifications?: Notifications }) => (
-  <div className={styles.statsItem}>
-    <label className={styles.statsLabel}>Notifications</label>
-    <div className={styles.notificationTags}>
-      <span className={`tag ${notifications?.email ? 'is-success' : 'is-light'}`}>
+  <div className="box has-background-white has-radius has-shadow">
+    <label className="has-text-black has-text-weight-semibold is-size-7 is-uppercase">Notifications</label>
+    <div className="tags">
+      <span className={`tag is-small ${notifications?.email ? 'is-success' : 'is-light'}`}>
         Email: {notifications?.email ? 'On' : 'Off'}
       </span>
-      <span className={`tag ${notifications?.push ? 'is-success' : 'is-light'}`}>
+      <span className={`tag is-small ${notifications?.push ? 'is-success' : 'is-light'}`}>
         Push: {notifications?.push ? 'On' : 'Off'}
       </span>
-      <span className={`tag ${notifications?.sms ? 'is-success' : 'is-light'}`}>
+      <span className={`tag is-small ${notifications?.sms ? 'is-success' : 'is-light'}`}>
         SMS: {notifications?.sms ? 'On' : 'Off'}
       </span>
     </div>
   </div>
+);
+
+// ===== SECTION COMPONENTS =====
+const ProfileSection = ({ 
+  title, 
+  children, 
+  className = "", 
+  delay = 0.2 
+}: { 
+  title?: string; 
+  children: React.ReactNode; 
+  className?: string;
+  delay?: number;
+}) => (
+  <motion.div 
+    className={className}
+    initial={{ opacity: 0, y: 30 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.6, delay, ease: "easeOut" }}
+    whileHover={{ scale: 1.01 }}
+  >
+    <div className="box has-shadow p-5 has-background-white" style={{
+      background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
+      borderRadius: '20px',
+      boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.2)',
+      backdropFilter: 'blur(10px)',
+      height: '100%',
+      minHeight: '400px',
+      position: 'relative',
+      overflow: 'hidden'
+    }}>
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '4px',
+        background: 'linear-gradient(90deg, #667eea, #764ba2, #f093fb)',
+        borderRadius: '20px 20px 0 0'
+      }}></div>
+      {title && (
+        <h2 className="title is-4 has-text-centered mb-4 has-text-black has-text-weight-bold">
+          {title}
+        </h2>
+      )}
+      {children}
+    </div>
+  </motion.div>
 );
 
 // ===== MAIN COMPONENT =====
@@ -150,193 +198,148 @@ const Profile = () => {
     });
   }, []);
 
+  // ===== DATA CONFIGURATIONS =====
+  const personalInfoItems = [
+    { icon: 'phone', label: 'Phone', field: 'phone' as keyof EditData },
+    { icon: 'location_on', label: 'Location', field: 'location' as keyof EditData },
+    { icon: 'work', label: 'Status', field: 'status' as keyof EditData },
+    { icon: 'schedule', label: 'Timezone', field: 'timezone' as keyof any, static: true },
+    { icon: 'notifications', label: 'Notifications', field: 'notifications' as keyof any, isTag: true }
+  ];
+
+  const statsItems = [
+    { label: 'Total Orders', field: 'totalOrders' as keyof any },
+    { label: 'Completed Orders', field: 'completedOrders' as keyof any },
+    { label: 'Language', field: 'language' as keyof any },
+    { label: 'Member Since', field: 'createdAt' as keyof any }
+  ];
+
+  const socialItems = [
+    { icon: 'work', label: 'LinkedIn', field: 'linkedin' as keyof SocialLinks },
+    { icon: 'flutter_dash', label: 'Twitter', field: 'twitter' as keyof SocialLinks },
+    { icon: 'facebook', label: 'Facebook', field: 'facebook' as keyof SocialLinks },
+    { icon: 'camera_alt', label: 'Instagram', field: 'instagram' as keyof SocialLinks },
+    { icon: 'language', label: 'Website', field: 'website' as keyof SocialLinks }
+  ];
+
   // ===== RENDER FUNCTIONS =====
-  const renderPersonalInfo = useCallback(() => (
-    <div className={`${styles.infoGrid} ${styles.mobileInfoGrid}`}>
-      <InfoItem
-        icon="phone"
-        label="Phone"
-        value={isEditing ? editData.phone : user?.phone}
-        isEditing={isEditing}
-        fieldName="phone"
-        onEditChange={(value) => handleEditChange('phone', value)}
-      />
-      <InfoItem
-        icon="location_on"
-        label="Location"
-        value={isEditing ? editData.location : user?.location}
-        isEditing={isEditing}
-        fieldName="location"
-        onEditChange={(value) => handleEditChange('location', value)}
-      />
-      <InfoItem
-        icon="work"
-        label="Status"
-        value={isEditing ? editData.status : user?.status}
-        isEditing={isEditing}
-        fieldName="status"
-        onEditChange={(value) => handleEditChange('status', value)}
-      />
-      <InfoItem
-        icon="schedule"
-        label="Timezone"
-        value={user?.timezone || 'UTC'}
-      />
-      <InfoItem
-        icon="notifications"
-        label="Notifications"
-        value={user?.notifications ? 'Yes' : 'No'}
-        isTag={true}
-      />
+  const renderItems = useCallback((items: any[], type: 'info' | 'stats' | 'social') => (
+    <div className="columns is-multiline">
+      {items.map((item, index) => (
+        <div key={index} className="column is-6-tablet is-12-mobile">
+          {type === 'info' && (
+            <InfoItem
+              icon={item.icon}
+              label={item.label}
+              value={
+                item.static 
+                  ? (user as any)?.[item.field] 
+                  : item.field === 'notifications'
+                    ? (user?.notifications ? 'Yes' : 'No')
+                    : (isEditing ? (editData as any)[item.field] : (user as any)?.[item.field])
+              }
+              isTag={item.isTag}
+              isEditing={isEditing && !item.static}
+              fieldName={item.field}
+              onEditChange={(value) => handleEditChange(item.field, value)}
+            />
+          )}
+          {type === 'stats' && (
+            <StatsItem
+              label={item.label}
+              value={(user as any)?.[item.field] || (item.field === 'language' ? 'English' : '0')}
+            />
+          )}
+          {type === 'social' && (
+            <InfoItem
+              icon={item.icon}
+              label={item.label}
+              value={isEditing ? (editData.socialLinks as any)[item.field] : (user?.socialLinks as any)?.[item.field]}
+              isEditing={isEditing}
+              fieldName={`socialLinks.${item.field}`}
+              onEditChange={(value) => handleEditChange(`socialLinks.${item.field}`, value)}
+            />
+          )}
+        </div>
+      ))}
     </div>
   ), [isEditing, editData, user, handleEditChange]);
-
-  const renderSocialLinks = useCallback(() => (
-    <div className={styles.socialLinksGrid}>
-      <InfoItem 
-        icon="work" 
-        label="LinkedIn" 
-        value={isEditing ? editData.socialLinks.linkedin : user?.socialLinks?.linkedin} 
-        isEditing={isEditing} 
-        fieldName="socialLinks.linkedin" 
-        onEditChange={(value) => handleEditChange('socialLinks.linkedin', value)} 
-      />
-      <InfoItem 
-        icon="flutter_dash"
-        label="Twitter" 
-        value={isEditing ? editData.socialLinks.twitter : user?.socialLinks?.twitter} 
-        isEditing={isEditing} 
-        fieldName="socialLinks.twitter" 
-        onEditChange={(value) => handleEditChange('socialLinks.twitter', value)} 
-      />
-      <InfoItem 
-        icon="facebook"
-        label="Facebook" 
-        value={isEditing ? editData.socialLinks.facebook : user?.socialLinks?.facebook} 
-        isEditing={isEditing} 
-        fieldName="socialLinks.facebook" 
-        onEditChange={(value) => handleEditChange('socialLinks.facebook', value)} 
-      />
-      <InfoItem 
-        icon="camera_alt"
-        label="Instagram" 
-        value={isEditing ? editData.socialLinks.instagram : user?.socialLinks?.instagram} 
-        isEditing={isEditing} 
-        fieldName="socialLinks.instagram" 
-        onEditChange={(value) => handleEditChange('socialLinks.instagram', value)} 
-      />
-      <InfoItem
-        icon="language"
-        label="Website"
-        value={isEditing ? editData.socialLinks.website : user?.socialLinks?.website}
-        isEditing={isEditing}
-        fieldName="socialLinks.website"
-        onEditChange={(value) => handleEditChange('socialLinks.website', value)}
-      />
-    </div>
-  ), [isEditing, editData.socialLinks, user?.socialLinks, handleEditChange]);
 
   // ===== RENDER =====
   return (
     <ProtectedRoute>
-      <div>
+      <div className="has-background-light p-5" style={{ 
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)'
+      }}>
         <NavBar />
-        <div className={styles.profileMainContainer}>
+        <div className="container mt-6">
           {/* Header */}
           <motion.div 
-            className={styles.profileHeader}
+            className="has-text-centered mb-5"
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <h1 className="title is-3" style={{ color: TITLE_COLOR }}>User Profile</h1>
+            <h1 className="title is-3 has-text-black has-text-weight-bold" style={{ letterSpacing: '0.1em' }}>User Profile</h1>
           </motion.div>
           
-          <div className={styles.profileContent}>
-            {/* Top Row - Avatar & Personal Info */}
-            <motion.div 
-              className={styles.profileTopRow}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-            >
-              {/* Avatar Section */}
-              <motion.div 
-                className={styles.avatarSection}
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className={styles.avatarWrapper}>
-                  <Image 
-                    src={user?.avatar || '/images/husble.png'} 
-                    alt="User Avatar"
-                    width={120} 
-                    height={120} 
-                    className={styles.avatarImage}
-                  />
-                  <div className={styles.avatarInfo}>
-                    <h3 className="title is-4" style={{ color: TITLE_COLOR }}>{user?.name}</h3>
-                    <p className="subtitle is-6" style={{ color: SUBTITLE_COLOR }}>{user?.email}</p>
-                    <p className="subtitle is-6" style={{ color: SUBTITLE_COLOR }}>Role: {user?.role}</p>
-                  </div>
+          {/* Main Content with Bulma Columns */}
+          <div className="columns is-multiline">
+            {/* Avatar Section */}
+            <ProfileSection className="column is-12-tablet is-4-desktop" delay={0.2}>
+              <div className="has-text-centered">
+                <Image 
+                  src={user?.avatar || '/images/husble.png'} 
+                  alt="User Avatar"
+                  width={120} 
+                  height={120} 
+                  className="has-shadow"
+                  style={{
+                    width: '120px',
+                    height: '120px',
+                    borderRadius: '50%',
+                    border: '4px solid #e0e0e0',
+                    transition: 'all 0.3s ease',
+                    objectFit: 'cover'
+                  }}
+                />
+                <div className="mt-4">
+                  <h3 className="title is-4 has-text-black has-text-weight-bold">{user?.name}</h3>
+                  <p className="subtitle is-6 has-text-black">{user?.email}</p>
+                  <p className="subtitle is-6 has-text-black">Role: {user?.role}</p>
                 </div>
-              </motion.div>
+              </div>
+            </ProfileSection>
 
-              {/* Personal Information Section */}
-              <motion.div 
-                className={styles.infoSection}
-                whileHover={{ scale: 1.01 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className={styles.infoHeaderSection}>
-                  <h2 className="title is-4" style={{ color: TITLE_COLOR }}>Personal Information</h2>
-                  <button
-                    className={`button is-small ${isEditing ? 'is-danger' : 'is-primary'}`}
-                    onClick={handleEditToggle}
-                  >
-                    <span className="icon is-small">
-                      <i className="material-icons">{isEditing ? 'close' : 'edit'}</i>
-                    </span>
-                    <span>{isEditing ? 'Cancel' : 'Edit'}</span>
-                  </button>
-                </div>
-                {renderPersonalInfo()}
-              </motion.div>
-            </motion.div>
+            {/* Personal Information Section */}
+            <ProfileSection className="column is-12-tablet is-8-desktop" delay={0.2}>
+              <div className="has-text-centered mb-4">
+                <button
+                  className={`button is-small ${isEditing ? 'is-danger' : 'is-primary'}`}
+                  onClick={handleEditToggle}
+                >
+                  <span className="icon is-small">
+                    <i className="material-icons">{isEditing ? 'close' : 'edit'}</i>
+                  </span>
+                  <span>{isEditing ? 'Cancel' : 'Edit'}</span>
+                </button>
+              </div>
+              {renderItems(personalInfoItems, 'info')}
+            </ProfileSection>
 
-            {/* Bottom Row - Statistics & Social Links */}
-            <motion.div 
-              className={styles.profileBottomRow}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
-            >
-              {/* Statistics Section */}
-              <motion.div 
-                className={styles.infoSection}
-                whileHover={{ scale: 1.01 }}
-                transition={{ duration: 0.3 }}
-              >
-                <h2 className="title is-4" style={{ color: TITLE_COLOR }}>Statistics</h2>
-                <div className={styles.statsGrid}>
-                  <StatsItem label="Total Orders" value={user?.totalOrders || 0} />
-                  <StatsItem label="Completed Orders" value={user?.completedOrders || 0} />
-                  <StatsItem label="Language" value={user?.language || 'English'} />
-                  <StatsItem label="Member Since" value={user?.createdAt || 'N/A'} />
-                  <NotificationItem notifications={user?.notifications} />
-                </div>
-              </motion.div>
-              
-              {/* Social Links Section */}
-              <motion.div 
-                className={styles.infoSection}
-                whileHover={{ scale: 1.01 }}
-                transition={{ duration: 0.3 }}
-              >
-                <h2 className="title is-4" style={{ color: TITLE_COLOR }}>Social Links</h2>
-                {renderSocialLinks()}
-              </motion.div>
-            </motion.div>
+            {/* Statistics Section */}
+            <ProfileSection className="column is-12-tablet is-6-desktop" title="Statistics" delay={0.4}>
+              {renderItems(statsItems, 'stats')}
+              <div className="column is-12">
+                <NotificationItem notifications={user?.notifications} />
+              </div>
+            </ProfileSection>
+            
+            {/* Social Links Section */}
+            <ProfileSection className="column is-12-tablet is-6-desktop" title="Social Links" delay={0.4}>
+              {renderItems(socialItems, 'social')}
+            </ProfileSection>
           </div>
         </div>
       </div>
