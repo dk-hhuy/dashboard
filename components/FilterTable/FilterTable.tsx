@@ -17,7 +17,7 @@ const FilterTable = () => {
   };
 
   return (
-    <div className="level is-mobile is-hidden-touch">
+    <div className="level is-mobile is-hidden-touch is-size-7">
       <div className="level-left">
         {orderStatus.map((status) => (
           <motion.div
@@ -25,11 +25,11 @@ const FilterTable = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
             key={status.label}
-            className="level-item mr-2"
+            className="level-item mr-2 is-size-7"
           >
-            <div className="tags has-addons">
+            <div className="tags has-addons is-size-7">
               <span
-                className="tag is-dark"
+                className="tag is-dark is-size-7"
                 style={{
                   cursor: 'pointer'
                 }}
@@ -46,7 +46,7 @@ const FilterTable = () => {
                 {status.label}
               </span>
               <span
-                className="tag"
+                className="tag is-size-7"
                 style={{
                   background: status.color.background,
                   color: status.color.text,

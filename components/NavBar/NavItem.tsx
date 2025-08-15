@@ -16,7 +16,6 @@ const NavItem = () => {
   return (
     <>
       {navLink.map((link, index) => {
-        const isActive = pathname === link.href;
         const isTools = link.label === 'Tools';
         const hasDropdownOptions = hasDropdown(link.label);
         
@@ -24,25 +23,25 @@ const NavItem = () => {
           return (
             <div 
               key={index} 
-              className="navbar-item has-dropdown is-hoverable"
+              className="navbar-item has-dropdown is-hoverable is-size-7"
             >
-              <a className="navbar-link">
+              <a className="navbar-link is-size-7">
                 <span className="icon is-hidden-touch">
-                  <i className="material-icons">{link.icon}</i>
+                  <i className="material-icons is-size-7">{link.icon}</i>
                 </span>
                 <span>{link.label}</span>
               </a>
-              <div className="navbar-dropdown has-background-white">
+              <div className="navbar-dropdown is-size-7">
                 {dropdownOptions[link.label]?.map((option, optionIndex) => (
                   <Link 
                     key={optionIndex}
                     href={option.value} 
-                    className="navbar-item"
+                    className="navbar-item is-size-7"
                   >
                     <span className="icon is-small is-hidden-touch">
-                      <i className="material-icons">{option.icon}</i>
+                      <i className="material-icons is-size-7">{option.icon}</i>
                     </span>
-                    <span>{option.label}</span>
+                    <span className="is-size-7">{option.label}</span>
                   </Link>
                 ))}
               </div>
@@ -53,12 +52,12 @@ const NavItem = () => {
             <Link 
               key={index}
               href={link.href} 
-              className={`navbar-item ${isActive ? 'is-active' : ''} ${isTools ? 'has-text-warning' : ''}`}
+              className={`navbar-item is-size-7`}
             >
               <span className="icon is-hidden-touch">
-                <i className="material-icons">{link.icon}</i>
+                <i className="material-icons is-size-7">{link.icon}</i>
               </span>
-              <span>{link.label}</span>
+              <span className={isTools ? 'has-text-warning' : ''}>{link.label}</span>
             </Link>
           );
         }

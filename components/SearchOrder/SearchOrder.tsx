@@ -8,6 +8,7 @@ import { orders, Order } from '../../constants';
 // ===== TYPES =====
 interface SearchOrderProps {
   onFilterChange?: (filters: Order[]) => void;
+  className?: string;
 }
 
 // ===== CONSTANTS =====
@@ -24,7 +25,7 @@ const STATUS_OPTIONS = [
 ];
 
 // ===== MAIN COMPONENT =====
-const SearchOrder: React.FC<SearchOrderProps> = ({ onFilterChange }) => {
+const SearchOrder: React.FC<SearchOrderProps> = ({ onFilterChange, className }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -178,7 +179,7 @@ const SearchOrder: React.FC<SearchOrderProps> = ({ onFilterChange }) => {
 
   // ===== RENDER =====
   return (
-    <div className="box has-background-white is-fullwidth has-shadow mb-0" style={{ border: '1px solid #dbdbdb', borderBottom: 'none', borderTop: 'none' }}>
+    <div className="card-content is-fullwidth has-shadow mb-0 is-size-7" style={{ border: '1px solid #dbdbdb', borderBottom: 'none', borderTop: 'none' }}>
       <div className="is-flex is-align-items-center" style={{ 
         gap: '0.5rem',
         width: '100%',
@@ -188,16 +189,16 @@ const SearchOrder: React.FC<SearchOrderProps> = ({ onFilterChange }) => {
         {/* Search Input */}
         <div style={{ flex: '2', minWidth: '250px', flexShrink: 0 }}>
           <div className="field">
-            <div className="control has-icons-left">
+            <div className="control has-icons-left is-size-7">
               <input
                 type="text"
                 placeholder="Keywords: order number, line item, tracking"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="input has-background-white has-text-black"
+                className="input is-size-7"
               />
               <span className="icon is-left">
-                <i className="material-icons">search</i>
+                <i className="material-icons is-size-7">search</i>
               </span>
             </div>
           </div>
@@ -207,11 +208,10 @@ const SearchOrder: React.FC<SearchOrderProps> = ({ onFilterChange }) => {
         <div style={{ flex: '0 0 140px', minWidth: '140px', flexShrink: 0 }}>
           <div className="field">
             <div className="control">
-              <div className="select is-fullwidth">
+              <div className="select is-fullwidth is-size-7">
                 <select 
                   value={statusQuery} 
                   onChange={(e) => setStatusQuery(e.target.value)}
-                  className="has-background-white has-text-black"
                 >
                   {STATUS_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -228,12 +228,9 @@ const SearchOrder: React.FC<SearchOrderProps> = ({ onFilterChange }) => {
         <div style={{ flex: '3', minWidth: '600px', flexShrink: 0 }}>
           <div className="field">
             <div className="control">
-              <div className="field has-addons" style={{ width: '100%' }}>
+              <div className="field has-addons is-size-7" style={{ width: '100%' }}>
                 <div className="control" style={{ flex: '0 0 auto' }}>
-                  <span className="button is-static has-background-white has-text-black">
-                    <span className="icon">
-                      <i className="material-icons">calendar_today</i>
-                    </span>
+                  <span className="button is-static is-size-7">
                     <span>Time</span>
                   </span>
                 </div>
@@ -242,41 +239,40 @@ const SearchOrder: React.FC<SearchOrderProps> = ({ onFilterChange }) => {
                     type="date"
                     value={fromDateQuery}
                     onChange={(e) => setFromDateQuery(e.target.value)}
-                    className="input has-background-white has-text-black"
+                    className="input is-fullwidth is-size-7"
                     placeholder="From date"
-                    style={{ width: '100%' }}
+             
                   />
                 </div>
                 <div className="control" style={{ flex: '0 0 auto' }}>
-                  <span className="button is-static has-background-white has-text-black">-</span>
+                  <span className="button is-static is-size-7">-</span>
                 </div>
                 <div className="control" style={{ flex: '1' }}>
                   <input
                     type="date"
                     value={toDateQuery}
                     onChange={(e) => setToDateQuery(e.target.value)}
-                    className="input has-background-white has-text-black"
+                    className="input is-fullwidth is-size-7"
                     placeholder="To date"
-                    style={{ width: '100%' }}
                   />
                 </div>
                 <div className="control" style={{ flex: '0 0 auto' }}>
                   <button
-                    className="button has-background-white has-text-black"
+                    className="button is-size-7"
                     onClick={(e) => handleDateChange(e, 'prev')}
                   >
-                    <span className="icon">
-                      <i className="material-icons">chevron_left</i>
+                    <span className="icon is-size-7">
+                      <i className="material-icons is-size-7">chevron_left</i>
                     </span>
                   </button>
                 </div>
                 <div className="control" style={{ flex: '0 0 auto' }}>
                   <button
-                    className="button has-background-white has-text-black"
+                    className="button is-size-7"
                     onClick={(e) => handleDateChange(e, 'next')}
                   >
-                    <span className="icon">
-                      <i className="material-icons">chevron_right</i>
+                    <span className="icon is-size-7">
+                      <i className="material-icons is-size-7">chevron_right</i>
                     </span>
                   </button>
                 </div>
@@ -291,10 +287,10 @@ const SearchOrder: React.FC<SearchOrderProps> = ({ onFilterChange }) => {
             <div className="control">
               <button
                 onClick={hasActiveFilters ? handleClearAll : undefined}
-                className={`button is-fullwidth ${hasActiveFilters ? 'is-danger' : 'is-primary'}`}
+                className={`button is-fullwidth is-size-7 ${hasActiveFilters ? 'is-danger' : 'is-primary'}`}
               >
-                <span className="icon">
-                  <i className="material-icons">
+                <span className="icon is-size-7">
+                  <i className="material-icons is-size-7">
                     {hasActiveFilters ? 'clear' : 'search'}
                   </i>
                 </span>

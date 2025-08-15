@@ -12,6 +12,7 @@ import TableResult from '../TableResult';
 // ===== TYPES =====
 interface ItemInfoProps {
   orders?: Order[];
+  className?: string;
 }
 
 // ===== CONSTANTS =====
@@ -74,25 +75,27 @@ const OrderHeaderRow = React.memo(function OrderHeaderRow({
 
   return (
     <motion.tr
-      className={`has-background-white ${isHovered ? 'has-background-light' : ''}`}
+      className={`${isHovered ? 'has-background-light' : ''} is-size-7`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       animate={isHovered ? { x: -10 } : { x: 0 }}
       transition={{ duration: 0.2, ease: "easeInOut" }}
     >
-      <td className="has-background-white has-text-black">
-        <label className="checkbox">
-          <input type="checkbox" />
-          <strong className="has-text-black">{order.orderId}</strong>
-        </label>
+      <td className="is-size-7">
+        <div className="is-flex is-align-items-center">
+          <label className="checkbox is-size-7">
+            <input type="checkbox" />
+          </label>
+          <strong className="ml-2 mr-2 is-size-7">{order.orderId}</strong>
+        </div>
       </td>
-      <td className="has-background-white has-text-black"><span className={getStatusTagClass(order.status)}>{order.status}</span></td>
-      <td className="has-background-white has-text-black"><strong className="has-text-black">{order.lineItems.length} items</strong></td>
-      <td className="has-background-white has-text-black"><strong className="has-text-black">{totalQuantity}</strong></td>
-      <td className="has-background-white has-text-black"><strong className="has-text-black">${totalCost.toFixed(2)}</strong></td>
-      <td className="has-background-white has-text-black"><strong className="has-text-black">{order.shippingAddress}</strong></td>
-      <td className="has-background-white has-text-black"></td>
-      <td className="has-background-white has-text-black"><strong className="has-text-black">{order.createdAt}</strong></td>
+      <td><span className={`${getStatusTagClass(order.status)} is-size-7`}>{order.status}</span></td>
+      <td><strong className="is-size-7">{order.lineItems.length} items</strong></td>
+      <td><strong className="is-size-7">{totalQuantity}</strong></td>
+      <td><strong className="is-size-7">${totalCost.toFixed(2)}</strong></td>
+      <td><strong className="is-size-7">{order.shippingAddress}</strong></td>
+      <td></td>
+      <td><strong className="is-size-7">{order.createdAt}</strong></td>
     </motion.tr>
   );
 });
@@ -144,31 +147,31 @@ const LineItemRow = React.memo(function LineItemRow({
   return (
     <motion.tr
       key={`${orderId}-${itemIndex}`}
-      className={`has-background-white ${isHovered ? 'has-background-light' : ''}`}
+      className={`${isHovered ? 'has-background-light' : ''}`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       animate={isHovered ? { x: -10 } : { x: 0 }}
       transition={{ duration: 0.2, ease: "easeInOut" }}
     >
-      <td className="has-background-white has-text-black"></td>
-      <td className="has-background-white has-text-black"></td>
-      <td className="has-background-white has-text-black"><span className="has-text-black">{item.itemId}</span></td>
-      <td className="has-background-white has-text-black"><span className="has-text-black">{item.quantity}</span></td>
-      <td className="has-background-white has-text-black"><span className="has-text-black">${parsedCost}</span></td>
-      <td className="has-background-white has-text-black">
-        <div className="has-text-black">
+      <td className="is-size-7"></td>
+      <td className="is-size-7"></td>
+      <td><span className="is-size-7">{item.itemId}</span></td>
+      <td><span className="is-size-7">{item.quantity}</span></td>
+      <td><span className="is-size-7">${parsedCost}</span></td>
+      <td>
+        <div className="is-size-7">
           Carrier: {item.carrier} | {' '}
-          <Link href={`/items/${item.trackingNo}`} className="has-text-black">
+          <Link href={`/items/${item.trackingNo}`} className="is-size-7">
             {item.trackingNo}
           </Link>
         </div>
       </td>
-      <td className="has-background-white has-text-black"><span className="has-text-black">SKU: {item.sku}</span></td>
-      <td className="has-background-white has-text-black">
+      <td><span className="is-size-7">SKU: {item.sku}</span></td>
+      <td>
         <div className="level is-mobile">
           <div className="level-left">
-            {item.images?.double && renderImage(item.images.double, 'double', 40)}
-            {item.images?.love && renderImage(item.images.love, 'love', 30)}
+            {item.images?.double && renderImage(item.images.double, 'double', 30)}
+            {item.images?.love && renderImage(item.images.love, 'love', 20)}
           </div>
         </div>
       </td>
@@ -177,7 +180,7 @@ const LineItemRow = React.memo(function LineItemRow({
 });
 
 // ===== MAIN COMPONENT =====
-const ItemInfo: React.FC<ItemInfoProps> = ({ orders: propOrders }) => {
+const ItemInfo: React.FC<ItemInfoProps> = ({ orders: propOrders, className }) => {
   // ===== STATE MANAGEMENT =====
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredOrders, setFilteredOrders] = useState(propOrders || orders);
@@ -264,51 +267,49 @@ const ItemInfo: React.FC<ItemInfoProps> = ({ orders: propOrders }) => {
 
   // ===== RENDER =====
   return (
-    <div className="pt-0">
-      <div className="box has-background-white is-fullwidth has-shadow" style={{ border: '1px solid #dbdbdb', borderTop: 'none' }}>
-        <div className="table-container">
-          <table className="table is-fullwidth is-striped is-hoverable is-bordered">
-            <thead>
-              <tr className="has-background-white">
-                <th className="has-background-white has-text-black">ALL ORDERS</th>
-                <th className="has-background-white has-text-black">STATUS</th>
-                <th className="has-background-white has-text-black">LINE ITEMS</th>
-                <th className="has-background-white has-text-black">QUANTITY</th>
-                <th className="has-background-white has-text-black">TOTAL COST</th>
-                <th className="has-background-white has-text-black">SHIPPING ADDRESS</th>
-                <th className="has-background-white has-text-black">DETAILS</th>
-                <th className="has-background-white has-text-black">CREATED AT</th>
-              </tr>
-            </thead>
-            <tbody>
-              {displayOrders.map((order) => (
-                <React.Fragment key={order.orderId}>
-                  <OrderHeaderRow
-                    order={order}
-                    getStatusTagClass={getStatusTagClass}
+    <div className="card-content is-fullwidth has-shadow is-size-7" style={{ border: '1px solid #dbdbdb', borderTop: 'none' }}>
+      <div className="table-container">
+        <table className="table is-fullwidth is-striped is-hoverable is-bordered is-size-7">
+          <thead>
+            <tr>
+              <th className="is-size-7">ALL ORDERS</th>
+              <th className="is-size-7">STATUS</th>
+              <th className="is-size-7">LINE ITEMS</th>
+              <th className="is-size-7">QUANTITY</th>
+              <th className="is-size-7">TOTAL COST</th>
+              <th className="is-size-7">SHIPPING ADDRESS</th>
+              <th className="is-size-7">DETAILS</th>
+              <th className="is-size-7">CREATED AT</th>
+            </tr>
+          </thead>
+          <tbody>
+            {displayOrders.map((order) => (
+              <React.Fragment key={order.orderId}>
+                <OrderHeaderRow
+                  order={order}
+                  getStatusTagClass={getStatusTagClass}
+                  isHovered={hoveredOrderId === order.orderId}
+                  onMouseEnter={() => handleOrderHover(order.orderId)}
+                  onMouseLeave={handleOrderLeave}
+                />
+                
+                {order.lineItems.map((item: LineItem, itemIndex: number) => (
+                  <LineItemRow
+                    key={`${order.orderId}-${itemIndex}`}
+                    orderId={order.orderId}
+                    item={item}
+                    itemIndex={itemIndex}
                     isHovered={hoveredOrderId === order.orderId}
                     onMouseEnter={() => handleOrderHover(order.orderId)}
                     onMouseLeave={handleOrderLeave}
+                    onImageHover={handleImageHover}
+                    onImageLeave={handleImageLeave}
                   />
-                  
-                  {order.lineItems.map((item: LineItem, itemIndex: number) => (
-                    <LineItemRow
-                      key={`${order.orderId}-${itemIndex}`}
-                      orderId={order.orderId}
-                      item={item}
-                      itemIndex={itemIndex}
-                      isHovered={hoveredOrderId === order.orderId}
-                      onMouseEnter={() => handleOrderHover(order.orderId)}
-                      onMouseLeave={handleOrderLeave}
-                      onImageHover={handleImageHover}
-                      onImageLeave={handleImageLeave}
-                    />
-                  ))}
-                </React.Fragment>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                ))}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
       </div>
       
       <TableResult 

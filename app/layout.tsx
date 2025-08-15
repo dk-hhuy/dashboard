@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => (
-  <html lang="en">
+  <html lang="en" data-theme="light">
     <head>
       <link
         href="https://fonts.googleapis.com/icon?family=Material+Icons"

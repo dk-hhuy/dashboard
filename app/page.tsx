@@ -57,18 +57,18 @@ const Home = () => {
   
   return (
     <ProtectedRoute>
-      <div className="has-background-white" style={{ minHeight: '100vh' }}>
+      <div style={{ minHeight: '100vh', paddingTop: '3rem' }}>
         <NavBar />
         
-        <div className="mt-6">
+        <div className="mt-5">
           <div className="container is-fluid">
             <div className="columns is-gapless">
-              <div className="column">
-                <div className="box has-background-white has-shadow mb-0" style={{ border: '1px solid #dbdbdb', borderBottom: 'none' }}>
+              <div className="column card">
+                <div className="card-content has-shadow mb-0" style={{ border: '1px solid #dbdbdb', borderBottom: 'none' }}>
                   <div className="level is-mobile">
                     <div className="level-left">
                       <motion.h4
-                        className="title is-4 mb-0 has-text-black"
+                        className="title is-4 mb-0 is-size-6"
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true, amount: 0.6 }}

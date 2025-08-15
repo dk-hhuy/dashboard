@@ -47,55 +47,53 @@ const InfoItem = ({
   fieldName?: string;
   onEditChange?: (value: string) => void;
 }) => (
-  <div className="box has-background-white has-radius has-shadow">
-    <div className="level is-mobile">
-      <div className="level-left">
-        <div className="level-item">
-          <span className="icon has-text-primary">
-            <i className="material-icons">{icon}</i>
-          </span>
-        </div>
-        <div className="level-item">
-          <label className="has-text-black has-text-weight-semibold is-size-7 is-uppercase">{label}</label>
-        </div>
-      </div>
+  <div className="box has-radius has-shadow is-size-7">
+    <div className="is-flex is-align-items-center mb-2 is-size-7">
+      <span className="icon has-text-primary mr-2 is-size-7">
+        <i className="material-icons is-size-7">{icon}</i>
+      </span>
+      <label className="has-text-weight-semibold is-uppercase is-size-7">{label}</label>
     </div>
     {isTag && !isEditing ? (
-      <span className={`tag is-small ${value === 'Yes' ? 'is-info' : 'is-success'}`}>
+      <span className={`tag is-small ${value === 'Yes' ? 'is-info' : 'is-success'} is-size-7`}>
         {value || 'Not provided'}
       </span>
     ) : isEditing && fieldName ? (
       <input 
-        className="input has-background-white" 
+        className="input is-size-7" 
         type="text" 
         value={value || ''} 
         onChange={(e) => onEditChange(e.target.value)} 
         placeholder={`Enter ${label.toLowerCase()}`} 
       />
     ) : (
-      <p className="has-text-black has-text-weight-medium mb-0">{value || 'Not provided'}</p>
+      <p className="has-text-weight-medium mb-0 is-size-7">{value || 'Not provided'}</p>
     )}
   </div>
 );
 
 const StatsItem = ({ label, value }: { label: string; value?: string | number }) => (
-  <div className="box has-background-white has-radius has-shadow">
-    <label className="has-text-black has-text-weight-semibold is-size-7 is-uppercase">{label}</label>
-    <p className="has-text-black has-text-weight-semibold is-size-5">{value || '0'}</p>
+  <div className="box has-radius has-shadow is-size-7">
+    <div className="mb-3">
+      <label className="has-text-weight-semibold is-size-7 is-uppercase">{label}</label>
+    </div>
+    <p className="has-text-weight-semibold is-size-7">{value || '0'}</p>
   </div>
 );
 
 const NotificationItem = ({ notifications }: { notifications?: Notifications }) => (
-  <div className="box has-background-white has-radius has-shadow">
-    <label className="has-text-black has-text-weight-semibold is-size-7 is-uppercase">Notifications</label>
-    <div className="tags">
-      <span className={`tag is-small ${notifications?.email ? 'is-success' : 'is-light'}`}>
+  <div className="box has-radius has-shadow is-size-7">
+    <div className="mb-3">
+      <label className="has-text-weight-semibold is-uppercase is-size-7">Notifications</label>
+    </div>
+    <div className="tags is-fullwidth">
+      <span className={`tag is-small ${notifications?.email ? 'is-success' : 'is-light'} is-size-7`}>
         Email: {notifications?.email ? 'On' : 'Off'}
       </span>
-      <span className={`tag is-small ${notifications?.push ? 'is-success' : 'is-light'}`}>
+      <span className={`tag is-small ${notifications?.push ? 'is-success' : 'is-light'} is-size-7`}>
         Push: {notifications?.push ? 'On' : 'Off'}
       </span>
-      <span className={`tag is-small ${notifications?.sms ? 'is-success' : 'is-light'}`}>
+      <span className={`tag is-small ${notifications?.sms ? 'is-success' : 'is-light'} is-size-7`}>
         SMS: {notifications?.sms ? 'On' : 'Off'}
       </span>
     </div>
@@ -121,7 +119,7 @@ const ProfileSection = ({
     transition={{ duration: 0.6, delay, ease: "easeOut" }}
     whileHover={{ scale: 1.01 }}
   >
-    <div className="box has-shadow p-5 has-background-white" style={{
+    <div className="box has-shadow p-5 is-size-7" style={{
       background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
       borderRadius: '20px',
       boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.2)',
@@ -141,7 +139,7 @@ const ProfileSection = ({
         borderRadius: '20px 20px 0 0'
       }}></div>
       {title && (
-        <h2 className="title is-4 has-text-centered mb-4 has-text-black has-text-weight-bold">
+        <h2 className="is-size-7 has-text-centered mb-4 has-text-weight-bold">
           {title}
         </h2>
       )}
@@ -224,7 +222,7 @@ const Profile = () => {
 
   // ===== RENDER FUNCTIONS =====
   const renderItems = useCallback((items: any[], type: 'info' | 'stats' | 'social') => (
-    <div className="columns is-multiline">
+    <div className="columns is-multiline is-size-7">
       {items.map((item, index) => (
         <div key={index} className="column is-6-tablet is-12-mobile">
           {type === 'info' && (
@@ -268,7 +266,7 @@ const Profile = () => {
   // ===== RENDER =====
   return (
     <ProtectedRoute>
-      <div className="has-background-light p-5" style={{ 
+      <div className="p-5 is-size-7" style={{ 
         minHeight: '100vh',
         background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)'
       }}>
@@ -276,60 +274,64 @@ const Profile = () => {
         <div className="container mt-6">
           {/* Header */}
           <motion.div 
-            className="has-text-centered mb-5"
+            className="has-text-centered mb-5 box has-shadow"
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <h1 className="title is-3 has-text-black has-text-weight-bold" style={{ letterSpacing: '0.1em' }}>User Profile</h1>
+            <h1 className="is-size-7 has-text-weight-bold" style={{ letterSpacing: '0.1em' }}>User Profile</h1>
           </motion.div>
           
           {/* Main Content with Bulma Columns */}
           <div className="columns is-multiline">
             {/* Avatar Section */}
-            <ProfileSection className="column is-12-tablet is-4-desktop" delay={0.2}>
-              <div className="has-text-centered">
+            <ProfileSection className="column is-12-mobile is-12-tablet is-4-desktop" delay={0.2}>
+              <div className="is-flex is-flex-direction-column is-align-items-center is-justify-content-center is-fullheight" 
+                  style={{ 
+                    minHeight: '300px',
+                    padding: '2rem 0'
+                  }}>
                 <Image 
                   src={user?.avatar || '/images/husble.png'} 
                   alt="User Avatar"
-                  width={120} 
-                  height={120} 
+                  width={72} 
+                  height={72} 
                   className="has-shadow"
                   style={{
-                    width: '120px',
-                    height: '120px',
+                    width: '72px',
+                    height: '72px',
                     borderRadius: '50%',
-                    border: '4px solid #e0e0e0',
+                    border: '3px solid #e0e0e0',
                     transition: 'all 0.3s ease',
                     objectFit: 'cover'
                   }}
                 />
-                <div className="mt-4">
-                  <h3 className="title is-4 has-text-black has-text-weight-bold">{user?.name}</h3>
-                  <p className="subtitle is-6 has-text-black">{user?.email}</p>
-                  <p className="subtitle is-6 has-text-black">Role: {user?.role}</p>
+                <div className="mt-3 has-text-centered">
+                  <h3 className="is-size-7 has-text-weight-bold">{user?.name}</h3>
+                  <p className="is-size-7">{user?.email}</p>
+                  <p className="is-size-7">Role: {user?.role}</p>
                 </div>
               </div>
             </ProfileSection>
 
             {/* Personal Information Section */}
-            <ProfileSection className="column is-12-tablet is-8-desktop" delay={0.2}>
+            <ProfileSection className="column is-12-mobile is-12-tablet is-8-desktop" delay={0.2}>
               <div className="has-text-centered mb-4">
                 <button
-                  className={`button is-small ${isEditing ? 'is-danger' : 'is-primary'}`}
+                  className={`button is-small ${isEditing ? 'is-danger' : 'is-primary'} is-size-7`}
                   onClick={handleEditToggle}
                 >
-                  <span className="icon is-small">
-                    <i className="material-icons">{isEditing ? 'close' : 'edit'}</i>
+                  <span className="icon is-small is-size-7">
+                    <i className="material-icons is-size-7">{isEditing ? 'close' : 'edit'}</i>
                   </span>
-                  <span>{isEditing ? 'Cancel' : 'Edit'}</span>
+                  <span className="is-size-7">{isEditing ? 'Cancel' : 'Edit'}</span>
                 </button>
               </div>
               {renderItems(personalInfoItems, 'info')}
             </ProfileSection>
 
             {/* Statistics Section */}
-            <ProfileSection className="column is-12-tablet is-6-desktop" title="Statistics" delay={0.4}>
+            <ProfileSection className="column is-12-mobile is-12-tablet is-6-desktop" title="Statistics" delay={0.4}>
               {renderItems(statsItems, 'stats')}
               <div className="column is-12">
                 <NotificationItem notifications={user?.notifications} />
@@ -337,7 +339,7 @@ const Profile = () => {
             </ProfileSection>
             
             {/* Social Links Section */}
-            <ProfileSection className="column is-12-tablet is-6-desktop" title="Social Links" delay={0.4}>
+            <ProfileSection className="column is-12-mobile is-12-tablet is-6-desktop" title="Social Links" delay={0.4}>
               {renderItems(socialItems, 'social')}
             </ProfileSection>
           </div>

@@ -64,29 +64,29 @@ const SignIn = () => {
       <div className="hero-body">
         <div className="container">
           <div className="columns is-centered">
-            <div className="column is-5">
-              <div className="box has-shadow">
-                <h1 className="title has-text-centered mb-5 has-text-white">Sign In</h1>
+            <div className="column is-5 is-size-7">
+              <div className="box has-shadow is-size-7">
+                <h1 className="title has-text-centered mb-5 has-text-white is-size-6">Sign In</h1>
                 
                 {/* Demo credentials */}
-                <div className="notification is-info is-light mb-4">
+                <div className="notification is-info is-light mb-4 is-size-7">
                   <strong>Demo Credentials:</strong><br/>
                   Admin: admin@aluffm.com / admin123<br/>
                   User: user@aluffm.com / user123
                 </div>
                 
                 {error && (
-                  <div className="notification is-danger is-light mb-4">
+                  <div className="notification is-danger is-light mb-4 is-size-7">
                     <button className="delete" onClick={() => setError('')}></button>
                     {error}
                   </div>
                 )}
                 
                 <form onSubmit={handleSubmit}>
-                  <div className="field">
-                    <p className="control has-icons-left">
+                  <div className="field is-size-7">
+                    <p className="control has-icons-left is-size-7">
                       <input 
-                        className="input is-medium" 
+                        className="input is-medium is-size-7" 
                         type="email" 
                         name="email"
                         placeholder="Email" 
@@ -94,16 +94,16 @@ const SignIn = () => {
                         onChange={handleInputChange}
                         required
                       />
-                      <span className="icon is-small is-left">
-                        <i className="material-icons">email</i>
+                      <span className="icon is-small is-left is-size-7">
+                        <i className="material-icons is-size-7">email</i>
                       </span>
                     </p>
                   </div>
                   
-                  <div className="field">
-                    <p className="control has-icons-left">
+                  <div className="field is-size-7">
+                    <p className="control has-icons-left is-size-7">
                       <input 
-                        className="input is-medium" 
+                        className="input is-medium is-size-7" 
                         type="password" 
                         name="password"
                         placeholder="Password" 
@@ -111,16 +111,16 @@ const SignIn = () => {
                         onChange={handleInputChange}
                         required
                       />
-                      <span className="icon is-small is-left">
-                        <i className="material-icons">lock</i>
+                      <span className="icon is-small is-left is-size-7">
+                        <i className="material-icons is-size-7">lock</i>
                       </span>
                     </p>
                   </div>
                   
-                  <div className="field">
-                    <p className="control">
+                  <div className="field is-size-7">
+                    <p className="control is-size-7">
                       <button 
-                        className={`button is-primary is-medium is-fullwidth ${isLoading ? 'is-loading' : ''}`}
+                        className={`button is-primary is-medium is-fullwidth is-size-7 ${isLoading ? 'is-loading' : ''}`}
                         type="submit"
                         disabled={isLoading}
                       >

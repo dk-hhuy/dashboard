@@ -23,11 +23,11 @@ export default function SignOut() {
           <div className="columns is-centered">
             <div className="column is-4">
               <div className="box has-text-centered">
-                <div className="content">
-                  <h3 className="title is-4">Signing Out...</h3>
-                  <p>Please wait while we sign you out.</p>
-                  <div className="mt-4">
-                    <div className="button is-loading is-primary">Loading</div>
+                <div className="content is-size-7">
+                  <h3 className="title is-4 is-size-6">Signing Out...</h3>
+                  <p className="is-size-7">Please wait while we sign you out.</p>
+                  <div className="mt-4 is-size-7">
+                    <div className="button is-loading is-primary is-size-7">Loading</div>
                   </div>
                 </div>
               </div>

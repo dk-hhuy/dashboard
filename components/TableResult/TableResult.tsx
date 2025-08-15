@@ -24,23 +24,23 @@ const TableResult = ({ currentPage, setCurrentPage, itemsPerPage, startIndex, en
   const handleNextPage = () => handlePageChange(currentPage + 1);
 
   return (
-    <div className="level is-mobile has-background-white p-4 has-shadow">
+    <div className="level is-mobile p-4 has-shadow is-size-7">
       <div className="level-left">
-        <div className="level-item">
-          <p className="has-text-black is-size-7 has-text-weight-medium">
+        <div className="level-item is-size-7">
+          <p className="has-text-weight-medium is-size-7">
             {startIndex + 1}-{Math.min(endIndex, totalItems)} of {totalItems} results
           </p>
         </div>
       </div>
       <div className="level-right">
-        <div className="level-item">
+        <div className="level-item is-size-7">
           <div className="field has-addons">
             <div className="control">
-              <div className="select is-small">
+              <div className="select is-small is-size-7">
                 <select 
                   onChange={(e) => handlePageChange(parseInt(e.target.value))} 
                   value={currentPage}
-                  className="has-background-white has-text-black"
+                  
                 >
                   {Array.from({ length: totalPages }, (_, index) => (
                     <option key={index} value={index + 1}>{index + 1} / {totalPages}</option>
@@ -54,25 +54,25 @@ const TableResult = ({ currentPage, setCurrentPage, itemsPerPage, startIndex, en
                 </select>
               </div>
             </div>
-            <div className="control">
+            <div className="control is-size-7">
               <button 
-                className={`button is-small ${isPreviousButtonDisabled ? 'is-static has-background-white' : 'has-background-white has-text-black'}`}
+                className={`button is-small ${isPreviousButtonDisabled ? 'is-static' : ''}`}
                 onClick={handlePreviousPage} 
                 disabled={isPreviousButtonDisabled}
               >
-                <span className="icon is-small">
-                  <i className="material-icons">arrow_back</i>
+                <span className="icon is-small is-size-7">
+                  <i className="material-icons is-size-7">arrow_back</i>
                 </span>
               </button>
             </div>
-            <div className="control">
+            <div className="control is-size-7">
               <button 
-                className={`button is-small ${isNextDisabled ? 'is-static has-background-white' : 'has-background-white has-text-black'}`}
+                className={`button is-small ${isNextDisabled ? 'is-static' : ''}`}
                 onClick={handleNextPage} 
                 disabled={isNextDisabled}
               >
-                <span className="icon is-small">
-                  <i className="material-icons">arrow_forward</i>
+                <span className="icon is-small is-size-7">
+                  <i className="material-icons is-size-7">arrow_forward</i>
                 </span>
               </button>
             </div>
