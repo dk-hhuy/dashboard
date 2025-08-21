@@ -1,4 +1,4 @@
-import { Order } from '../constants';
+import { Order } from '@/constants';
 
 // Calculate total quantity for a single order based on lineItems
 export const calculateOrderTotalQuantity = (order: Order): number => 
@@ -41,3 +41,4 @@ export const calculateAllOrderErrorStatus = (orders: Order[]): Order[] =>
 
 export const calculateAllOrderDuplicateStatus = (orders: Order[]): Order[] => 
   filterOrdersByStatus(orders, "duplicate");
+

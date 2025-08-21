@@ -1,0 +1,32 @@
+[
+  {
+    "productSku": "TEST-001",
+    "name": "Test Product for Price Update",
+    "description": "This product is used to test price update functionality",
+    "category": "Test",
+    "fulfillmentTime": "1 day",
+    "priceHistory": [
+      {
+        "oldCost": "10.00",
+        "effectiveDate": "2024-12-15"
+      }
+    ],
+    "supplier": ["Test Supplier"],
+    "productStatus": "In Stock"
+  },
+  {
+    "productSku": "TEST-002",
+    "name": "Another Test Product",
+    "description": "Another product for testing price updates",
+    "category": "Test",
+    "fulfillmentTime": "2 days",
+    "priceHistory": [
+      {
+        "oldCost": "25.50",
+        "effectiveDate": "2024-12-15"
+      }
+    ],
+    "supplier": ["Test Supplier"],
+    "productStatus": "In Stock"
+  }
+] 

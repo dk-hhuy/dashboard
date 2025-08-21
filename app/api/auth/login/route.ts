@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { socialLinks } from '../../../../constants'
+import { socialLinks } from '@/constants'
 
 // Mock user data - replace with your actual database
 const mockUsers = [

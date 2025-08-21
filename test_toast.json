@@ -1,0 +1,17 @@
+[
+  {
+    "productSku": "TOAST-001",
+    "name": "Test Toast Product",
+    "description": "This is a test product to verify toast notifications work correctly",
+    "category": "Test",
+    "fulfillmentTime": "1 day",
+    "priceHistory": [
+      {
+        "oldCost": "$10.00",
+        "effectiveDate": "2024-12-15"
+      }
+    ],
+    "supplier": ["Test Supplier"],
+    "productStatus": "In Stock"
+  }
+] 

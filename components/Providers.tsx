@@ -1,10 +1,13 @@
 'use client'
 
-import { AuthProvider } from '../contexts/AuthContext'
+import { AuthProvider } from '@/contexts/AuthContext'
+import { ToastProvider } from './Shared'
 
 const Providers = ({ children }: { children: React.ReactNode }) => (
   <AuthProvider>
-    {children}
+    <ToastProvider>
+      {children}
+    </ToastProvider>
   </AuthProvider>
 )
 

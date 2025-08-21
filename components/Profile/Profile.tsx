@@ -1,11 +1,11 @@
 'use client'
 
 import React, { useState, useCallback } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import NavBar from '../NavBar';
-import ProtectedRoute from '../ProtectedRoute';
+import NavBar from '@/components/Shared/NavBar';
+import ProtectedRoute from '@/components/Shared/ProtectedRoute';
 
 // ===== TYPES =====
 interface Notifications {

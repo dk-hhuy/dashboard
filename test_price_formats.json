@@ -1,0 +1,42 @@
+[
+  {
+    "productSku": "PRICE-001",
+    "name": "Test Price Format 1",
+    "description": "Testing price format without $ symbol",
+    "category": "Test",
+    "fulfillmentTime": "1 day",
+    "price": "8.99",
+    "supplier": ["Test Supplier"],
+    "productStatus": "In Stock"
+  },
+  {
+    "productSku": "PRICE-002",
+    "name": "Test Price Format 2",
+    "description": "Testing price format with $ symbol",
+    "category": "Test",
+    "fulfillmentTime": "1 day",
+    "price": "$56.99",
+    "supplier": ["Test Supplier"],
+    "productStatus": "In Stock"
+  },
+  {
+    "productSku": "PRICE-003",
+    "name": "Test Price Format 3",
+    "description": "Testing price format with integer",
+    "category": "Test",
+    "fulfillmentTime": "1 day",
+    "price": "25",
+    "supplier": ["Test Supplier"],
+    "productStatus": "In Stock"
+  },
+  {
+    "productSku": "PRICE-004",
+    "name": "Test Price Format 4",
+    "description": "Testing price format with one decimal",
+    "category": "Test",
+    "fulfillmentTime": "1 day",
+    "price": "19.5",
+    "supplier": ["Test Supplier"],
+    "productStatus": "In Stock"
+  }
+] 

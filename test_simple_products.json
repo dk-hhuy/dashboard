@@ -1,0 +1,20 @@
+[
+  {
+    "productSku": "TEST001",
+    "name": "Test Product 1",
+    "description": "A test product for import",
+    "category": "Tumbler",
+    "price": "10.99",
+    "productStatus": "In Stock",
+    "supplier": "Test Supplier"
+  },
+  {
+    "productSku": "TEST002", 
+    "name": "Test Product 2",
+    "description": "Another test product",
+    "category": "Tumbler",
+    "price": "15.50",
+    "productStatus": "Out Stock",
+    "supplier": "Test Supplier 2"
+  }
+] 

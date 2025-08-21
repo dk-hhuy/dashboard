@@ -52,6 +52,7 @@ export const navLink: NavLink[] = [
   {'label': 'Google Ads', 'href': '/GoogleAds', 'icon': 'campaign'},
   {'label': 'Tools', 'href': '/Tools', 'icon': 'handyman'},
   {'label': 'Config', 'href': '/Config', 'icon': 'tune'},
+  {'label': 'Products', 'href': '/Products', 'icon': 'shopping_cart'},
 ];
 
 // Social Links data
@@ -629,3 +630,5 @@ export const orderStatus = [
     color: { text: '#000000', background: '#ffdd57' }
   }
 ]
+
+
