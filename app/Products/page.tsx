@@ -18,6 +18,7 @@ import { exportProductsData } from '@/lib/utils_product'
 import { useProductFilter } from '@/hooks/useProductFilter'
 import { Product, ProductFormData } from '@/types/product'
 import { useToast } from '@/components/Shared/ToastProvider'
+import ConfigSupplierModal from '@/components/Products/Modals/ConfigSupplierModal'
 
 // Constants
 const IMAGE_HOVER_DELAY = 100
@@ -36,6 +37,7 @@ const Products = () => {
   const [showUpdatePrice, setShowUpdatePrice] = useState(false)
   const [updatedProductSkus, setUpdatedProductSkus] = useState<Set<string>>(new Set())
   const [showUpdatedOnly, setShowUpdatedOnly] = useState(false)
+  const [showConfigSupplier, setShowConfigSupplier] = useState(false)
 
   // Custom hook for filtering and pagination
   const {
@@ -136,6 +138,14 @@ const Products = () => {
     })
   }, [])
 
+  const handleConfig = useCallback(() => {
+    setShowConfigSupplier(true)
+  }, [])
+
+  const handleConfigClose = useCallback(() => {
+    setShowConfigSupplier(false)
+  }, [])
+
   const handleUpdatePriceSave = useCallback((priceUpdates: any[]) => {
     
     // Update products with new prices
@@ -192,6 +202,8 @@ const Products = () => {
       reader.readAsDataURL(file)
     })
   }, [])
+
+
 
   const handleFormSave = useCallback(async (productsFormData: ProductFormData[]) => {
     console.log('Saving products:', productsFormData)
@@ -453,6 +465,7 @@ const Products = () => {
                             exportProductsData(productsData)
                             showToast('Products data exported to console!', 'info')
                           }}
+                          onConfig={handleConfig}
                         />
                       </div>
                     </div>
@@ -505,6 +518,11 @@ const Products = () => {
           products={productsData}
           onClose={handleUpdatePriceClose}
           onSave={handleUpdatePriceSave}
+        />
+
+        <ConfigSupplierModal
+          isVisible={showConfigSupplier}
+          onClose={handleConfigClose}
         />
       </div>
     </ProtectedRoute>

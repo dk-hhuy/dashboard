@@ -13,7 +13,15 @@ const ConfigSupplierModal = React.memo(({ isVisible, onClose }: ConfigSupplierMo
   return createPortal (
     <div className="modal is-active">
         <div className="modal-background" onClick={onClose}></div>
-        <div className="modal-content" style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <div 
+          className="modal-content" 
+          style={{ 
+            width: '50vw', 
+            maxWidth: '1600px', 
+            margin: '0 auto',
+            transform: 'none'
+          }}
+        >
             <div className="box" style={{ maxHeight: '90vh', overflowY: 'auto', padding: '20px' }}>
                 <ConfigSupplier />
             </div>

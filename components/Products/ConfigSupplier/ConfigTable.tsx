@@ -1,9 +1,13 @@
 import React from 'react'
-import { suppliers } from '@/constants/index_product'
-const ConfigTable = ( {suppliers}: {suppliers: any[]} ) => {
+
+interface ConfigTableProps {
+  suppliers: any[]
+}
+
+const ConfigTable = ({ suppliers }: ConfigTableProps) => {
   return (
-    <div className="card-content is-size-7">
-        <table className="table is-fullwidth is-size-7">
+    <div className="is-size-7">
+        <table className="table is-fullwidth is-bordered is-size-7">
             <thead>
                 <tr>
                     <th className="has-text-left is-size-7 title">SUPPLIER</th>
@@ -16,16 +20,12 @@ const ConfigTable = ( {suppliers}: {suppliers: any[]} ) => {
                     <tr key={index}>
                         <td className="has-text-left is-size-7">{supplier.name}</td>
                         <td className="has-text-left is-size-7">{supplier.country}</td>
-                        <td className="has-text-centered">
-                            <button className="button is-small is-size-7 is-danger">
-                                <span className="icon is-small">
-                                    <i className="material-icons is-size-7">edit</i>
-                                </span>
+                        <td className="has-text-centered" style={{ width: '150px' }}> 
+                            <button className="button is-small is-size-7 is-primary">
+                                Edit    
                             </button>
-                            <button className="button is-small is-size-7 is-danger">
-                                <span className="icon is-small">
-                                    <i className="material-icons is-size-7">delete</i>
-                                </span>
+                            <button className="button is-small is-size-7 is-danger ml-2">
+                                Delete
                             </button>
                         </td>
                     </tr>
