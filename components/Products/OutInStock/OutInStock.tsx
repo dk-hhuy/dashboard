@@ -11,60 +11,79 @@ interface OutInStockProps {
   updatedProductSkus?: Set<string>;
 }
 
-const OutInStock = ({ activeStockFilter, onStockFilterChange, showUpdatedOnly, onToggleShowUpdated, productsData, updatedProductSkus = new Set() }: OutInStockProps) => {
+interface FilterButton {
+  key: string;
+  label: string;
+  filter: StockFilter;
+  count: number;
+  isActive: boolean;
+}
+
+const OutInStock = React.memo(({ 
+  activeStockFilter, 
+  onStockFilterChange, 
+  showUpdatedOnly, 
+  onToggleShowUpdated, 
+  productsData, 
+  updatedProductSkus = new Set() 
+}: OutInStockProps) => {
+  const filterButtons: FilterButton[] = [
+    {
+      key: 'all',
+      label: 'All',
+      filter: null,
+      count: calculateAllProducts(productsData).length,
+      isActive: !showUpdatedOnly && activeStockFilter === null
+    },
+    {
+      key: 'in',
+      label: 'In Stock',
+      filter: 'in',
+      count: calculateAllProductsInStock(productsData).length,
+      isActive: !showUpdatedOnly && activeStockFilter === 'in'
+    },
+    {
+      key: 'out',
+      label: 'Out Stock',
+      filter: 'out',
+      count: calculateAllProductsOutStock(productsData).length,
+      isActive: !showUpdatedOnly && activeStockFilter === 'out'
+    }
+  ];
+
+  const handleFilterClick = (filter: StockFilter) => {
+    onStockFilterChange(filter);
+    if (showUpdatedOnly) onToggleShowUpdated();
+  };
+
   return (
     <div className="is-flex is-align-items-center is-flex-direction-row is-size-7">
-
-      <div className="is-size-7 mr-2">
-        <button 
-          className={`button is-size-7 is-responsive is-rounded ${!showUpdatedOnly && activeStockFilter === null ? 'is-link is-light' : 'is-info is-light'}`}
-          onClick={() => {
-            onStockFilterChange(null)
-            if (showUpdatedOnly) onToggleShowUpdated() // Turn off showUpdatedOnly if it's active
-          }}
-        >
-          All ({calculateAllProducts(productsData).length})
-        </button>
-      </div>
-
-      <div className="is-size-7 mr-2">
-        <button 
-          className={`button is-size-7 is-responsive is-rounded ${!showUpdatedOnly && activeStockFilter === 'in' ? 'is-link is-light' : 'is-info is-light'}`}
-          onClick={() => {
-            onStockFilterChange('in')
-            if (showUpdatedOnly) onToggleShowUpdated() // Turn off showUpdatedOnly if it's active
-          }}
-        >
-          In Stock ({calculateAllProductsInStock(productsData).length})
-        </button>
-      </div>
-
-      <div className="is-size-7">
-        <button 
-          className={`button is-size-7 is-responsive is-rounded ${!showUpdatedOnly && activeStockFilter === 'out' ? 'is-link is-light' : 'is-info is-light'}`}
-          onClick={() => {
-            onStockFilterChange('out')
-            if (showUpdatedOnly) onToggleShowUpdated() // Turn off showUpdatedOnly if it's active
-          }}
-        >
-          Out Stock ({calculateAllProductsOutStock(productsData).length})
-        </button>
-      </div>
+      {filterButtons.map(({ key, label, filter, count, isActive }) => (
+        <div key={key} className={`is-size-7 ${key !== 'out' ? 'mr-2' : ''}`}>
+          <button 
+            className={`button is-size-7 is-responsive is-rounded ${isActive ? 'is-link is-light' : 'is-info is-light'}`}
+            onClick={() => handleFilterClick(filter)}
+          >
+            {label} ({count})
+          </button>
+        </div>
+      ))}
 
       <div className="is-size-7 ml-2">
         <button 
           className={`button is-size-7 is-responsive is-rounded ${showUpdatedOnly ? 'is-link is-light' : 'is-info is-light'}`}
           onClick={() => {
-            onToggleShowUpdated()
-            if (activeStockFilter !== null) onStockFilterChange(null) // Reset stock filter if it's active
+            onToggleShowUpdated();
+            if (activeStockFilter !== null) onStockFilterChange(null);
           }}
         >
           Show Updated Only ({updatedProductSkus.size})
         </button>
       </div>
-
     </div>
-  )
-}
+  );
+});
 
-export default OutInStock
+OutInStock.displayName = 'OutInStock';
+
+export default OutInStock;

@@ -14,7 +14,7 @@ interface ProductsTableProps {
   updatedProductSkus?: Set<string>
 }
 
-const ProductsTable = React.memo(({ 
+const ProductsTable = React.memo<ProductsTableProps>(({ 
   products, 
   onImageHover, 
   onImageLeave,
@@ -22,7 +22,7 @@ const ProductsTable = React.memo(({
   showUpdatedOnly = false,
   activeStockFilter = null,
   updatedProductSkus = new Set()
-}: ProductsTableProps) => (
+}) => (
   <div className="is-size-7">
     <table className="table is-fullwidth is-size-7 is-hoverable">
       <TableHeader />
@@ -40,7 +40,12 @@ const ProductsTable = React.memo(({
       </tbody>
     </table>
     
-    {products.length === 0 && <EmptyState showUpdatedOnly={showUpdatedOnly} activeStockFilter={activeStockFilter} />}
+    {products.length === 0 && (
+      <EmptyState 
+        showUpdatedOnly={showUpdatedOnly} 
+        activeStockFilter={activeStockFilter} 
+      />
+    )}
   </div>
 ))
 
