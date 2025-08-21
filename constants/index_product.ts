@@ -423,3 +423,67 @@ export const products = [
     productStatus: "Out Stock"
   }
 ]
+
+// Suppliers
+export const suppliers = [
+  {
+    name: "GlassCraft Inc",
+    country: "United States"
+  },
+  {
+    name: "Premium Supplies", 
+    country: "Germany"
+  },
+  {
+    name: "SparkleCraft",
+    country: "Italy"
+  },
+  {
+    name: "Luxury Items",
+    country: "France"
+  },
+  {
+    name: "TravelGear Pro",
+    country: "Japan"
+  },
+  {
+    name: "MugMasters",
+    country: "United Kingdom"
+  },
+  {
+    name: "Classic Items",
+    country: "United States"
+  },
+  {
+    name: "ColorTech",
+    country: "South Korea"
+  },
+  {
+    name: "AluminumCraft",
+    country: "Canada"
+  },
+  {
+    name: "Large Items",
+    country: "United States"
+  },
+  {
+    name: "Compact Items",
+    country: "Japan"
+  },
+  {
+    name: "Small Items",
+    country: "South Korea"
+  },
+  {
+    name: "Medium Items",
+    country: "United States"
+  },
+  {
+    name: "Frosted Items",
+    country: "United States"
+  },
+  {
+    name: "Extra Large Items",
+    country: "United States"
+  }
+]
