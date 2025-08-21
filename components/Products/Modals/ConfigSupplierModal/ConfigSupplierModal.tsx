@@ -23,7 +23,7 @@ const ConfigSupplierModal = React.memo(({ isVisible, onClose }: ConfigSupplierMo
           }}
         >
             <div className="box" style={{ maxHeight: '90vh', overflowY: 'auto', padding: '20px' }}>
-                <ConfigSupplier />
+                <ConfigSupplier onClose={onClose} />
             </div>
         </div>
         <button 

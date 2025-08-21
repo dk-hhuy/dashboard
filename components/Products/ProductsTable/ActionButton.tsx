@@ -9,9 +9,9 @@ const ActionButton = React.memo(({ action, onClick }: ActionButtonProps) => {
   const getButtonClass = () => {
     switch (action) {
       case 'Edit':
-        return 'is-info is-light'
+        return 'is-info'
       case 'Delete':
-        return 'is-danger is-light'
+        return 'is-danger'
       default:
         return 'is-link'
     }

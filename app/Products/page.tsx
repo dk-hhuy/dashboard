@@ -423,15 +423,15 @@ const Products = () => {
       <div className="is-size-7" style={{ minHeight: '100vh', paddingTop: '3rem' }}>
         <NavBar />
 
-        <div className="mt-5">
-          <div className="container is-fluid">
+        <div>
+          <div className="is-fluid">
             <div className="columns is-gapless">
               <div className="column">
-                <div className="box mb-0 is-fullwidth is-size-7 has-background-light">
+                <div className="box is-fullwidth is-size-7">
                   {/* Header Section */}
                   <div className="level is-size-7">
                     <motion.h4
-                      className="title is-4 mb-0 is-size-6 level-left"
+                      className="title is-4 is-size-6 level-left"
                       initial={{ opacity: 0 }}
                       whileInView={{ opacity: 1 }}
                       viewport={{ once: true, amount: 0.6 }}
@@ -446,8 +446,8 @@ const Products = () => {
                   </div>
 
                   {/* Table Section */}
-                  <div className="card is-size-7">
-                    <div className="card-content is-size-7">
+                  <div className="is-size-7 mt-7">
+                    <div className="is-size-7 mb-5">
                       <div className="is-flex is-align-items-center is-justify-content-space-between is-size-7">
                         <OutInStock 
                           activeStockFilter={activeStockFilter}

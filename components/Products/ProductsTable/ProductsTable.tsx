@@ -23,7 +23,7 @@ const ProductsTable = React.memo(({
   activeStockFilter = null,
   updatedProductSkus = new Set()
 }: ProductsTableProps) => (
-  <div className="card-content is-size-7">
+  <div className="is-size-7">
     <table className="table is-fullwidth is-size-7 is-hoverable">
       <TableHeader />
       <tbody>

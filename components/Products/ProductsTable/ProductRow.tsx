@@ -21,7 +21,7 @@ const ProductRow = React.memo(({
   isUpdated = false
 }: ProductRowProps) => (
   <tr className="is-size-7">
-    <td className="has-text-centered">
+    <td>
       <ProductImage 
         src={product.mainimage} 
         alt={product.name} 
@@ -44,7 +44,7 @@ const ProductRow = React.memo(({
     <td className="has-text-centered" style={{ verticalAlign: 'middle' }}>
       <ProductSuppliers suppliers={product.supplier} />
     </td>
-    <td className="has-text-centered" style={{ verticalAlign: 'middle' }}>
+    <td className="has-text-centered" style={{ verticalAlign: 'middle', width: '210px' }}>
       <div className="buttons are-small is-justify-content-center">
         <ActionButton
           action="Edit"

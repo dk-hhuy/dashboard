@@ -4,7 +4,11 @@ import { suppliers } from '@/constants/index_product'
 import TableResult from '@/components/Shared/TableResult'
 import { getAllSuppliers } from '@/lib/utils_supplier'
 
-const ConfigSupplier = () => {
+type ConfigSupplierProps = {
+  onClose: () => void
+}
+
+const ConfigSupplier = ({ onClose }: ConfigSupplierProps) => {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10 // Hiển thị tối đa 10 suppliers/trang
   const startIndex = (currentPage - 1) * itemsPerPage
@@ -20,7 +24,7 @@ const ConfigSupplier = () => {
             <div className="is-size-7">
                 <div className="is-flex is-flex-direction-row is-justify-content-space-between is-align-items-center is-flex-wrap-wrap mb-4">
                     <h4 className="title is-4 mb-0 is-size-6">Config Supplier ({getAllSuppliers()})</h4>
-                    <button className="button is-small is-size-7 is-danger is-light ml-4">
+                    <button className="button is-small is-size-7 is-danger is-light ml-4" onClick={onClose}>
                         <span className="icon is-small">
                             <i className="material-icons is-size-7">close</i>
                         </span>
