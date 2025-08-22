@@ -1,3 +1,6 @@
+import React from 'react'
+import ItemsPerPageSelector from './ItemsPerPageSelector'
+
 interface TableResultProps {
   currentPage: number;
   setCurrentPage: (page: number) => void;
@@ -5,9 +8,10 @@ interface TableResultProps {
   startIndex: number;
   endIndex: number;
   totalItems: number;
+  onItemsPerPageChange?: (itemsPerPage: number) => void;
 }
 
-const TableResult = ({ currentPage, setCurrentPage, itemsPerPage, startIndex, endIndex, totalItems }: TableResultProps) => {
+const TableResult = ({ currentPage, setCurrentPage, itemsPerPage, startIndex, endIndex, totalItems, onItemsPerPageChange }: TableResultProps) => {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const isPreviousButtonDisabled = currentPage === 1;
   const isNextDisabled = currentPage === totalPages;
@@ -78,6 +82,15 @@ const TableResult = ({ currentPage, setCurrentPage, itemsPerPage, startIndex, en
             </div>
           </div>
         </div>
+        {onItemsPerPageChange && (
+          <div className="level-item is-size-7 ml-4">
+            <ItemsPerPageSelector
+              itemsPerPage={itemsPerPage}
+              onItemsPerPageChange={onItemsPerPageChange}
+              totalItems={totalItems}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

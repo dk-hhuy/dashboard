@@ -504,19 +504,6 @@ const Products = () => {
                       updatedProductSkus={updatedProductSkus}
                     />
                     
-                    {/* Pagination Controls */}
-                    <div className="level is-mobile p-4 is-size-7">
-                      <div className="level-left">
-                        <div className="level-item">
-                          <ItemsPerPageSelector
-                            itemsPerPage={itemsPerPage}
-                            onItemsPerPageChange={handleItemsPerPageChange}
-                            totalItems={filteredProducts.length}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    
                     {/* Pagination */}
                     <TableResult 
                       currentPage={currentPage}
@@ -525,6 +512,7 @@ const Products = () => {
                       startIndex={startIndex}
                       endIndex={endIndex}
                       totalItems={filteredProducts.length}
+                      onItemsPerPageChange={handleItemsPerPageChange}
                     />
                   </div>
                 </div>
