@@ -1,4 +1,6 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useEffect } from 'react'
+import { formUrlQuery, removeKeysFromUrlQuery } from '@jsmastery/utils'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { calculateAllProducts, calculateAllProductsInStock, calculateAllProductsOutStock } from '@/lib/utils_product'
 import { StockFilter, Product } from '@/types/product'
 
@@ -35,6 +37,25 @@ const OutInStock = React.memo<OutInStockProps>(({
   productsData, 
   updatedProductSkus = new Set() 
 }) => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // URL update helper
+  const updateUrlParam = useCallback((key: string, value: string) => {
+    const newUrl = value 
+      ? formUrlQuery({ params: searchParams.toString(), key, value })
+      : removeKeysFromUrlQuery({ params: searchParams.toString(), keysToRemove: [key] });
+    router.push(newUrl, { scroll: false });
+  }, [searchParams, router]);
+
+  // Update URL when filters change
+  useEffect(() => {
+    updateUrlParam('stock', activeStockFilter || '');
+  }, [activeStockFilter, updateUrlParam]);
+
+  useEffect(() => {
+    updateUrlParam('updated', showUpdatedOnly ? 'true' : '');
+  }, [showUpdatedOnly, updateUrlParam]);
   // Memoized filter buttons
   const filterButtons = useMemo<FilterButton[]>(() => [
     {

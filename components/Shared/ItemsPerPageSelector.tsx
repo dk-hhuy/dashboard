@@ -1,4 +1,6 @@
-import React from 'react'
+import React, { useCallback, useEffect } from 'react'
+import { formUrlQuery, removeKeysFromUrlQuery } from '@jsmastery/utils'
+import { useSearchParams, useRouter } from 'next/navigation'
 
 interface ItemsPerPageSelectorProps {
   itemsPerPage: number
@@ -11,7 +13,23 @@ const ItemsPerPageSelector: React.FC<ItemsPerPageSelectorProps> = ({
   onItemsPerPageChange,
   totalItems
 }) => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
   const options = [5, 10, 12, 15, 20, 25, 30, 50, 100]
+
+  // URL update helper
+  const updateUrlParam = useCallback((key: string, value: string) => {
+    const newUrl = value 
+      ? formUrlQuery({ params: searchParams.toString(), key, value })
+      : removeKeysFromUrlQuery({ params: searchParams.toString(), keysToRemove: [key] });
+    router.push(newUrl, { scroll: false });
+  }, [searchParams, router]);
+
+  // Update URL when itemsPerPage changes
+  useEffect(() => {
+    updateUrlParam('itemsPerPage', itemsPerPage.toString());
+  }, [itemsPerPage, updateUrlParam]);
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newItemsPerPage = parseInt(event.target.value)

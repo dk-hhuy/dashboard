@@ -1,4 +1,6 @@
-import React, { useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
+import { formUrlQuery, removeKeysFromUrlQuery } from '@jsmastery/utils'
+import { useSearchParams, useRouter } from 'next/navigation'
 
 // ============================================================================
 // TYPES & CONSTANTS
@@ -7,6 +9,9 @@ import React, { useCallback } from 'react'
 interface SearchProductProps {
   onSearch?: (searchTerm: string) => void;
 }
+
+// Constants
+const DEBOUNCE_DELAY = 300;
 
 const SEARCH_STYLES = {
   container: {
@@ -26,11 +31,39 @@ const SEARCH_STYLES = {
 // ============================================================================
 
 const SearchProduct = React.memo<SearchProductProps>(({ onSearch }) => {
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
+  // State management
+  const [searchQuery, setSearchQuery] = useState<string>(searchParams.get('search') || '');
+
+  // URL update helper
+  const updateUrlParam = useCallback((key: string, value: string) => {
+    const newUrl = value 
+      ? formUrlQuery({ params: searchParams.toString(), key, value })
+      : removeKeysFromUrlQuery({ params: searchParams.toString(), keysToRemove: [key] });
+    router.push(newUrl, { scroll: false });
+  }, [searchParams, router]);
+
+  // Debounced search effect
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      updateUrlParam('search', searchQuery);
+    }, DEBOUNCE_DELAY);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery, updateUrlParam]);
+
+  // Notify parent component
+  useEffect(() => {
     if (onSearch) {
-      onSearch(e.target.value);
+      onSearch(searchQuery);
     }
-  }, [onSearch]);
+  }, [searchQuery, onSearch]);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  }, []);
 
   return (
     <div>
@@ -58,6 +91,7 @@ const SearchProduct = React.memo<SearchProductProps>(({ onSearch }) => {
                 className="input is-size-7" 
                 type="text" 
                 placeholder="Search products, categories, skus"
+                value={searchQuery}
                 onChange={handleSearchChange}
               />
               <span className="icon is-left">

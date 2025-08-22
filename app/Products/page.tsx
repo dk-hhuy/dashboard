@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useCallback, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import NavBar from '@/components/Shared/NavBar'
 import ProtectedRoute from '@/components/Shared/ProtectedRoute'
@@ -38,7 +39,8 @@ const Products = () => {
   const [showImportProduct, setShowImportProduct] = useState(false)
   const [showUpdatePrice, setShowUpdatePrice] = useState(false)
   const [updatedProductSkus, setUpdatedProductSkus] = useState<Set<string>>(new Set())
-  const [showUpdatedOnly, setShowUpdatedOnly] = useState(false)
+  const searchParams = useSearchParams()
+  const [showUpdatedOnly, setShowUpdatedOnly] = useState(searchParams.get('updated') === 'true')
   const [showConfigSupplier, setShowConfigSupplier] = useState(false)
   const [selectedProductSkus, setSelectedProductSkus] = useState<Set<string>>(new Set())
 

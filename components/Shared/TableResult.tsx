@@ -1,4 +1,6 @@
-import React from 'react'
+import React, { useCallback, useEffect } from 'react'
+import { formUrlQuery, removeKeysFromUrlQuery } from '@jsmastery/utils'
+import { useSearchParams, useRouter } from 'next/navigation'
 import ItemsPerPageSelector from './ItemsPerPageSelector'
 
 interface TableResultProps {
@@ -12,9 +14,25 @@ interface TableResultProps {
 }
 
 const TableResult = ({ currentPage, setCurrentPage, itemsPerPage, startIndex, endIndex, totalItems, onItemsPerPageChange }: TableResultProps) => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const isPreviousButtonDisabled = currentPage === 1;
   const isNextDisabled = currentPage === totalPages;
+
+  // URL update helper
+  const updateUrlParam = useCallback((key: string, value: string) => {
+    const newUrl = value 
+      ? formUrlQuery({ params: searchParams.toString(), key, value })
+      : removeKeysFromUrlQuery({ params: searchParams.toString(), keysToRemove: [key] });
+    router.push(newUrl, { scroll: false });
+  }, [searchParams, router]);
+
+  // Update URL when page changes
+  useEffect(() => {
+    updateUrlParam('page', currentPage.toString());
+  }, [currentPage, updateUrlParam]);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {

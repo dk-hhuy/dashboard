@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Product, StockFilter } from '@/types/product'
 
 // Constants
@@ -11,10 +12,17 @@ export const useProductFilter = (
   showUpdatedOnly?: boolean,
   initialItemsPerPage: number = DEFAULT_ITEMS_PER_PAGE
 ) => {
-  const [activeStockFilter, setActiveStockFilter] = useState<StockFilter>(null)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage)
+  const searchParams = useSearchParams()
+  
+  // Initialize state from URL params
+  const [activeStockFilter, setActiveStockFilter] = useState<StockFilter>(
+    (searchParams.get('stock') as StockFilter) || null
+  )
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '')
+  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1'))
+  const [itemsPerPage, setItemsPerPage] = useState(
+    parseInt(searchParams.get('itemsPerPage') || initialItemsPerPage.toString())
+  )
 
   const filteredProducts = useMemo(() => {
     let filtered = productsData
