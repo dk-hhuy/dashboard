@@ -83,6 +83,28 @@ export const exportProductsData = (productsData: Product[]) => {
   return exportData
 }
 
+// Export selected products data
+export const exportSelectedProductsData = (productsData: Product[], selectedProductSkus: Set<string>) => {
+  const selectedProducts = productsData.filter(product => selectedProductSkus.has(product.productSku));
+  
+  const exportData = selectedProducts.map(product => ({
+    mainimage: product.mainimage,
+    productSku: product.productSku,
+    name: product.name,
+    description: product.description,
+    category: product.category,
+    fulfillmentTime: product.fulfillmentTime,
+    priceHistory: product.priceHistory,
+    supplier: product.supplier,
+    productStatus: product.productStatus
+  }))
+  
+  console.log(`Export selected products data (${selectedProducts.length} products):`)
+  console.log(JSON.stringify(exportData, null, 2))
+  
+  return exportData
+}
+
 // Generate constants file content
 export const generateConstantsFileContent = (productsData: Product[]) => {
   const exportData = exportProductsData(productsData)

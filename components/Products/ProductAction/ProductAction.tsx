@@ -9,6 +9,8 @@ interface ProductActionProps {
   onUpdatePrice?: () => void;
   onImport?: () => void;
   onExport?: () => void;
+  onExportSelected?: () => void;
+  selectedCount?: number;
   onConfig?: () => void;
 }
 
@@ -28,6 +30,8 @@ const ProductAction = React.memo<ProductActionProps>(({
   onUpdatePrice, 
   onImport, 
   onExport, 
+  onExportSelected,
+  selectedCount = 0,
   onConfig 
 }) => {
   // Memoized action buttons configuration
@@ -35,9 +39,15 @@ const ProductAction = React.memo<ProductActionProps>(({
     { icon: 'add', label: 'Add', color: 'is-primary', onClick: onAddProduct },
     { icon: 'sync', label: 'Update Price', color: 'is-warning', onClick: onUpdatePrice },
     { icon: 'import_export', label: 'Import', color: 'is-info', onClick: onImport },
-    { icon: 'file_download', label: 'Export', color: '', onClick: onExport },
+    { icon: 'file_download', label: 'Export All', color: '', onClick: onExport },
+    ...(selectedCount > 0 ? [{
+      icon: 'file_download',
+      label: `Export Selected (${selectedCount})`,
+      color: 'is-link',
+      onClick: onExportSelected
+    }] : []),
     { icon: 'settings', label: 'Config', color: 'is-success', onClick: onConfig }
-  ], [onAddProduct, onUpdatePrice, onImport, onExport, onConfig]);
+  ], [onAddProduct, onUpdatePrice, onImport, onExport, onExportSelected, selectedCount, onConfig]);
 
   // Event handler
   const handleButtonClick = useCallback((onClick?: () => void) => {

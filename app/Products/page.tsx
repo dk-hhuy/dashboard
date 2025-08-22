@@ -14,7 +14,7 @@ import ProductFormModal from '@/components/Products/Modals/ProductFormModal'
 import ImportProductModal from '@/components/Products/Modals/ImportProductModal'
 import UpdatePriceModal from '@/components/Products/Modals/UpdatePriceModal'
 import { products } from '@/constants/index_product'
-import { exportProductsData } from '@/lib/utils_product'
+import { exportProductsData, exportSelectedProductsData } from '@/lib/utils_product'
 import { useProductFilter } from '@/hooks/useProductFilter'
 import { Product, ProductFormData } from '@/types/product'
 import { useToast } from '@/components/Shared/ToastProvider'
@@ -39,6 +39,7 @@ const Products = () => {
   const [updatedProductSkus, setUpdatedProductSkus] = useState<Set<string>>(new Set())
   const [showUpdatedOnly, setShowUpdatedOnly] = useState(false)
   const [showConfigSupplier, setShowConfigSupplier] = useState(false)
+  const [selectedProductSkus, setSelectedProductSkus] = useState<Set<string>>(new Set())
 
   // Custom hook for filtering and pagination
   const {
@@ -54,6 +55,21 @@ const Products = () => {
     handlePageChange,
     handleItemsPerPageChange
   } = useProductFilter(productsData, updatedProductSkus, showUpdatedOnly, 12)
+
+  const handleSelectionChange = useCallback((selectedProducts: Set<string>) => {
+    setSelectedProductSkus(selectedProducts);
+  }, [])
+
+  // Export selected products handler
+  const handleExportSelected = useCallback(() => {
+    if (selectedProductSkus.size === 0) {
+      showToast('No products selected for export!', 'warning');
+      return;
+    }
+    
+    exportSelectedProductsData(productsData, selectedProductSkus);
+    showToast(`Exported ${selectedProductSkus.size} selected products to console!`, 'success');
+  }, [selectedProductSkus, productsData, showToast]);
 
   // Image hover handlers with debouncing
   const handleImageHover = useCallback((src: string) => {
@@ -490,6 +506,8 @@ const Products = () => {
                             exportProductsData(productsData)
                             showToast('Products data exported to console!', 'info')
                           }}
+                          onExportSelected={handleExportSelected}
+                          selectedCount={selectedProductSkus.size}
                           onConfig={handleConfig}
                         />
                       </div>
@@ -503,6 +521,7 @@ const Products = () => {
                       showUpdatedOnly={showUpdatedOnly}
                       activeStockFilter={activeStockFilter}
                       updatedProductSkus={updatedProductSkus}
+                      onSelectionChange={handleSelectionChange}
                     />
                     
                     {/* Pagination */}

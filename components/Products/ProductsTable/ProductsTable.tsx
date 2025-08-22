@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { Product } from '@/types/product'
 import TableHeader from './TableHeader'
 import ProductRow from './ProductRow'
@@ -13,6 +13,7 @@ interface ProductsTableProps {
   showUpdatedOnly?: boolean
   activeStockFilter?: string | null
   updatedProductSkus?: Set<string>
+  onSelectionChange?: (selectedProducts: Set<string>) => void
 }
 
 const ProductsTable = React.memo<ProductsTableProps>(({ 
@@ -23,7 +24,9 @@ const ProductsTable = React.memo<ProductsTableProps>(({
   onActionClick,
   showUpdatedOnly = false,
   activeStockFilter = null,
-  updatedProductSkus = new Set()
+  updatedProductSkus = new Set(),
+  onSelectionChange
+
 }) => {
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
   const [isSelectAll, setIsSelectAll] = useState(false);
@@ -31,7 +34,8 @@ const ProductsTable = React.memo<ProductsTableProps>(({
   const handleSelectAll = useCallback(() => {
     if (isSelectAll) {
       // Deselect all
-      setSelectedProducts(new Set());
+      const newSelection = new Set<string>();
+      setSelectedProducts(newSelection);
       setIsSelectAll(false);
     } else {
       // Select all products from the entire list, not just current page
@@ -56,6 +60,11 @@ const ProductsTable = React.memo<ProductsTableProps>(({
     const newSelectedCount = isSelected ? selectedProducts.size + 1 : selectedProducts.size - 1;
     setIsSelectAll(newSelectedCount === allProducts.length);
   }, [selectedProducts.size, allProducts.length]);
+
+  // Use useEffect to notify parent of selection changes
+  useEffect(() => {
+    onSelectionChange?.(selectedProducts);
+  }, [selectedProducts, onSelectionChange]);
 
   return (
   <div className="is-size-7">
