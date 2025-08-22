@@ -1,6 +1,10 @@
-import React from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { calculateAllProducts, calculateAllProductsInStock, calculateAllProductsOutStock } from '@/lib/utils_product'
 import { StockFilter, Product } from '@/types/product'
+
+// ============================================================================
+// TYPES & INTERFACES
+// ============================================================================
 
 interface OutInStockProps {
   activeStockFilter: StockFilter;
@@ -19,15 +23,20 @@ interface FilterButton {
   isActive: boolean;
 }
 
-const OutInStock = React.memo(({ 
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
+
+const OutInStock = React.memo<OutInStockProps>(({ 
   activeStockFilter, 
   onStockFilterChange, 
   showUpdatedOnly, 
   onToggleShowUpdated, 
   productsData, 
   updatedProductSkus = new Set() 
-}: OutInStockProps) => {
-  const filterButtons: FilterButton[] = [
+}) => {
+  // Memoized filter buttons
+  const filterButtons = useMemo<FilterButton[]>(() => [
     {
       key: 'all',
       label: 'All',
@@ -49,12 +58,18 @@ const OutInStock = React.memo(({
       count: calculateAllProductsOutStock(productsData).length,
       isActive: !showUpdatedOnly && activeStockFilter === 'out'
     }
-  ];
+  ], [productsData, showUpdatedOnly, activeStockFilter]);
 
-  const handleFilterClick = (filter: StockFilter) => {
+  // Event handlers
+  const handleFilterClick = useCallback((filter: StockFilter) => {
     onStockFilterChange(filter);
     if (showUpdatedOnly) onToggleShowUpdated();
-  };
+  }, [onStockFilterChange, showUpdatedOnly, onToggleShowUpdated]);
+
+  const handleToggleShowUpdated = useCallback(() => {
+    onToggleShowUpdated();
+    if (activeStockFilter !== null) onStockFilterChange(null);
+  }, [onToggleShowUpdated, activeStockFilter, onStockFilterChange]);
 
   return (
     <div className="is-flex is-align-items-center is-flex-direction-row is-size-7">
@@ -72,10 +87,7 @@ const OutInStock = React.memo(({
       <div className="is-size-7 ml-2">
         <button 
           className={`button is-size-7 is-responsive is-rounded ${showUpdatedOnly ? 'is-link is-light' : 'is-info is-light'}`}
-          onClick={() => {
-            onToggleShowUpdated();
-            if (activeStockFilter !== null) onStockFilterChange(null);
-          }}
+          onClick={handleToggleShowUpdated}
         >
           Show Updated Only ({updatedProductSkus.size})
         </button>

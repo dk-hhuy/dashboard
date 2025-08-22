@@ -131,7 +131,7 @@ const ActionButtons = React.memo<{
   onEdit: () => void;
   onDelete: () => void;
 }>(({ isEditing, onSave, onCancel, onEdit, onDelete }) => (
-  <div className="has-text-centered" style={{ width: ACTION_COLUMN_WIDTH }}> 
+  <>
     {isEditing ? (
       <>
         <button 
@@ -163,7 +163,7 @@ const ActionButtons = React.memo<{
         </button>
       </>
     )}
-  </div>
+  </>
 ));
 ActionButtons.displayName = 'ActionButtons';
 
@@ -221,13 +221,15 @@ const TableRow = React.memo<{
           supplier.country
         )}
       </td>
-      <ActionButtons 
-        isEditing={isEditing}
-        onSave={onSave}
-        onCancel={onCancel}
-        onEdit={onEdit}
-        onDelete={onDelete}
-      />
+      <td className="has-text-centered is-size-7" style={{ width: ACTION_COLUMN_WIDTH }}>
+        <ActionButtons 
+          isEditing={isEditing}
+          onSave={onSave}
+          onCancel={onCancel}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
+      </td>
     </tr>
     {/* General Error Message Row */}
     {isEditing && errors['edit'] && errors['edit'].length > 0 && (
