@@ -496,6 +496,7 @@ const Products = () => {
                     </div>
                     <ProductsTable 
                       products={displayProducts} 
+                      allProducts={filteredProducts}
                       onImageHover={handleImageHover}
                       onImageLeave={handleImageLeave}
                       onActionClick={handleActionClick}

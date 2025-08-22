@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useCallback } from 'react'
 import { Product } from '@/types/product'
 import TableHeader from './TableHeader'
 import ProductRow from './ProductRow'
@@ -6,6 +6,7 @@ import EmptyState from './EmptyState'
 
 interface ProductsTableProps {
   products: Product[]
+  allProducts: Product[] // All products for select all functionality
   onImageHover: (src: string) => void
   onImageLeave: () => void
   onActionClick: (action: string, productSku: string) => void
@@ -16,16 +17,53 @@ interface ProductsTableProps {
 
 const ProductsTable = React.memo<ProductsTableProps>(({ 
   products, 
+  allProducts,
   onImageHover, 
   onImageLeave,
   onActionClick,
   showUpdatedOnly = false,
   activeStockFilter = null,
   updatedProductSkus = new Set()
-}) => (
+}) => {
+  const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
+  const [isSelectAll, setIsSelectAll] = useState(false);
+
+  const handleSelectAll = useCallback(() => {
+    if (isSelectAll) {
+      // Deselect all
+      setSelectedProducts(new Set());
+      setIsSelectAll(false);
+    } else {
+      // Select all products from the entire list, not just current page
+      const allProductSkus = new Set(allProducts.map(product => product.productSku));
+      setSelectedProducts(allProductSkus);
+      setIsSelectAll(true);
+    }
+  }, [isSelectAll, allProducts]);
+
+  const handleProductSelect = useCallback((productSku: string, isSelected: boolean) => {
+    setSelectedProducts(prev => {
+      const newSet = new Set(prev);
+      if (isSelected) {
+        newSet.add(productSku);
+      } else {
+        newSet.delete(productSku);
+      }
+      return newSet;
+    });
+
+    // Update select all state based on current selection
+    const newSelectedCount = isSelected ? selectedProducts.size + 1 : selectedProducts.size - 1;
+    setIsSelectAll(newSelectedCount === allProducts.length);
+  }, [selectedProducts.size, allProducts.length]);
+
+  return (
   <div className="is-size-7">
     <table className="table is-fullwidth is-size-7 is-hoverable">
-      <TableHeader />
+      <TableHeader 
+        isSelectAll={isSelectAll}
+        onSelectAll={handleSelectAll}
+      />
       <tbody>
         {products.map((product, index) => (
           <ProductRow 
@@ -35,6 +73,8 @@ const ProductsTable = React.memo<ProductsTableProps>(({
             onImageLeave={onImageLeave}
             onActionClick={onActionClick}
             isUpdated={updatedProductSkus.has(product.productSku)}
+            isSelected={selectedProducts.has(product.productSku)}
+            onSelect={handleProductSelect}
           />
         ))}
       </tbody>
@@ -47,7 +87,8 @@ const ProductsTable = React.memo<ProductsTableProps>(({
       />
     )}
   </div>
-))
+  );
+});
 
 ProductsTable.displayName = 'ProductsTable'
 
