@@ -10,8 +10,10 @@
   },
   "dependencies": {
     "@jsmastery/utils": "^1.0.2",
+    "@types/file-saver": "^2.0.7",
     "@types/papaparse": "^5.3.16",
     "bulma": "^1.0.4",
+    "file-saver": "^2.0.5",
     "framer-motion": "^12.23.12",
     "next": "15.4.5",
     "papaparse": "^5.5.3",

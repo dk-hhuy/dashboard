@@ -15,6 +15,7 @@ import ImportProductModal from '@/components/Products/Modals/ImportProductModal'
 import UpdatePriceModal from '@/components/Products/Modals/UpdatePriceModal'
 import { products } from '@/constants/index_product'
 import { exportProductsData, exportSelectedProductsData } from '@/lib/utils_product'
+import { exportProducts, exportSelectedProducts, ExportFormat } from '@/lib/exportUtils'
 import { useProductFilter } from '@/hooks/useProductFilter'
 import { Product, ProductFormData } from '@/types/product'
 import { useToast } from '@/components/Shared/ToastProvider'
@@ -61,15 +62,21 @@ const Products = () => {
   }, [])
 
   // Export selected products handler
-  const handleExportSelected = useCallback(() => {
+  const handleExportSelected = useCallback((format: ExportFormat = 'json') => {
     if (selectedProductSkus.size === 0) {
       showToast('No products selected for export!', 'warning');
       return;
     }
     
-    exportSelectedProductsData(productsData, selectedProductSkus);
-    showToast(`Exported ${selectedProductSkus.size} selected products to console!`, 'success');
+    const exportedCount = exportSelectedProducts(productsData, selectedProductSkus, format);
+    showToast(`Exported ${exportedCount} selected products as ${format.toUpperCase()}!`, 'success');
   }, [selectedProductSkus, productsData, showToast]);
+
+  // Export all products handler
+  const handleExportAll = useCallback((format: ExportFormat = 'json') => {
+    exportProducts(productsData, format);
+    showToast(`Exported ${productsData.length} products as ${format.toUpperCase()}!`, 'success');
+  }, [productsData, showToast]);
 
   // Image hover handlers with debouncing
   const handleImageHover = useCallback((src: string) => {
@@ -502,10 +509,7 @@ const Products = () => {
                           onAddProduct={handleAddProduct}
                           onUpdatePrice={handleUpdatePrice}
                           onImport={handleImportProduct}
-                          onExport={() => {
-                            exportProductsData(productsData)
-                            showToast('Products data exported to console!', 'info')
-                          }}
+                          onExport={handleExportAll}
                           onExportSelected={handleExportSelected}
                           selectedCount={selectedProductSkus.size}
                           onConfig={handleConfig}

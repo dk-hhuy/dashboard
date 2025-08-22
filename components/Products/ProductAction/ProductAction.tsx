@@ -1,4 +1,6 @@
 import React, { useCallback, useMemo } from 'react'
+import ExportButtons from './ExportButtons'
+import { ExportFormat } from '@/lib/exportUtils'
 
 // ============================================================================
 // TYPES & INTERFACES
@@ -8,8 +10,8 @@ interface ProductActionProps {
   onAddProduct?: () => void;
   onUpdatePrice?: () => void;
   onImport?: () => void;
-  onExport?: () => void;
-  onExportSelected?: () => void;
+  onExport?: (format: ExportFormat) => void;
+  onExportSelected?: (format: ExportFormat) => void;
   selectedCount?: number;
   onConfig?: () => void;
 }
@@ -39,15 +41,8 @@ const ProductAction = React.memo<ProductActionProps>(({
     { icon: 'add', label: 'Add', color: 'is-primary', onClick: onAddProduct },
     { icon: 'sync', label: 'Update Price', color: 'is-warning', onClick: onUpdatePrice },
     { icon: 'import_export', label: 'Import', color: 'is-info', onClick: onImport },
-    { icon: 'file_download', label: 'Export All', color: '', onClick: onExport },
-    ...(selectedCount > 0 ? [{
-      icon: 'file_download',
-      label: `Export Selected (${selectedCount})`,
-      color: 'is-link',
-      onClick: onExportSelected
-    }] : []),
     { icon: 'settings', label: 'Config', color: 'is-success', onClick: onConfig }
-  ], [onAddProduct, onUpdatePrice, onImport, onExport, onExportSelected, selectedCount, onConfig]);
+  ], [onAddProduct, onUpdatePrice, onImport, onConfig]);
 
   // Event handler
   const handleButtonClick = useCallback((onClick?: () => void) => {
@@ -70,6 +65,15 @@ const ProductAction = React.memo<ProductActionProps>(({
           <span>{label}</span>
         </button>
       ))}
+      
+      {/* Export Buttons with Format Selector */}
+      {onExport && onExportSelected && (
+        <ExportButtons
+          onExport={onExport}
+          onExportSelected={onExportSelected}
+          selectedCount={selectedCount || 0}
+        />
+      )}
     </div>
   );
 });
