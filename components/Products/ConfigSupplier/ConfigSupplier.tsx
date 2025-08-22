@@ -1,9 +1,10 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useCallback } from 'react'
 import { ConfigTable } from '.'
 import { suppliers } from '@/constants/index_product'
 import TableResult from '@/components/Shared/TableResult'
+import ErrorMessage from '@/components/Shared/ErrorMessage'
 import { getAllSuppliers, addSupplier, deleteSupplier, updateSupplierByIndex } from '@/lib/utils_supplier'
-import { validateAddSupplier, validateDeleteSupplier, validateUpdateSupplier } from '@/schemas/configSchema'
+import { validateAddSupplier, validateDeleteSupplier, validateUpdateSupplier, validateSupplierName, validateCountry } from '@/schemas/configSchema'
 
 interface ConfigSupplierProps {
   onClose: () => void
@@ -17,11 +18,94 @@ const ConfigSupplier = React.memo<ConfigSupplierProps>(({ onClose }) => {
   const [country, setCountry] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [suppliersData, setSuppliersData] = useState([...suppliers])
+  const [errors, setErrors] = useState<Record<string, string[]>>({})
+
+  const clearErrors = () => {
+    setErrors({})
+  }
+
+  const setFieldError = (fieldName: string, errorMessage: string) => {
+    setErrors(prev => ({
+      ...prev,
+      [fieldName]: [errorMessage]
+    }))
+  }
+
+  // Real-time validation for supplier name field
+  const handleSupplierChange = useCallback((value: string) => {
+    setSupplier(value);
+    
+    // Clear previous supplier errors
+    setErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors['supplier'];
+      return newErrors;
+    });
+
+    // Validate format if not empty
+    if (value.trim()) {
+      const validationResult = validateSupplierName(value);
+      if (!validationResult.isValid) {
+        setFieldError('supplier', validationResult.error || 'Invalid supplier name');
+      }
+    }
+  }, []);
+
+  // Real-time validation for country field
+  const handleCountryChange = useCallback((value: string) => {
+    setCountry(value);
+    
+    // Clear previous country errors
+    setErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors['country'];
+      return newErrors;
+    });
+
+    // Validate format if not empty
+    if (value.trim()) {
+      const validationResult = validateCountry(value);
+      if (!validationResult.isValid) {
+        setFieldError('country', validationResult.error || 'Invalid country');
+      }
+    }
+  }, []);
 
   const handleAddSupplier = () => {
+    clearErrors()
+    
+    // Validate both fields
+    let hasErrors = false;
+    
+    if (!supplier.trim()) {
+      setFieldError('supplier', 'Supplier name is required');
+      hasErrors = true;
+    } else {
+      const supplierValidation = validateSupplierName(supplier);
+      if (!supplierValidation.isValid) {
+        setFieldError('supplier', supplierValidation.error || 'Invalid supplier name');
+        hasErrors = true;
+      }
+    }
+    
+    if (!country.trim()) {
+      setFieldError('country', 'Country is required');
+      hasErrors = true;
+    } else {
+      const countryValidation = validateCountry(country);
+      if (!countryValidation.isValid) {
+        setFieldError('country', countryValidation.error || 'Invalid country');
+        hasErrors = true;
+      }
+    }
+
+    if (hasErrors) {
+      return;
+    }
+
     const validationResult = validateAddSupplier(supplier, country)
     if (!validationResult.isValid) {
-      alert(validationResult.error)
+      setFieldError('general', validationResult.error || 'Invalid supplier data')
       return
     }
     const updatedSuppliers = addSupplier(supplier, country, suppliersData);
@@ -31,16 +115,47 @@ const ConfigSupplier = React.memo<ConfigSupplierProps>(({ onClose }) => {
   }
 
   const handleDeleteSupplier = () => {
+    clearErrors()
+    
+    // Validate both fields for delete operation
+    let hasErrors = false;
+    
+    if (!supplier.trim()) {
+      setFieldError('supplier', 'Supplier name is required');
+      hasErrors = true;
+    } else {
+      const supplierValidation = validateSupplierName(supplier);
+      if (!supplierValidation.isValid) {
+        setFieldError('supplier', supplierValidation.error || 'Invalid supplier name');
+        hasErrors = true;
+      }
+    }
+    
+    if (!country.trim()) {
+      setFieldError('country', 'Country is required');
+      hasErrors = true;
+    } else {
+      const countryValidation = validateCountry(country);
+      if (!countryValidation.isValid) {
+        setFieldError('country', countryValidation.error || 'Invalid country');
+        hasErrors = true;
+      }
+    }
+
+    if (hasErrors) {
+      return;
+    }
+
     // Find the index of the supplier to delete
     const index = suppliersData.findIndex(item => item.name === supplier && item.country === country);
     if (index === -1) {
-      alert('Supplier not found')
+      setFieldError('general', 'Supplier not found. Please check the supplier name and country.');
       return
     }
     
     const validationResult = validateDeleteSupplier(index)
     if (!validationResult?.isValid) {
-      alert(validationResult?.error || 'Invalid supplier data')
+      setFieldError('general', validationResult?.error || 'Invalid supplier data')
       return
     }
     const updatedSuppliers = deleteSupplier(supplier, country, suppliersData);
@@ -50,6 +165,7 @@ const ConfigSupplier = React.memo<ConfigSupplierProps>(({ onClose }) => {
   }
 
   const handleEditSupplier = (paginatedIndex: number, newName: string, newCountry: string) => {
+    clearErrors()
     // Map paginated index to actual index in filteredSuppliers
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const filteredIndex = startIndex + paginatedIndex;
@@ -57,7 +173,7 @@ const ConfigSupplier = React.memo<ConfigSupplierProps>(({ onClose }) => {
     // Get the actual supplier from filtered data
     const supplierToEdit = filteredSuppliers[filteredIndex];
     if (!supplierToEdit) {
-      alert('Supplier not found')
+      setFieldError('general', 'Supplier not found')
       return
     }
     
@@ -67,13 +183,13 @@ const ConfigSupplier = React.memo<ConfigSupplierProps>(({ onClose }) => {
     );
     
     if (actualIndex === -1) {
-      alert('Supplier not found in original data')
+      setFieldError('general', 'Supplier not found in original data')
       return
     }
     
     const validationResult = validateUpdateSupplier(actualIndex, newName, newCountry);
     if (!validationResult?.isValid) {
-      alert(validationResult?.error || 'Invalid supplier data')
+      setFieldError('general', validationResult?.error || 'Invalid supplier data')
       return
     }
     
@@ -82,6 +198,7 @@ const ConfigSupplier = React.memo<ConfigSupplierProps>(({ onClose }) => {
   }
 
   const handleDeleteSupplierFromTable = (paginatedIndex: number) => {
+    clearErrors()
     // Map paginated index to actual index in filteredSuppliers
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const filteredIndex = startIndex + paginatedIndex;
@@ -89,7 +206,7 @@ const ConfigSupplier = React.memo<ConfigSupplierProps>(({ onClose }) => {
     // Get the actual supplier from filtered data
     const supplierToDelete = filteredSuppliers[filteredIndex];
     if (!supplierToDelete) {
-      alert('Supplier not found')
+      setFieldError('general', 'Supplier not found')
       return
     }
     
@@ -99,13 +216,13 @@ const ConfigSupplier = React.memo<ConfigSupplierProps>(({ onClose }) => {
     );
     
     if (actualIndex === -1) {
-      alert('Supplier not found in original data')
+      setFieldError('general', 'Supplier not found in original data')
       return
     }
     
     const validationResult = validateDeleteSupplier(actualIndex)
     if (!validationResult?.isValid) {
-      alert(validationResult?.error || 'Invalid supplier data')
+      setFieldError('general', validationResult?.error || 'Invalid supplier data')
       return
     }
     
@@ -194,11 +311,11 @@ const ConfigSupplier = React.memo<ConfigSupplierProps>(({ onClose }) => {
                 </div>
                 <div className="control is-expanded">
                   <input 
-                    className="input is-size-7" 
+                    className={`input is-size-7 ${errors['supplier'] ? 'is-danger' : ''}`}
                     type="text" 
                     placeholder="Supplier" 
                     value={supplier} 
-                    onChange={(e) => setSupplier(e.target.value)} 
+                    onChange={(e) => handleSupplierChange(e.target.value)} 
                   />
                 </div>
               </div>
@@ -208,11 +325,11 @@ const ConfigSupplier = React.memo<ConfigSupplierProps>(({ onClose }) => {
                 </div>
                 <div className="control is-expanded">
                   <input 
-                    className="input is-size-7" 
+                    className={`input is-size-7 ${errors['country'] ? 'is-danger' : ''}`}
                     type="text" 
                     placeholder="Country" 
                     value={country} 
-                    onChange={(e) => setCountry(e.target.value)} 
+                    onChange={(e) => handleCountryChange(e.target.value)} 
                   />
                 </div>
               </div>
@@ -230,6 +347,19 @@ const ConfigSupplier = React.memo<ConfigSupplierProps>(({ onClose }) => {
                   Delete
                 </button>
               </div>
+            </div>
+            {/* Field-specific error messages */}
+            <div className="is-flex is-gap-4 mt-2">
+              <div style={{ width: 'calc(50% - 75px)' }}>
+                <ErrorMessage errors={errors} fieldName="supplier" />
+              </div>
+              <div style={{ width: 'calc(50% - 75px)' }}>
+                <ErrorMessage errors={errors} fieldName="country" />
+              </div>
+            </div>
+            {/* General Error Message */}
+            <div className="mt-2">
+              <ErrorMessage errors={errors} fieldName="general" />
             </div>
           </div>
 

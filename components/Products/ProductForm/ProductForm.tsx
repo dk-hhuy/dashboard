@@ -3,6 +3,7 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import { Product, ProductFormData } from '@/types/product'
 import { validateProductForm, validateField } from '@/schemas/productSchema'
+import ErrorMessage from '@/components/Shared/ErrorMessage'
 
 // Constants
 const STATUS_OPTIONS = ['In Stock', 'Out Stock']
@@ -142,26 +143,6 @@ const ImageUploadField = React.memo(({
   </div>
 ))
 ImageUploadField.displayName = 'ImageUploadField'
-
-const ErrorMessage = React.memo(({ 
-  errors, 
-  fieldName 
-}: { 
-  errors: Record<string, string[]>
-  fieldName: string
-}) => {
-  const fieldErrors = errors[fieldName] || []
-  if (fieldErrors.length === 0) return null
-  
-  return (
-    <div className="help is-danger is-size-7">
-      {fieldErrors.map((error, index) => (
-        <div key={index}>{error}</div>
-      ))}
-    </div>
-  )
-})
-ErrorMessage.displayName = 'ErrorMessage'
 
 // Form Header Component
 const FormHeader = React.memo(({ 
