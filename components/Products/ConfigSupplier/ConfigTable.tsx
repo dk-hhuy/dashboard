@@ -1,7 +1,8 @@
-import React, { useState, Fragment, useCallback } from 'react'
+import React, { useState, Fragment, useCallback, useMemo } from 'react'
 import { validateSupplier, validateSupplierName, validateCountry } from '@/schemas/configSchema'
 import ErrorMessage from '@/components/Shared/ErrorMessage'
 
+// Types
 interface ConfigTableProps {
   suppliers: Array<{
     name: string;
@@ -11,126 +12,302 @@ interface ConfigTableProps {
   onDelete?: (index: number) => void;
 }
 
-const ConfigTable = React.memo<ConfigTableProps>(({ suppliers, onEdit, onDelete }) => {
+interface EditFormData {
+  name: string;
+  country: string;
+}
+
+// Constants
+const ACTION_COLUMN_WIDTH = '150px';
+
+// Custom hook for edit state management
+const useEditState = () => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [editName, setEditName] = useState('');
-  const [editCountry, setEditCountry] = useState('');
+  const [editData, setEditData] = useState<EditFormData>({ name: '', country: '' });
+
+  const startEditing = useCallback((index: number, name: string, country: string) => {
+    setEditingIndex(index);
+    setEditData({ name, country });
+  }, []);
+
+  const stopEditing = useCallback(() => {
+    setEditingIndex(null);
+    setEditData({ name: '', country: '' });
+  }, []);
+
+  const updateEditData = useCallback((field: keyof EditFormData, value: string) => {
+    setEditData(prev => ({ ...prev, [field]: value }));
+  }, []);
+
+  return {
+    editingIndex,
+    editData,
+    startEditing,
+    stopEditing,
+    updateEditData
+  };
+};
+
+// Custom hook for error management
+const useErrorManager = () => {
   const [errors, setErrors] = useState<Record<string, string[]>>({});
 
-  const clearErrors = () => {
-    setErrors({})
-  }
+  const clearErrors = useCallback(() => {
+    setErrors({});
+  }, []);
 
-  const setFieldError = (fieldName: string, errorMessage: string) => {
+  const setFieldError = useCallback((fieldName: string, errorMessage: string) => {
     setErrors(prev => ({
       ...prev,
       [fieldName]: [errorMessage]
-    }))
-  }
+    }));
+  }, []);
 
-  // Real-time validation for name field
-  const handleNameChange = useCallback((value: string) => {
-    setEditName(value);
-    
-    // Clear previous name errors
+  const clearFieldError = useCallback((fieldName: string) => {
     setErrors(prev => {
       const newErrors = { ...prev };
-      delete newErrors['name'];
+      delete newErrors[fieldName];
       return newErrors;
     });
+  }, []);
 
-    // Validate name if not empty
+  return { errors, clearErrors, setFieldError, clearFieldError };
+};
+
+// Custom hook for form validation
+const useFormValidation = (setFieldError: (field: string, message: string) => void) => {
+  const validateField = useCallback((fieldName: string, value: string, validator: (val: string) => any) => {
+    if (!value.trim()) {
+      setFieldError(fieldName, `${fieldName === 'name' ? 'Supplier name' : 'Country'} is required`);
+      return false;
+    }
+    
+    const validationResult = validator(value);
+    if (!validationResult.isValid) {
+      setFieldError(fieldName, validationResult.error || `Invalid ${fieldName}`);
+      return false;
+    }
+    
+    return true;
+  }, [setFieldError]);
+
+  const validateForm = useCallback((formData: EditFormData) => {
+    let isValid = true;
+    
+    isValid = validateField('name', formData.name, validateSupplierName) && isValid;
+    isValid = validateField('country', formData.country, validateCountry) && isValid;
+    
+    return isValid;
+  }, [validateField]);
+
+  return { validateField, validateForm };
+};
+
+// Edit input component
+const EditInput = React.memo<{
+  value: string;
+  onChange: (value: string) => void;
+  hasError: boolean;
+  fieldName: string;
+  errors: Record<string, string[]>;
+}>(({ value, onChange, hasError, fieldName, errors }) => (
+  <div>
+    <input 
+      className={`input is-size-7 ${hasError ? 'is-danger' : ''}`}
+      type="text" 
+      value={value} 
+      onChange={(e) => onChange(e.target.value)}
+    />
+    <ErrorMessage errors={errors} fieldName={fieldName} />
+  </div>
+));
+EditInput.displayName = 'EditInput';
+
+// Action buttons component
+const ActionButtons = React.memo<{
+  isEditing: boolean;
+  onSave: () => void;
+  onCancel: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}>(({ isEditing, onSave, onCancel, onEdit, onDelete }) => (
+  <div className="has-text-centered" style={{ width: ACTION_COLUMN_WIDTH }}> 
+    {isEditing ? (
+      <>
+        <button 
+          className="button is-small is-size-7 is-success mr-1"
+          onClick={onSave}
+        >
+          Save
+        </button>
+        <button 
+          className="button is-small is-size-7 is-warning"
+          onClick={onCancel}
+        >
+          Cancel
+        </button>
+      </>
+    ) : (
+      <>
+        <button 
+          className="button is-small is-size-7 is-primary mr-1"
+          onClick={onEdit}
+        >
+          Edit    
+        </button>
+        <button 
+          className="button is-small is-size-7 is-danger"
+          onClick={onDelete}
+        >
+          Delete
+        </button>
+      </>
+    )}
+  </div>
+));
+ActionButtons.displayName = 'ActionButtons';
+
+// Table row component
+const TableRow = React.memo<{
+  supplier: { name: string; country: string };
+  index: number;
+  isEditing: boolean;
+  editData: EditFormData;
+  errors: Record<string, string[]>;
+  onNameChange: (value: string) => void;
+  onCountryChange: (value: string) => void;
+  onSave: () => void;
+  onCancel: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}>(({ 
+  supplier, 
+  index, 
+  isEditing, 
+  editData, 
+  errors, 
+  onNameChange, 
+  onCountryChange, 
+  onSave, 
+  onCancel, 
+  onEdit, 
+  onDelete 
+}) => (
+  <Fragment key={`${supplier.name}-${index}`}>
+    <tr>
+      <td className="has-text-left is-size-7">
+        {isEditing ? (
+          <EditInput
+            value={editData.name}
+            onChange={onNameChange}
+            hasError={!!errors['name']}
+            fieldName="name"
+            errors={errors}
+          />
+        ) : (
+          supplier.name
+        )}
+      </td>
+      <td className="has-text-left is-size-7">
+        {isEditing ? (
+          <EditInput
+            value={editData.country}
+            onChange={onCountryChange}
+            hasError={!!errors['country']}
+            fieldName="country"
+            errors={errors}
+          />
+        ) : (
+          supplier.country
+        )}
+      </td>
+      <ActionButtons 
+        isEditing={isEditing}
+        onSave={onSave}
+        onCancel={onCancel}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
+    </tr>
+    {/* General Error Message Row */}
+    {isEditing && errors['edit'] && errors['edit'].length > 0 && (
+      <tr>
+        <td colSpan={3} className="has-background-light">
+          <ErrorMessage errors={errors} fieldName="edit" />
+        </td>
+      </tr>
+    )}
+  </Fragment>
+));
+TableRow.displayName = 'TableRow';
+
+const ConfigTable = React.memo<ConfigTableProps>(({ suppliers, onEdit, onDelete }) => {
+  // Custom hooks
+  const { editingIndex, editData, startEditing, stopEditing, updateEditData } = useEditState();
+  const { errors, clearErrors, setFieldError, clearFieldError } = useErrorManager();
+  const { validateField, validateForm } = useFormValidation(setFieldError);
+
+  // Real-time validation handlers
+  const handleNameChange = useCallback((value: string) => {
+    updateEditData('name', value);
+    clearFieldError('name');
+
     if (value.trim()) {
       const validationResult = validateSupplierName(value);
       if (!validationResult.isValid) {
         setFieldError('name', validationResult.error || 'Invalid supplier name');
       }
     }
-  }, []);
+  }, [updateEditData, clearFieldError, setFieldError]);
 
-  // Real-time validation for country field
   const handleCountryChange = useCallback((value: string) => {
-    setEditCountry(value);
-    
-    // Clear previous country errors
-    setErrors(prev => {
-      const newErrors = { ...prev };
-      delete newErrors['country'];
-      return newErrors;
-    });
+    updateEditData('country', value);
+    clearFieldError('country');
 
-    // Validate country if not empty
     if (value.trim()) {
       const validationResult = validateCountry(value);
       if (!validationResult.isValid) {
         setFieldError('country', validationResult.error || 'Invalid country');
       }
     }
-  }, []);
+  }, [updateEditData, clearFieldError, setFieldError]);
 
-  const handleEditClick = (index: number, name: string, country: string) => {
-    clearErrors()
-    setEditingIndex(index);
-    setEditName(name);
-    setEditCountry(country);
-  };
+  // Edit handlers
+  const handleEditClick = useCallback((index: number, name: string, country: string) => {
+    clearErrors();
+    startEditing(index, name, country);
+  }, [clearErrors, startEditing]);
 
-  const handleSaveEdit = (index: number) => {
-    clearErrors()
+  const handleSaveEdit = useCallback((index: number) => {
+    clearErrors();
     
-    // Validate both fields
-    let hasErrors = false;
-    
-    if (!editName.trim()) {
-      setFieldError('name', 'Supplier name is required');
-      hasErrors = true;
-    } else {
-      const nameValidation = validateSupplierName(editName);
-      if (!nameValidation.isValid) {
-        setFieldError('name', nameValidation.error || 'Invalid supplier name');
-        hasErrors = true;
-      }
-    }
-    
-    if (!editCountry.trim()) {
-      setFieldError('country', 'Country is required');
-      hasErrors = true;
-    } else {
-      const countryValidation = validateCountry(editCountry);
-      if (!countryValidation.isValid) {
-        setFieldError('country', countryValidation.error || 'Invalid country');
-        hasErrors = true;
-      }
-    }
-
-    if (hasErrors) {
+    if (!validateForm(editData)) {
       return;
     }
 
-    // Validate combined data
-    const validationResult = validateSupplier({ name: editName.trim(), country: editCountry.trim() });
+    const validationResult = validateSupplier({ 
+      name: editData.name.trim(), 
+      country: editData.country.trim() 
+    });
+    
     if (!validationResult.isValid) {
       setFieldError('edit', validationResult.error || 'Invalid supplier data');
       return;
     }
 
     if (onEdit) {
-      onEdit(index, editName.trim(), editCountry.trim());
-      setEditingIndex(null);
-      setEditName('');
-      setEditCountry('');
+      onEdit(index, editData.name.trim(), editData.country.trim());
+      stopEditing();
     }
-  };
+  }, [clearErrors, validateForm, editData, setFieldError, onEdit, stopEditing]);
 
-  const handleCancelEdit = () => {
-    clearErrors()
-    setEditingIndex(null);
-    setEditName('');
-    setEditCountry('');
-  };
+  const handleCancelEdit = useCallback(() => {
+    clearErrors();
+    stopEditing();
+  }, [clearErrors, stopEditing]);
 
-  const handleDeleteClick = (index: number) => {
-    clearErrors()
+  const handleDeleteClick = useCallback((index: number) => {
+    clearErrors();
     const supplierToDelete = suppliers[index];
     const confirmDelete = window.confirm(
       `Are you sure you want to delete supplier "${supplierToDelete.name}" from "${supplierToDelete.country}"?`
@@ -139,7 +316,42 @@ const ConfigTable = React.memo<ConfigTableProps>(({ suppliers, onEdit, onDelete 
     if (confirmDelete && onDelete) {
       onDelete(index);
     }
-  };
+  }, [clearErrors, suppliers, onDelete]);
+
+  // Memoized table rows
+  const tableRows = useMemo(() => {
+    return suppliers.map((supplier, index) => {
+      const isEditing = editingIndex === index;
+      
+      return (
+        <TableRow
+          key={`${supplier.name}-${index}`}
+          supplier={supplier}
+          index={index}
+          isEditing={isEditing}
+          editData={editData}
+          errors={errors}
+          onNameChange={handleNameChange}
+          onCountryChange={handleCountryChange}
+          onSave={() => handleSaveEdit(index)}
+          onCancel={handleCancelEdit}
+          onEdit={() => handleEditClick(index, supplier.name, supplier.country)}
+          onDelete={() => handleDeleteClick(index)}
+        />
+      );
+    });
+  }, [
+    suppliers, 
+    editingIndex, 
+    editData, 
+    errors, 
+    handleNameChange, 
+    handleCountryChange, 
+    handleSaveEdit, 
+    handleCancelEdit, 
+    handleEditClick, 
+    handleDeleteClick
+  ]);
 
   return (
     <div className="is-size-7">
@@ -152,83 +364,7 @@ const ConfigTable = React.memo<ConfigTableProps>(({ suppliers, onEdit, onDelete 
           </tr>
         </thead>
         <tbody>
-          {suppliers.map((supplier, index) => (
-            <Fragment key={`${supplier.name}-${index}`}>
-              <tr>
-                <td className="has-text-left is-size-7">
-                  {editingIndex === index ? (
-                    <div>
-                      <input 
-                        className={`input is-size-7 ${errors['name'] ? 'is-danger' : ''}`}
-                        type="text" 
-                        value={editName} 
-                        onChange={(e) => handleNameChange(e.target.value)}
-                      />
-                      <ErrorMessage errors={errors} fieldName="name" />
-                    </div>
-                  ) : (
-                    supplier.name
-                  )}
-                </td>
-                <td className="has-text-left is-size-7">
-                  {editingIndex === index ? (
-                    <div>
-                      <input 
-                        className={`input is-size-7 ${errors['country'] ? 'is-danger' : ''}`}
-                        type="text" 
-                        value={editCountry} 
-                        onChange={(e) => handleCountryChange(e.target.value)}
-                      />
-                      <ErrorMessage errors={errors} fieldName="country" />
-                    </div>
-                  ) : (
-                    supplier.country
-                  )}
-                </td>
-                <td className="has-text-centered" style={{ width: '150px' }}> 
-                  {editingIndex === index ? (
-                    <>
-                      <button 
-                        className="button is-small is-size-7 is-success mr-1"
-                        onClick={() => handleSaveEdit(index)}
-                      >
-                        Save
-                      </button>
-                      <button 
-                        className="button is-small is-size-7 is-warning"
-                        onClick={handleCancelEdit}
-                      >
-                        Cancel
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button 
-                        className="button is-small is-size-7 is-primary mr-1"
-                        onClick={() => handleEditClick(index, supplier.name, supplier.country)}
-                      >
-                        Edit    
-                      </button>
-                      <button 
-                        className="button is-small is-size-7 is-danger"
-                        onClick={() => handleDeleteClick(index)}
-                      >
-                        Delete
-                      </button>
-                    </>
-                  )}
-                </td>
-              </tr>
-              {/* General Error Message Row - chỉ hiển thị khi đang edit row này và có lỗi */}
-              {editingIndex === index && errors['edit'] && errors['edit'].length > 0 && (
-                <tr>
-                  <td colSpan={3} className="has-background-light">
-                    <ErrorMessage errors={errors} fieldName="edit" />
-                  </td>
-                </tr>
-              )}
-            </Fragment>
-          ))}
+          {tableRows}
         </tbody>
       </table>
     </div>
