@@ -19,6 +19,7 @@ import { useProductFilter } from '@/hooks/useProductFilter'
 import { Product, ProductFormData } from '@/types/product'
 import { useToast } from '@/components/Shared/ToastProvider'
 import ConfigSupplierModal from '@/components/Products/Modals/ConfigSupplierModal'
+import ItemsPerPageSelector from '@/components/Shared/ItemsPerPageSelector'
 
 // Constants
 const IMAGE_HOVER_DELAY = 100
@@ -47,10 +48,12 @@ const Products = () => {
     currentPage,
     startIndex,
     endIndex,
+    itemsPerPage,
     handleStockFilter,
     handleSearch,
-    handlePageChange
-  } = useProductFilter(productsData, updatedProductSkus, showUpdatedOnly)
+    handlePageChange,
+    handleItemsPerPageChange
+  } = useProductFilter(productsData, updatedProductSkus, showUpdatedOnly, 12)
 
   // Image hover handlers with debouncing
   const handleImageHover = useCallback((src: string) => {
@@ -501,11 +504,24 @@ const Products = () => {
                       updatedProductSkus={updatedProductSkus}
                     />
                     
+                    {/* Pagination Controls */}
+                    <div className="level is-mobile p-4 is-size-7">
+                      <div className="level-left">
+                        <div className="level-item">
+                          <ItemsPerPageSelector
+                            itemsPerPage={itemsPerPage}
+                            onItemsPerPageChange={handleItemsPerPageChange}
+                            totalItems={filteredProducts.length}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
                     {/* Pagination */}
                     <TableResult 
                       currentPage={currentPage}
                       setCurrentPage={handlePageChange}
-                      itemsPerPage={10}
+                      itemsPerPage={itemsPerPage}
                       startIndex={startIndex}
                       endIndex={endIndex}
                       totalItems={filteredProducts.length}

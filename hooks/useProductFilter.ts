@@ -2,13 +2,19 @@ import { useState, useMemo, useCallback, useEffect } from 'react'
 import { Product, StockFilter } from '@/types/product'
 
 // Constants
-const ITEMS_PER_PAGE = 10
+const DEFAULT_ITEMS_PER_PAGE = 10
 
 // Custom hook for product filtering and pagination
-export const useProductFilter = (productsData: Product[], updatedProductSkus?: Set<string>, showUpdatedOnly?: boolean) => {
+export const useProductFilter = (
+  productsData: Product[], 
+  updatedProductSkus?: Set<string>, 
+  showUpdatedOnly?: boolean,
+  initialItemsPerPage: number = DEFAULT_ITEMS_PER_PAGE
+) => {
   const [activeStockFilter, setActiveStockFilter] = useState<StockFilter>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage)
 
   const filteredProducts = useMemo(() => {
     let filtered = productsData
@@ -50,14 +56,14 @@ export const useProductFilter = (productsData: Product[], updatedProductSkus?: S
   }, [activeStockFilter, searchTerm, productsData, updatedProductSkus, showUpdatedOnly])
 
   const { startIndex, endIndex, displayProducts } = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE
-    const end = start + ITEMS_PER_PAGE
+    const start = (currentPage - 1) * itemsPerPage
+    const end = start + itemsPerPage
     return {
       startIndex: start,
       endIndex: end,
       displayProducts: filteredProducts.slice(start, end),
     }
-  }, [currentPage, filteredProducts])
+  }, [currentPage, filteredProducts, itemsPerPage])
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -76,6 +82,11 @@ export const useProductFilter = (productsData: Product[], updatedProductSkus?: S
     setCurrentPage(page)
   }, [])
 
+  const handleItemsPerPageChange = useCallback((newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage)
+    setCurrentPage(1) // Reset to first page when changing items per page
+  }, [])
+
   return {
     activeStockFilter,
     searchTerm,
@@ -84,8 +95,10 @@ export const useProductFilter = (productsData: Product[], updatedProductSkus?: S
     currentPage,
     startIndex,
     endIndex,
+    itemsPerPage,
     handleStockFilter,
     handleSearch,
-    handlePageChange
+    handlePageChange,
+    handleItemsPerPageChange
   }
 } 
