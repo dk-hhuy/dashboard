@@ -3,6 +3,7 @@ import { ConfigTable } from '.'
 import { suppliers } from '@/constants/index_product'
 import TableResult from '@/components/Shared/TableResult'
 import ErrorMessage from '@/components/Shared/ErrorMessage'
+import { useToast } from '@/components/Shared/ToastProvider'
 import { getAllSuppliers, addSupplier, deleteSupplier, updateSupplierByIndex } from '@/lib/utils_supplier'
 import { validateAddSupplier, validateDeleteSupplier, validateUpdateSupplier, validateSupplierName, validateCountry } from '@/schemas/configSchema'
 
@@ -77,21 +78,24 @@ const useFormValidation = (setFieldError: (field: string, message: string) => vo
 };
 
 // Custom hook for supplier operations
-const useSupplierOperations = (suppliersData: any[], setSuppliersData: (data: any[]) => void) => {
+const useSupplierOperations = (suppliersData: any[], setSuppliersData: (data: any[]) => void, showToast: (message: string, type: 'success' | 'error' | 'warning' | 'info') => void) => {
   const addSupplierOperation = useCallback((supplier: string, country: string) => {
     const updatedSuppliers = addSupplier(supplier, country, suppliersData);
     setSuppliersData(updatedSuppliers);
-  }, [suppliersData, setSuppliersData]);
+    showToast(`**Supplier "${supplier}"** from **${country}** has been added successfully!`, 'success');
+  }, [suppliersData, setSuppliersData, showToast]);
 
   const deleteSupplierOperation = useCallback((supplier: string, country: string) => {
     const updatedSuppliers = deleteSupplier(supplier, country, suppliersData);
     setSuppliersData(updatedSuppliers);
-  }, [suppliersData, setSuppliersData]);
+    showToast(`**Supplier "${supplier}"** from **${country}** has been deleted successfully!`, 'success');
+  }, [suppliersData, setSuppliersData, showToast]);
 
   const updateSupplierOperation = useCallback((index: number, newName: string, newCountry: string) => {
     const updatedSuppliers = updateSupplierByIndex(index, newName, newCountry, suppliersData);
     setSuppliersData(updatedSuppliers);
-  }, [suppliersData, setSuppliersData]);
+    showToast(`**Supplier** has been updated to **"${newName}"** from **"${newCountry}"** successfully!`, 'success');
+  }, [suppliersData, setSuppliersData, showToast]);
 
   return { addSupplierOperation, deleteSupplierOperation, updateSupplierOperation };
 };
@@ -186,10 +190,13 @@ const ConfigSupplier = React.memo<ConfigSupplierProps>(({ onClose }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [suppliersData, setSuppliersData] = useState([...suppliers]);
 
+  // Toast hook
+  const { showToast } = useToast();
+
   // Custom hooks
   const { errors, clearErrors, setFieldError, clearFieldError } = useErrorManager();
   const { validateField, validateForm } = useFormValidation(setFieldError);
-  const { addSupplierOperation, deleteSupplierOperation, updateSupplierOperation } = useSupplierOperations(suppliersData, setSuppliersData);
+  const { addSupplierOperation, deleteSupplierOperation, updateSupplierOperation } = useSupplierOperations(suppliersData, setSuppliersData, showToast);
 
   // Memoized computations
   const filteredSuppliers = useMemo(() => {
@@ -245,12 +252,14 @@ const ConfigSupplier = React.memo<ConfigSupplierProps>(({ onClose }) => {
     clearErrors();
     
     if (!validateForm(formData)) {
+      showToast('Please fix the validation errors before adding supplier.', 'error');
       return;
     }
 
     const validationResult = validateAddSupplier(formData.supplier, formData.country);
     if (!validationResult.isValid) {
       setFieldError('general', validationResult.error || 'Invalid supplier data');
+      showToast('Failed to add supplier. Please check the data.', 'error');
       return;
     }
 
@@ -262,6 +271,7 @@ const ConfigSupplier = React.memo<ConfigSupplierProps>(({ onClose }) => {
     clearErrors();
     
     if (!validateForm(formData)) {
+      showToast('Please fix the validation errors before deleting supplier.', 'error');
       return;
     }
 
@@ -271,12 +281,14 @@ const ConfigSupplier = React.memo<ConfigSupplierProps>(({ onClose }) => {
     
     if (index === -1) {
       setFieldError('general', 'Supplier not found. Please check the supplier name and country.');
+      showToast('Supplier not found. Please check the supplier name and country.', 'error');
       return;
     }
     
     const validationResult = validateDeleteSupplier(index);
     if (!validationResult?.isValid) {
       setFieldError('general', validationResult?.error || 'Invalid supplier data');
+      showToast('Failed to delete supplier. Please check the data.', 'error');
       return;
     }
 
@@ -293,6 +305,7 @@ const ConfigSupplier = React.memo<ConfigSupplierProps>(({ onClose }) => {
     const supplierToEdit = filteredSuppliers[filteredIndex];
     if (!supplierToEdit) {
       setFieldError('general', 'Supplier not found');
+      showToast('Supplier not found.', 'error');
       return;
     }
     
@@ -302,12 +315,14 @@ const ConfigSupplier = React.memo<ConfigSupplierProps>(({ onClose }) => {
     
     if (actualIndex === -1) {
       setFieldError('general', 'Supplier not found in original data');
+      showToast('Supplier not found in original data.', 'error');
       return;
     }
     
     const validationResult = validateUpdateSupplier(actualIndex, newName, newCountry);
     if (!validationResult?.isValid) {
       setFieldError('general', validationResult?.error || 'Invalid supplier data');
+      showToast('Failed to update supplier. Please check the data.', 'error');
       return;
     }
     
@@ -323,6 +338,7 @@ const ConfigSupplier = React.memo<ConfigSupplierProps>(({ onClose }) => {
     const supplierToDelete = filteredSuppliers[filteredIndex];
     if (!supplierToDelete) {
       setFieldError('general', 'Supplier not found');
+      showToast('Supplier not found.', 'error');
       return;
     }
     
@@ -332,12 +348,14 @@ const ConfigSupplier = React.memo<ConfigSupplierProps>(({ onClose }) => {
     
     if (actualIndex === -1) {
       setFieldError('general', 'Supplier not found in original data');
+      showToast('Supplier not found in original data.', 'error');
       return;
     }
     
     const validationResult = validateDeleteSupplier(actualIndex);
     if (!validationResult?.isValid) {
       setFieldError('general', validationResult?.error || 'Invalid supplier data');
+      showToast('Failed to delete supplier. Please check the data.', 'error');
       return;
     }
     
