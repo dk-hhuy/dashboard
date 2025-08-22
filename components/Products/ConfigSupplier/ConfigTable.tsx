@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { validateSupplier, validateSupplierName, validateCountry } from '@/schemas/configSchema'
+
 
 interface ConfigTableProps {
   suppliers: Array<{
@@ -22,7 +24,13 @@ const ConfigTable = React.memo<ConfigTableProps>(({ suppliers, onEdit, onDelete 
 
   const handleSaveEdit = (index: number) => {
     if (editName.trim() && editCountry.trim() && onEdit) {
+      const validationResult = validateSupplier({ name: editName.trim(), country: editCountry.trim() });
+      if (!validationResult.isValid) {
+        alert(validationResult.error);
+        return;
+      }
       onEdit(index, editName.trim(), editCountry.trim());
+
       setEditingIndex(null);
       setEditName('');
       setEditCountry('');
@@ -36,7 +44,12 @@ const ConfigTable = React.memo<ConfigTableProps>(({ suppliers, onEdit, onDelete 
   };
 
   const handleDeleteClick = (index: number) => {
-    if (onDelete) {
+    const supplierToDelete = suppliers[index];
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete supplier "${supplierToDelete.name}" from "${supplierToDelete.country}"?`
+    );
+    
+    if (confirmDelete && onDelete) {
       onDelete(index);
     }
   };

@@ -25,15 +25,14 @@ export const findSupplierCountry = (country: string, suppliersData?: Supplier[])
 export const addSupplier = (name: string, country: string, suppliersData?: Supplier[]) => {
     const data = suppliersData || suppliers;
     const newSupplier = { name, country };
-    data.push(newSupplier);
-    return data;
+    return [...data, newSupplier];
 }
 
 export const deleteSupplier = (name: string, country: string, suppliersData?: Supplier[]) => {
     const data = suppliersData || suppliers;
     const index = data.findIndex(item => item.name === name && item.country === country);
     if (index !== -1) {
-        data.splice(index, 1);
+        return data.filter((_, i) => i !== index);
     }
     return data;
 }
@@ -42,7 +41,7 @@ export const updateSupplier = (oldName: string, oldCountry: string, newName: str
     const data = suppliersData || suppliers;
     const index = data.findIndex(item => item.name === oldName && item.country === oldCountry);
     if (index !== -1) {
-        data[index] = { name: newName, country: newCountry };
+        return data.map((item, i) => i === index ? { name: newName, country: newCountry } : item);
     }
     return data;
 }
@@ -50,7 +49,7 @@ export const updateSupplier = (oldName: string, oldCountry: string, newName: str
 export const updateSupplierByIndex = (index: number, newName: string, newCountry: string, suppliersData?: Supplier[]) => {
     const data = suppliersData || suppliers;
     if (index >= 0 && index < data.length) {
-        data[index] = { name: newName, country: newCountry };
+        return data.map((item, i) => i === index ? { name: newName, country: newCountry } : item);
     }
     return data;
 }

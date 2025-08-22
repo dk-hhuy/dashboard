@@ -3,6 +3,7 @@ import { ConfigTable } from '.'
 import { suppliers } from '@/constants/index_product'
 import TableResult from '@/components/Shared/TableResult'
 import { getAllSuppliers, addSupplier, deleteSupplier, updateSupplierByIndex } from '@/lib/utils_supplier'
+import { validateAddSupplier, validateDeleteSupplier, validateUpdateSupplier } from '@/schemas/configSchema'
 
 interface ConfigSupplierProps {
   onClose: () => void
@@ -18,44 +19,102 @@ const ConfigSupplier = React.memo<ConfigSupplierProps>(({ onClose }) => {
   const [suppliersData, setSuppliersData] = useState([...suppliers])
 
   const handleAddSupplier = () => {
-    if (supplier.trim() && country.trim()) {
-      const updatedSuppliers = addSupplier(supplier, country, suppliersData);
-      setSuppliersData(updatedSuppliers);
-      setSupplier('');
-      setCountry('');
+    const validationResult = validateAddSupplier(supplier, country)
+    if (!validationResult.isValid) {
+      alert(validationResult.error)
+      return
     }
+    const updatedSuppliers = addSupplier(supplier, country, suppliersData);
+    setSuppliersData(updatedSuppliers);
+    setSupplier('');
+    setCountry('');
   }
 
   const handleDeleteSupplier = () => {
-    if (supplier.trim() && country.trim()) {
-      const updatedSuppliers = deleteSupplier(supplier, country, suppliersData);
-      setSuppliersData(updatedSuppliers);
-      setSupplier('');
-      setCountry('');
+    // Find the index of the supplier to delete
+    const index = suppliersData.findIndex(item => item.name === supplier && item.country === country);
+    if (index === -1) {
+      alert('Supplier not found')
+      return
     }
+    
+    const validationResult = validateDeleteSupplier(index)
+    if (!validationResult?.isValid) {
+      alert(validationResult?.error || 'Invalid supplier data')
+      return
+    }
+    const updatedSuppliers = deleteSupplier(supplier, country, suppliersData);
+    setSuppliersData(updatedSuppliers);
+    setSupplier('');
+    setCountry('');
   }
 
   const handleEditSupplier = (paginatedIndex: number, newName: string, newCountry: string) => {
-    // Map paginated index to actual index in suppliersData
+    // Map paginated index to actual index in filteredSuppliers
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const actualIndex = startIndex + paginatedIndex;
+    const filteredIndex = startIndex + paginatedIndex;
+    
+    // Get the actual supplier from filtered data
+    const supplierToEdit = filteredSuppliers[filteredIndex];
+    if (!supplierToEdit) {
+      alert('Supplier not found')
+      return
+    }
+    
+    // Find the actual index in suppliersData
+    const actualIndex = suppliersData.findIndex(
+      item => item.name === supplierToEdit.name && item.country === supplierToEdit.country
+    );
+    
+    if (actualIndex === -1) {
+      alert('Supplier not found in original data')
+      return
+    }
+    
+    const validationResult = validateUpdateSupplier(actualIndex, newName, newCountry);
+    if (!validationResult?.isValid) {
+      alert(validationResult?.error || 'Invalid supplier data')
+      return
+    }
     
     const updatedSuppliers = updateSupplierByIndex(actualIndex, newName, newCountry, suppliersData);
-    setSuppliersData([...updatedSuppliers]); // Force re-render with new array
+    setSuppliersData(updatedSuppliers);
   }
 
   const handleDeleteSupplierFromTable = (paginatedIndex: number) => {
-    // Map paginated index to actual index in suppliersData
+    // Map paginated index to actual index in filteredSuppliers
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const actualIndex = startIndex + paginatedIndex;
+    const filteredIndex = startIndex + paginatedIndex;
     
-    const supplierToDelete = suppliersData[actualIndex];
+    // Get the actual supplier from filtered data
+    const supplierToDelete = filteredSuppliers[filteredIndex];
+    if (!supplierToDelete) {
+      alert('Supplier not found')
+      return
+    }
+    
+    // Find the actual index in suppliersData
+    const actualIndex = suppliersData.findIndex(
+      item => item.name === supplierToDelete.name && item.country === supplierToDelete.country
+    );
+    
+    if (actualIndex === -1) {
+      alert('Supplier not found in original data')
+      return
+    }
+    
+    const validationResult = validateDeleteSupplier(actualIndex)
+    if (!validationResult?.isValid) {
+      alert(validationResult?.error || 'Invalid supplier data')
+      return
+    }
+    
     const updatedSuppliers = deleteSupplier(
       supplierToDelete.name, 
       supplierToDelete.country, 
       suppliersData
     );
-    setSuppliersData([...updatedSuppliers]); // Force re-render with new array
+    setSuppliersData(updatedSuppliers);
   }
 
   // Filter suppliers based on search criteria
