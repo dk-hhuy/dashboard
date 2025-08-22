@@ -215,7 +215,8 @@ const InputField = React.memo<{
   type?: string
   required?: boolean
   hasError?: boolean
-}>(({ value, onChange, placeholder, type = 'text', required = false, hasError = false }) => (
+  disabled?: boolean
+}>(({ value, onChange, placeholder, type = 'text', required = false, hasError = false, disabled = false }) => (
   <input 
     className={`input is-size-7 ${hasError ? 'is-danger' : ''}`}
     type={type}
@@ -223,6 +224,7 @@ const InputField = React.memo<{
     onChange={(e) => onChange(e.target.value)}
     placeholder={placeholder}
     required={required}
+    disabled={disabled}
   />
 ))
 InputField.displayName = 'InputField'
@@ -355,6 +357,7 @@ const ProductFormRow = React.memo<{
   errors: Record<string, string[]>
   touchedFields: Set<string>
   onFieldChange: (index: number, field: keyof FormData, value: string) => void
+  isEditMode: boolean
 }>(({ 
   index, 
   data, 
@@ -363,7 +366,8 @@ const ProductFormRow = React.memo<{
   canRemove, 
   errors, 
   touchedFields,
-  onFieldChange
+  onFieldChange,
+  isEditMode
 }) => {
   const hasFieldError = useCallback((fieldName: string) => {
     const fieldKey = `${index}.${fieldName}`
@@ -422,7 +426,13 @@ const ProductFormRow = React.memo<{
               placeholder="Enter product SKU"
               required
               hasError={hasFieldError('productSku')}
+              disabled={isEditMode}
             />
+            {isEditMode && (
+              <div className="help is-info is-size-7 mt-1">
+                SKU cannot be modified in edit mode
+              </div>
+            )}
             <ErrorMessage errors={errors} fieldName={`${index}.productSku`} />
           </FormField>
         </div>
@@ -683,6 +693,7 @@ const ProductForm = ({ product, onClose, onSave, onAddMore }: ProductFormProps) 
         errors={errors}
         touchedFields={touchedFields}
         onFieldChange={handleFieldChange}
+        isEditMode={isEditMode}
       />
     ))
   }, [formData, updateFormField, handleRemoveForm, isEditMode, errors, touchedFields, handleFieldChange])

@@ -211,7 +211,20 @@ const Products = () => {
     if (editingProduct) {
       // Edit mode - only one product
       const productData = productsFormData[0]
+      
+      // Check if productData exists
+      if (!productData) {
+        showToast('No product data found for editing.', 'error')
+        return
+      }
+      
       const productIndex = productsData.findIndex(p => p.productSku === productData.productSku)
+      
+      // Check if product exists
+      if (productIndex === -1) {
+        showToast('Product not found for editing.', 'error')
+        return
+      }
       
       // Determine image source
       let imageSource = '/images/glass1.png' // Default image
@@ -242,8 +255,8 @@ const Products = () => {
         priceHistory: [
           ...updatedProducts[productIndex].priceHistory,
           { 
-            oldCost: productData.priceHistory[0].oldCost, 
-            effectiveDate: productData.priceHistory[0].effectiveDate 
+            oldCost: productData.priceHistory?.[0]?.oldCost || '0.00', 
+            effectiveDate: productData.priceHistory?.[0]?.effectiveDate || new Date().toISOString().split('T')[0]
           }
         ]
       }
@@ -263,6 +276,12 @@ const Products = () => {
       const addedSkus: string[] = []
       
       for (const productData of productsFormData) {
+        // Check if productData exists
+        if (!productData) {
+          showToast('Invalid product data found. Skipping...', 'warning')
+          continue
+        }
+        
         // Determine image source
         let imageSource = '/images/glass1.png' // Default image
         
@@ -288,7 +307,10 @@ const Products = () => {
           supplier: productData.supplier,
           productStatus: productData.productStatus,
           fulfillmentTime: productData.fulfillmentTime,
-          priceHistory: productData.priceHistory
+          priceHistory: productData.priceHistory || [{
+            oldCost: '0.00',
+            effectiveDate: new Date().toISOString().split('T')[0]
+          }]
         }
         
         newProducts.push(newProduct)
