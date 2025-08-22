@@ -28,7 +28,8 @@ const flattenProductData = (products: Product[]) => {
 
     // Add price history data
     if (product.priceHistory && product.priceHistory.length > 0) {
-      const latestPrice = product.priceHistory[0];
+      // Get the latest price (last item in array as we push new prices to the end)
+      const latestPrice = product.priceHistory[product.priceHistory.length - 1];
       baseData['Latest Price'] = latestPrice.oldCost;
       baseData['Latest Date'] = latestPrice.effectiveDate;
       

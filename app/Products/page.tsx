@@ -14,7 +14,7 @@ import ProductFormModal from '@/components/Products/Modals/ProductFormModal'
 import ImportProductModal from '@/components/Products/Modals/ImportProductModal'
 import UpdatePriceModal from '@/components/Products/Modals/UpdatePriceModal'
 import { products } from '@/constants/index_product'
-import { exportProductsData, exportSelectedProductsData } from '@/lib/utils_product'
+import { exportSelectedProductsData } from '@/lib/utils_product'
 import { exportProducts, exportSelectedProducts, ExportFormat } from '@/lib/exportUtils'
 import { useProductFilter } from '@/hooks/useProductFilter'
 import { Product, ProductFormData } from '@/types/product'
@@ -122,9 +122,7 @@ const Products = () => {
             return newSet
           })
           
-          // Export updated data to console
-          exportProductsData(updatedProducts)
-          
+          // Product deleted successfully
           showToast(`Product **${productSku}** deleted successfully!`, 'success')
         }
         break
@@ -182,18 +180,33 @@ const Products = () => {
     priceUpdates.forEach(update => {
       const productIndex = updatedProducts.findIndex(p => p.productSku === update.productSku)
       if (productIndex !== -1) {
-        updatedProducts[productIndex] = {
-          ...updatedProducts[productIndex],
-          priceHistory: [
-            ...updatedProducts[productIndex].priceHistory,
-            {
-              oldCost: update.cost,
-              effectiveDate: update.effectiveDate
-            }
-          ]
+        const currentProduct = updatedProducts[productIndex]
+        const newPrice = update.cost
+        const newEffectiveDate = update.effectiveDate
+        
+        // Get latest price from current product
+        const latestPrice = currentProduct.priceHistory[currentProduct.priceHistory.length - 1]?.oldCost || '0.00'
+        const latestDate = currentProduct.priceHistory[currentProduct.priceHistory.length - 1]?.effectiveDate || ''
+        
+        // Check if price or effective date has changed
+        const priceChanged = newPrice !== latestPrice
+        const dateChanged = newEffectiveDate !== latestDate
+        const shouldUpdatePriceHistory = priceChanged || dateChanged
+        
+        if (shouldUpdatePriceHistory) {
+          updatedProducts[productIndex] = {
+            ...currentProduct,
+            priceHistory: [
+              ...currentProduct.priceHistory,
+              {
+                oldCost: newPrice,
+                effectiveDate: newEffectiveDate
+              }
+            ]
+          }
+          newlyUpdatedSkus.add(update.productSku)
+          updatedProductsList.push(updatedProducts[productIndex])
         }
-        newlyUpdatedSkus.add(update.productSku)
-        updatedProductsList.push(updatedProducts[productIndex])
       }
     })
     
@@ -204,10 +217,6 @@ const Products = () => {
       const newSet = new Set([...prev, ...newlyUpdatedSkus])
       return newSet
     })
-    
-    // Log only updated products to console
-
-    exportProductsData(updatedProductsList)
     
     showToast(`Successfully updated prices for **${priceUpdates.length}** products!`, 'success')
     setShowUpdatePrice(false)
@@ -269,8 +278,21 @@ const Products = () => {
       
       // Edit existing product
       const updatedProducts = [...productsData]
+      const currentProduct = updatedProducts[productIndex]
+      const newPrice = productData.priceHistory?.[0]?.oldCost || '0.00'
+      const newEffectiveDate = productData.priceHistory?.[0]?.effectiveDate || new Date().toISOString().split('T')[0]
+      
+      // Get latest price from current product
+      const latestPrice = currentProduct.priceHistory[currentProduct.priceHistory.length - 1]?.oldCost || '0.00'
+      const latestDate = currentProduct.priceHistory[currentProduct.priceHistory.length - 1]?.effectiveDate || ''
+      
+      // Check if price or effective date has changed
+      const priceChanged = newPrice !== latestPrice
+      const dateChanged = newEffectiveDate !== latestDate
+      const shouldUpdatePriceHistory = priceChanged || dateChanged
+      
       updatedProducts[productIndex] = {
-        ...updatedProducts[productIndex],
+        ...currentProduct,
         mainimage: imageSource, // Update image
         name: productData.name,
         description: productData.description,
@@ -278,13 +300,15 @@ const Products = () => {
         supplier: productData.supplier,
         productStatus: productData.productStatus,
         fulfillmentTime: productData.fulfillmentTime,
-        priceHistory: [
-          ...updatedProducts[productIndex].priceHistory,
-          { 
-            oldCost: productData.priceHistory?.[0]?.oldCost || '0.00', 
-            effectiveDate: productData.priceHistory?.[0]?.effectiveDate || new Date().toISOString().split('T')[0]
-          }
-        ]
+        priceHistory: shouldUpdatePriceHistory 
+          ? [
+              ...currentProduct.priceHistory,
+              { 
+                oldCost: newPrice,
+                effectiveDate: newEffectiveDate
+              }
+            ]
+          : currentProduct.priceHistory // Keep existing price history if no changes
       }
       
       setProductsData(updatedProducts)
@@ -323,6 +347,10 @@ const Products = () => {
           imageSource = productData.productImage
         }
         
+        // Get price data from form
+        const newPrice = productData.priceHistory?.[0]?.oldCost || '0.00'
+        const newEffectiveDate = productData.priceHistory?.[0]?.effectiveDate || new Date().toISOString().split('T')[0]
+        
         // Add new product
         const newProduct: Product = {
           mainimage: imageSource, // Use processed image
@@ -333,9 +361,9 @@ const Products = () => {
           supplier: productData.supplier,
           productStatus: productData.productStatus,
           fulfillmentTime: productData.fulfillmentTime,
-          priceHistory: productData.priceHistory || [{
-            oldCost: '0.00',
-            effectiveDate: new Date().toISOString().split('T')[0]
+          priceHistory: [{
+            oldCost: newPrice,
+            effectiveDate: newEffectiveDate
           }]
         }
         
@@ -352,9 +380,6 @@ const Products = () => {
         const newSet = new Set([...prev, ...addedSkus])
         return newSet
       })
-      
-      // Auto-export updated data to console
-      exportProductsData(newProducts)
       
       if (newProducts.length === 1) {
         showToast(`Product **${addedSkus[0]}** added successfully!`, 'success')
@@ -398,10 +423,15 @@ const Products = () => {
         if (JSON.stringify(existingProduct.supplier) !== JSON.stringify(importedProduct.supplier)) differences.push('supplier')
         if (existingProduct.mainimage !== importedProduct.mainimage) differences.push('mainimage')
         
-        // Compare price history (check if the latest price is different)
-        const existingLatestPrice = existingProduct.priceHistory[existingProduct.priceHistory.length - 1]?.oldCost
-        const importedLatestPrice = importedProduct.priceHistory[importedProduct.priceHistory.length - 1]?.oldCost
-        if (existingLatestPrice !== importedLatestPrice) differences.push('price')
+        // Compare price history (check if the latest price or effective date is different)
+        const existingLatestPrice = existingProduct.priceHistory[existingProduct.priceHistory.length - 1]?.oldCost || '0.00'
+        const existingLatestDate = existingProduct.priceHistory[existingProduct.priceHistory.length - 1]?.effectiveDate || ''
+        const importedLatestPrice = importedProduct.priceHistory[importedProduct.priceHistory.length - 1]?.oldCost || '0.00'
+        const importedLatestDate = importedProduct.priceHistory[importedProduct.priceHistory.length - 1]?.effectiveDate || ''
+        
+        const priceChanged = existingLatestPrice !== importedLatestPrice
+        const dateChanged = existingLatestDate !== importedLatestDate
+        if (priceChanged || dateChanged) differences.push('price')
         
         if (differences.length > 0) {
           // Update only the different fields
@@ -418,7 +448,7 @@ const Products = () => {
             // Add new price to history if different
             updatedProduct.priceHistory.push({
               oldCost: importedLatestPrice,
-              effectiveDate: new Date().toISOString().split('T')[0]
+              effectiveDate: importedLatestDate || new Date().toISOString().split('T')[0]
             })
           }
           
@@ -438,9 +468,6 @@ const Products = () => {
       const newSet = new Set([...prev, ...Array.from(updatedSkus)])
       return newSet
     })
-    
-    // Auto-export updated data to console
-    exportProductsData(updatedProducts)
     
     // Show result toast
     if (successCount > 0 && failedCount > 0) {
