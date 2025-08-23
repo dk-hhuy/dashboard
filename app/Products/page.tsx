@@ -15,13 +15,19 @@ import ProductFormModal from '@/components/Products/Modals/ProductFormModal'
 import ImportProductModal from '@/components/Products/Modals/ImportProductModal'
 import UpdatePriceModal from '@/components/Products/Modals/UpdatePriceModal'
 import { products } from '@/constants/index_product'
-import { exportSelectedProductsData } from '@/lib/utils_product'
+
 import { exportProducts, exportSelectedProducts, ExportFormat } from '@/lib/exportUtils'
 import { useProductFilter } from '@/hooks/useProductFilter'
 import { Product, ProductFormData } from '@/types/product'
+
+interface PriceUpdate {
+  productSku: string
+  cost: string
+  effectiveDate: string
+}
 import { useToast } from '@/components/Shared/ToastProvider'
 import ConfigSupplierModal from '@/components/Products/Modals/ConfigSupplierModal'
-import ItemsPerPageSelector from '@/components/Shared/ItemsPerPageSelector'
+
 
 // Constants
 const IMAGE_HOVER_DELAY = 100
@@ -32,7 +38,18 @@ const Products = () => {
   const { showToast } = useToast()
   
   // State management
-  const [productsData, setProductsData] = useState(products)
+  const [productsData, setProductsData] = useState<Product[]>(() => {
+    // Initialize from localStorage if available, otherwise use constants
+    try {
+      const storedProducts = localStorage.getItem('productsData')
+      if (storedProducts) {
+        return JSON.parse(storedProducts) as Product[]
+      }
+    } catch (error) {
+      console.warn('Failed to load products from localStorage:', error)
+    }
+    return products
+  })
   const [hoveredImage, setHoveredImage] = useState<string | null>(null)
   const [showProductForm, setShowProductForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
@@ -43,6 +60,15 @@ const Products = () => {
   const [showUpdatedOnly, setShowUpdatedOnly] = useState(searchParams.get('updated') === 'true')
   const [showConfigSupplier, setShowConfigSupplier] = useState(false)
   const [selectedProductSkus, setSelectedProductSkus] = useState<Set<string>>(new Set())
+
+  // Sync productsData with localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('productsData', JSON.stringify(productsData))
+    } catch (error) {
+      console.warn('Failed to save products to localStorage:', error)
+    }
+  }, [productsData])
 
   // Custom hook for filtering and pagination
   const {
@@ -72,13 +98,13 @@ const Products = () => {
     
     const exportedCount = exportSelectedProducts(productsData, selectedProductSkus, format);
     showToast(`Exported ${exportedCount} selected products as ${format.toUpperCase()}!`, 'success');
-  }, [selectedProductSkus, productsData, showToast]);
+  }, [selectedProductSkus, productsData]);
 
   // Export all products handler
   const handleExportAll = useCallback((format: ExportFormat = 'json') => {
     exportProducts(productsData, format);
     showToast(`Exported ${productsData.length} products as ${format.toUpperCase()}!`, 'success');
-  }, [productsData, showToast]);
+  }, [productsData]);
 
   // Image hover handlers with debouncing
   const handleImageHover = useCallback((src: string) => {
@@ -135,7 +161,7 @@ const Products = () => {
       default:
         console.warn(`Unknown action: ${action}`)
     }
-  }, [productsData, showToast])
+  }, [productsData])
 
   const handleAddProduct = useCallback(() => {
     setEditingProduct(null) // No product = Add mode
@@ -173,7 +199,7 @@ const Products = () => {
     setShowConfigSupplier(false)
   }, [])
 
-  const handleUpdatePriceSave = useCallback((priceUpdates: any[]) => {
+  const handleUpdatePriceSave = useCallback((priceUpdates: PriceUpdate[]) => {
     
     // Update products with new prices
     const updatedProducts = [...productsData]
@@ -223,7 +249,7 @@ const Products = () => {
     
     showToast(`Successfully updated prices for **${priceUpdates.length}** products!`, 'success')
     setShowUpdatePrice(false)
-  }, [productsData, showToast])
+  }, [productsData])
 
   // Form handlers
   const handleFormClose = useCallback(() => {
@@ -393,7 +419,7 @@ const Products = () => {
     
     setShowProductForm(false)
     setEditingProduct(null)
-  }, [productsData, editingProduct, convertFileToBase64, showToast])
+  }, [productsData, editingProduct, convertFileToBase64])
 
 
 
@@ -484,7 +510,7 @@ const Products = () => {
     }
     
     setShowImportProduct(false)
-  }, [productsData, showToast])
+  }, [productsData])
 
   // Cleanup on unmount
   useEffect(() => {

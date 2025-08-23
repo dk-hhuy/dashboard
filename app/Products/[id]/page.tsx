@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Dialog, Tab } from '@headlessui/react'
@@ -10,7 +10,7 @@ import ProtectedRoute from '@/components/Shared/ProtectedRoute'
 import { products } from '@/constants/index_product'
 import { Product } from '@/types/product'
 import { useToast } from '@/components/Shared/ToastProvider'
-import { productDetailImages } from '@/constants/index_producdetail'
+
 
 const ProductDetail = () => {
   const params = useParams()
@@ -21,6 +21,9 @@ const ProductDetail = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [isImageModalOpen, setIsImageModalOpen] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  
+  // Use product images or fallback to main image
+  const productImages = product?.productImages || [product?.mainimage || '/images/glass1.png']
   const [direction, setDirection] = useState(0)
 
   const handleBackImage = () => {
@@ -33,18 +36,57 @@ const ProductDetail = () => {
     setCurrentImageIndex(currentImageIndex + 1)
   }
 
-  useEffect(() => {
-    const productSku = params.id as string
-    const foundProduct = products.find(p => p.productSku === productSku)
+  const loadProduct = useCallback((productSku: string) => {
+    // Try to get products from localStorage first, then fallback to constants
+    let allProducts = products
+    try {
+      const storedProducts = localStorage.getItem('productsData')
+      if (storedProducts) {
+        allProducts = JSON.parse(storedProducts)
+      }
+    } catch (error) {
+      console.warn('Failed to load products from localStorage:', error)
+    }
+    
+    const foundProduct = allProducts.find(p => p.productSku === productSku)
     
     if (foundProduct) {
       setProduct(foundProduct)
+      setIsLoading(false)
     } else {
       showToast(`Product ${productSku} not found!`, 'error')
       router.push('/Products')
     }
-    setIsLoading(false)
-  }, [params.id, router, showToast])
+  }, [router])
+
+  useEffect(() => {
+    const productSku = params.id as string
+    setIsLoading(true)
+    loadProduct(productSku)
+  }, [params.id, loadProduct])
+
+  // Listen for storage changes and window focus to update product data
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'productsData' && e.newValue) {
+        const productSku = params.id as string
+        loadProduct(productSku)
+      }
+    }
+
+    const handleFocus = () => {
+      const productSku = params.id as string
+      loadProduct(productSku)
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+    window.addEventListener('focus', handleFocus)
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('focus', handleFocus)
+    }
+  }, [params.id, loadProduct])
 
   if (isLoading) {
     return (
@@ -111,7 +153,7 @@ const ProductDetail = () => {
                                 style={{ width: '100%', height: '100%' }}
                               >
                                 <Image 
-                                  src={productDetailImages[currentImageIndex]}
+                                  src={productImages[currentImageIndex]}
                                   alt={`${product.name} - Image ${currentImageIndex + 1}`}
                                   width={350}
                                   height={350}
@@ -127,14 +169,14 @@ const ProductDetail = () => {
                             </AnimatePresence>
                           </figure>
                           <p className="help mt-2">Click to enlarge</p>
-                          <p className="help is-size-7">{currentImageIndex + 1} / {productDetailImages.length}</p>
+                          <p className="help is-size-7">{currentImageIndex + 1} / {productImages.length}</p>
                         </div>
 
                         <motion.button 
                           className="button is-small is-white is-size-7"
                           style={{ border: 'none', background: 'transparent' }}
                           onClick={handleForwardImage}
-                          disabled={currentImageIndex === productDetailImages.length - 1}
+                          disabled={currentImageIndex === productImages.length - 1}
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.95 }}
                           transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -389,17 +431,17 @@ const ProductDetail = () => {
               ></button>
             </header>
             <section className="modal-card-body has-text-centered is-size-7">
-              <Image 
-                src={productDetailImages[currentImageIndex]} 
-                alt={`${product.name} - Image ${currentImageIndex + 1}`}
-                width={400}
-                height={400}
-                style={{ 
-                  objectFit: 'cover',
-                  borderRadius: '8px'
-                }}
-              />
-              <p className="help mt-3 is-size-7">{currentImageIndex + 1} / {productDetailImages.length}</p>
+                       <Image
+           src={productImages[currentImageIndex]}
+           alt={`${product.name} - Image ${currentImageIndex + 1}`}
+           width={400}
+           height={400}
+           style={{
+             objectFit: 'cover',
+             borderRadius: '8px'
+           }}
+         />
+         <p className="help mt-3 is-size-7">{currentImageIndex + 1} / {productImages.length}</p>
             </section>
           </Dialog.Panel>
         </Dialog>

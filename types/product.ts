@@ -8,6 +8,8 @@ export interface Product {
   priceHistory: Array<{ oldCost: string; effectiveDate: string }>
   supplier: string[]
   productStatus: string
+  productImages?: string[]
+  productVideos?: string[]
 }
 
 export interface ProductFormData {

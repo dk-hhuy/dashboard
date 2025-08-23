@@ -17,10 +17,13 @@ interface ToastProviderProps {
 
 export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   const [toasts, setToasts] = useState<ToastProps[]>([])
+  const [toastCounter, setToastCounter] = useState(0)
 
   // Show toast function
   const showToast = (message: string, type: ToastProps['type'], duration = 6000) => {
-    const id = Date.now().toString()
+    const id = `toast-${Date.now()}-${toastCounter}`
+    setToastCounter(prev => prev + 1)
+    
     const newToast: ToastProps = {
       id,
       message,

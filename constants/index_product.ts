@@ -18,7 +18,21 @@ export const products = [
       {oldCost: "$8.99", effectiveDate: "2025-01-08"},
     ],
     supplier: ["GlassCraft Inc", "Premium Supplies"],
-    productStatus: "In Stock"
+    productStatus: "In Stock",
+    productImages: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ],
+    productVideos: [
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "https://www.youtube.com/watch?v=9bZkp7q19f0", 
+      "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ]
   },
   {
     mainimage: "/images/glass1.png",
@@ -38,7 +52,21 @@ export const products = [
       {oldCost: "$11.99", effectiveDate: "2025-01-08"},
     ],
     supplier: ["SparkleCraft", "Luxury Items"],
-    productStatus: "In Stock"
+    productStatus: "In Stock",
+    productImages: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ],
+    productVideos: [
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "https://www.youtube.com/watch?v=9bZkp7q19f0", 
+      "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ]
   },
   {
     mainimage: "/images/glass1.png",
@@ -58,7 +86,21 @@ export const products = [
       {oldCost: "$5.99", effectiveDate: "2025-01-08"},
     ],
     supplier: ["TravelGear Pro", "MugMasters"],
-    productStatus: "Out Stock"
+    productStatus: "Out Stock",
+    productImages: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ],
+    productVideos: [
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "https://www.youtube.com/watch?v=9bZkp7q19f0", 
+      "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ]
   },
   {
     mainimage: "/images/glass1.png",
@@ -78,7 +120,21 @@ export const products = [
       {oldCost: "$7.99", effectiveDate: "2025-01-08"},
     ],
     supplier: ["GlassCraft Inc", "Classic Items"],
-    productStatus: "In Stock"
+    productStatus: "In Stock",
+    productImages: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ],
+    productVideos: [
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "https://www.youtube.com/watch?v=9bZkp7q19f0", 
+      "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ]
   },
   {
     mainimage: "/images/glass1.png",
@@ -118,7 +174,21 @@ export const products = [
       {oldCost: "$12.99", effectiveDate: "2025-01-08"},
     ],
     supplier: ["GlassCraft Inc", "Large Items"],
-    productStatus: "In Stock"
+    productStatus: "In Stock",
+    productImages: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ],
+    productVideos: [
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "https://www.youtube.com/watch?v=9bZkp7q19f0", 
+      "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ]
   },
   {
     mainimage: "/images/glass1.png",
@@ -158,7 +228,16 @@ export const products = [
       {oldCost: "$8.99", effectiveDate: "2025-01-08"},
     ],
     supplier: ["TravelGear Pro", "MugMasters"],
-    productStatus: "In Stock"
+    productStatus: "In Stock",
+    productImages: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ]
   },
   {
     mainimage: "/images/glass1.png",
@@ -178,7 +257,21 @@ export const products = [
       {oldCost: "$13.99", effectiveDate: "2025-01-08"},
     ],
     supplier: ["ColorTech", "AluminumCraft"],
-    productStatus: "In Stock"
+    productStatus: "In Stock",
+    productImages: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ],
+    productVideos: [
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "https://www.youtube.com/watch?v=9bZkp7q19f0", 
+      "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ]
   },
   {
     mainimage: "/images/glass1.png",
@@ -198,7 +291,21 @@ export const products = [
       {oldCost: "$17.99", effectiveDate: "2025-01-08"},
     ],
     supplier: ["GlassCraft Inc", "Premium Supplies"],
-    productStatus: "Out Stock"
+    productStatus: "Out Stock",
+    productImages: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ],
+    productVideos: [
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "https://www.youtube.com/watch?v=9bZkp7q19f0", 
+      "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ]
   },
   {
     mainimage: "/images/glass1.png",
@@ -218,7 +325,12 @@ export const products = [
       {oldCost: "$2.99", effectiveDate: "2025-01-08"},
     ],
     supplier: ["TravelGear Pro", "Compact Items"],
-    productStatus: "In Stock", 
+    productStatus: "In Stock",
+    productVideos: [
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "https://www.youtube.com/watch?v=9bZkp7q19f0", 
+      "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ],
     action: ["Edit", "Delete"]
   },
   {
@@ -239,7 +351,12 @@ export const products = [
       {oldCost: "$5.99", effectiveDate: "2025-01-08"},
     ],
     supplier: ["ColorTech", "Small Items"],
-    productStatus: "Out Stock"
+    productStatus: "Out Stock",
+    productVideos: [
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "https://www.youtube.com/watch?v=9bZkp7q19f0", 
+      "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ]
   },
   {
     mainimage: "/images/glass1.png",
@@ -259,7 +376,21 @@ export const products = [
       {oldCost: "$4.99", effectiveDate: "2025-01-08"},
     ],
     supplier: ["GlassCraft Inc", "Medium Items"],
-    productStatus: "In Stock"
+    productStatus: "In Stock",
+    productImages: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ],
+    productVideos: [
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "https://www.youtube.com/watch?v=9bZkp7q19f0", 
+      "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ]
   },
   {
     mainimage: "/images/glass1.png",
@@ -279,7 +410,21 @@ export const products = [
       {oldCost: "$9.99", effectiveDate: "2025-01-08"},
     ],
     supplier: ["SparkleCraft", "Medium Items"],
-    productStatus: "In Stock"
+    productStatus: "In Stock",
+    productImages: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ],
+    productVideos: [
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "https://www.youtube.com/watch?v=9bZkp7q19f0", 
+      "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ]
   },
   {
     mainimage: "/images/glass1.png",
@@ -299,7 +444,21 @@ export const products = [
       {oldCost: "$6.99", effectiveDate: "2025-01-08"},
     ],
     supplier: ["GlassCraft Inc", "Frosted Items"],
-    productStatus: "Out Stock"
+    productStatus: "Out Stock",
+    productImages: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ],
+    productVideos: [
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "https://www.youtube.com/watch?v=9bZkp7q19f0", 
+      "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ]
   },
   {
     mainimage: "/images/glass1.png",
@@ -319,7 +478,21 @@ export const products = [
       {oldCost: "$11.99", effectiveDate: "2025-01-08"},
     ],
     supplier: ["TravelGear Pro", "Large Items"],
-    productStatus: "In Stock"
+    productStatus: "In Stock",
+    productImages: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ],
+    productVideos: [
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "https://www.youtube.com/watch?v=9bZkp7q19f0", 
+      "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ]
   },
   {
     mainimage: "/images/glass1.png",
@@ -339,7 +512,21 @@ export const products = [
       {oldCost: "$7.99", effectiveDate: "2025-01-08"},
     ],
     supplier: ["ColorTech", "Medium Items"],
-    productStatus: "Out Stock"
+    productStatus: "Out Stock",
+    productImages: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ],
+    productVideos: [
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "https://www.youtube.com/watch?v=9bZkp7q19f0", 
+      "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ]
   },
   {
     mainimage: "/images/glass1.png",
@@ -359,7 +546,21 @@ export const products = [
       {oldCost: "$19.99", effectiveDate: "2025-01-08"},
     ],
     supplier: ["GlassCraft Inc", "Extra Large Items"],
-    productStatus: "In Stock"
+    productStatus: "In Stock",
+    productImages: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ],
+    productVideos: [
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "https://www.youtube.com/watch?v=9bZkp7q19f0", 
+      "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ]
   },
   {
     mainimage: "/images/glass1.png",
@@ -379,7 +580,21 @@ export const products = [
       {oldCost: "$21.99", effectiveDate: "2025-01-08"},
     ],
     supplier: ["SparkleCraft", "Extra Large Items"],
-    productStatus: "Out Stock"
+    productStatus: "Out Stock",
+    productImages: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ],
+    productVideos: [
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "https://www.youtube.com/watch?v=9bZkp7q19f0", 
+      "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ]
   },
   {
     mainimage: "/images/glass1.png",
@@ -420,7 +635,21 @@ export const products = [
       {oldCost: "$11.99", effectiveDate: "2025-01-08"},
     ],
     supplier: ["ColorTech", "Large Items"],
-    productStatus: "Out Stock"
+    productStatus: "Out Stock",
+    productImages: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ],
+    productVideos: [
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "https://www.youtube.com/watch?v=9bZkp7q19f0", 
+      "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ]
   }
 ]
 
