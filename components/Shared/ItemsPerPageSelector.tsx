@@ -28,7 +28,7 @@ const ItemsPerPageSelector: React.FC<ItemsPerPageSelectorProps> = ({
 
   // Update URL when itemsPerPage changes
   useEffect(() => {
-    updateUrlParam('itemsPerPage', itemsPerPage.toString());
+    updateUrlParam('limit', itemsPerPage.toString());
   }, [itemsPerPage, updateUrlParam]);
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {

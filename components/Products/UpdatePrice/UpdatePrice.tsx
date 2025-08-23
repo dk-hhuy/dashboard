@@ -48,8 +48,8 @@ const usePriceValidation = () => {
   const clearFieldError = useCallback((fieldKey: string) => {
     setErrors(prev => {
       const newErrors = { ...prev }
-      delete newErrors[fieldKey]
-      return newErrors
+        delete newErrors[fieldKey]
+        return newErrors
     })
   }, [])
 

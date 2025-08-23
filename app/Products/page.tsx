@@ -129,7 +129,8 @@ const Products = () => {
         }
         break
       case 'Detail':
-        showToast(`Detail product: ${productSku} - No functionality implemented yet`, 'info')
+        // Open product detail page in new tab
+        window.open(`/Products/${productSku}`, '_blank');
         break
       default:
         console.warn(`Unknown action: ${action}`)
