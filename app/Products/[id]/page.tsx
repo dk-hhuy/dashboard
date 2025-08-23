@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Dialog, Tab } from '@headlessui/react'
+import { motion, AnimatePresence } from 'framer-motion'
 import NavBar from '@/components/Shared/NavBar'
 import ProtectedRoute from '@/components/Shared/ProtectedRoute'
 import { products } from '@/constants/index_product'
@@ -20,12 +21,15 @@ const ProductDetail = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [isImageModalOpen, setIsImageModalOpen] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [direction, setDirection] = useState(0)
 
   const handleBackImage = () => {
+    setDirection(-1)
     setCurrentImageIndex(currentImageIndex - 1)
   }
 
   const handleForwardImage = () => {
+    setDirection(1)
     setCurrentImageIndex(currentImageIndex + 1)
   }
 
@@ -76,47 +80,69 @@ const ProductDetail = () => {
                   <div className="is-flex-shrink-0" style={{ marginRight: '6rem' }}>
                     <div className="is-flex is-flex-direction-column is-justify-content-center">
                       <div className="is-flex is-flex-direction-row is-justify-content-center is-align-items-center">
-                        <button 
+                        <motion.button 
                           className="button is-small is-white is-size-7" 
                           style={{ border: 'none', background: 'transparent' }} 
                           disabled={currentImageIndex === 0} 
                           onClick={handleBackImage}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                          transition={{ type: "spring", stiffness: 400, damping: 17 }}
                         >
                           <span className="icon">
                             <i className="material-icons is-size-6">chevron_left</i>
                           </span>
-                        </button>
+                        </motion.button>
                       
                         <div className="has-text-centered is-flex is-flex-direction-column is-justify-content-center">
-                          <figure className="image is-clickable" style={{ width: '350px', height: '350px' }} onClick={() => setIsImageModalOpen(true)}>
-                            <Image 
-                              src={productDetailImages[currentImageIndex]}
-                              alt={`${product.name} - Image ${currentImageIndex + 1}`}
-                              width={350}
-                              height={350}
-                              className="has-shadow"
-                              style={{ 
-                                objectFit: 'cover',
-                                width: '100%',
-                                height: '100%',
-                                borderRadius: '12px'
-                              }}
-                            />
+                          <figure className="image is-clickable" style={{ width: '350px', height: '350px', overflow: 'hidden' }} onClick={() => setIsImageModalOpen(true)}>
+                            <AnimatePresence mode="wait">
+                              <motion.div
+                                key={currentImageIndex}
+                                initial={{ x: direction * 350, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                exit={{ x: -direction * 350, opacity: 0 }}
+                                transition={{ 
+                                  type: "spring", 
+                                  stiffness: 500, 
+                                  damping: 25,
+                                  duration: 0.15
+                                }}
+                                style={{ width: '100%', height: '100%' }}
+                              >
+                                <Image 
+                                  src={productDetailImages[currentImageIndex]}
+                                  alt={`${product.name} - Image ${currentImageIndex + 1}`}
+                                  width={350}
+                                  height={350}
+                                  className="has-shadow"
+                                  style={{ 
+                                    objectFit: 'cover',
+                                    width: '100%',
+                                    height: '100%',
+                                    borderRadius: '12px'
+                                  }}
+                                />
+                              </motion.div>
+                            </AnimatePresence>
                           </figure>
                           <p className="help mt-2">Click to enlarge</p>
                           <p className="help is-size-7">{currentImageIndex + 1} / {productDetailImages.length}</p>
                         </div>
 
-                        <button 
+                        <motion.button 
                           className="button is-small is-white is-size-7"
                           style={{ border: 'none', background: 'transparent' }}
                           onClick={handleForwardImage}
                           disabled={currentImageIndex === productDetailImages.length - 1}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                          transition={{ type: "spring", stiffness: 400, damping: 17 }}
                         >
                           <span className="icon">
                             <i className="material-icons is-size-6">chevron_right</i>
                           </span>
-                        </button>
+                        </motion.button>
                       </div>
                     </div>
                   </div>
@@ -364,8 +390,8 @@ const ProductDetail = () => {
             </header>
             <section className="modal-card-body has-text-centered is-size-7">
               <Image 
-                src={product.mainimage || '/images/glass1.png'} 
-                alt={product.name}
+                src={productDetailImages[currentImageIndex]} 
+                alt={`${product.name} - Image ${currentImageIndex + 1}`}
                 width={400}
                 height={400}
                 style={{ 
@@ -373,6 +399,7 @@ const ProductDetail = () => {
                   borderRadius: '8px'
                 }}
               />
+              <p className="help mt-3 is-size-7">{currentImageIndex + 1} / {productDetailImages.length}</p>
             </section>
           </Dialog.Panel>
         </Dialog>
