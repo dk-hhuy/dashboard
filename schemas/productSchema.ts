@@ -121,7 +121,23 @@ export const ProductFormSchema = z.object({
     }, 'Effective date cannot be in the past'),
     
   // Optional fields
-  productImage: z.string().optional()
+  productImage: z.string().optional(),
+  
+  // Image upload validation
+  uploadedImage: z.instanceof(File).optional()
+    .refine((file) => {
+      if (!file) return true // Optional field
+      return file.size > 0
+    }, 'File cannot be empty')
+    .refine((file) => {
+      if (!file) return true
+      return file.size <= 10 * 1024 * 1024 // 10MB
+    }, 'Image size must be less than 10MB')
+    .refine((file) => {
+      if (!file) return true
+      const supportedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif']
+      return supportedTypes.includes(file.type)
+    }, 'Image must be a valid type (png, jpg, webp, gif)')
 })
 
 // ============================================================================
@@ -131,11 +147,16 @@ export const ProductFormSchema = z.object({
 /**
  * Validate a single field
  * @param fieldName - Name of the field to validate
- * @param value - Value to validate
+ * @param value - Value to validate (string or File)
  * @returns Validation result with success/error status
  */
-export const validateField = (fieldName: keyof ProductFormData, value: string) => {
+export const validateField = (fieldName: keyof ProductFormData, value: string | File) => {
   try {
+    // Special handling for uploadedImage field
+    if (fieldName === 'uploadedImage') {
+      return validateUploadedImage(value as File)
+    }
+    
     const fieldSchema = ProductFormSchema.pick({ [fieldName]: true })
     fieldSchema.parse({ [fieldName]: value })
     return { success: true, errors: {} }
@@ -225,6 +246,41 @@ export const validateImageURL = (url: string): boolean => {
   if (!url) return true // Optional field
   
   return REGEX_PATTERNS.IMAGE_URL.test(url)
+}
+
+/**
+ * Validate uploaded image file 
+ * Note: Uses same validation logic as importSchema.ts ImageFileSchema
+ * @param file - File to validate
+ * @returns Validation result with success/error status
+ */
+export const validateUploadedImage = (file: File | undefined) => {
+  if (!file) return { success: true, errors: {} } // Optional field
+  
+  try {
+    // Same validation as importSchema.ts ImageFileSchema
+    const MAX_IMAGE_SIZE = 10 * 1024 * 1024 // 10 MB
+    const SUPPORTED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif']
+    
+    if (file.size <= 0) {
+      return { success: false, errors: { uploadedImage: ['File cannot be empty'] } }
+    }
+    
+    if (file.size > MAX_IMAGE_SIZE) {
+      return { success: false, errors: { uploadedImage: [`Image size must be less than ${MAX_IMAGE_SIZE / (1024 * 1024)}MB`] } }
+    }
+    
+    if (!SUPPORTED_IMAGE_TYPES.includes(file.type)) {
+      return { success: false, errors: { uploadedImage: ['Image must be a valid type (png, jpg, webp, gif)'] } }
+    }
+    
+    return { success: true, errors: {} }
+  } catch (error) {
+    return { 
+      success: false, 
+      errors: { uploadedImage: ['Validation error occurred'] } 
+    }
+  }
 }
 
 // ============================================================================

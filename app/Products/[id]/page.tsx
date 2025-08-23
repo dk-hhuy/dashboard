@@ -245,9 +245,9 @@ const ProductDetail = () => {
                     <div className="buttons is-justify-content-flex-end">
                       <button className="button is-primary is-size-7">
                         <span className="icon is-size-7">
-                          <i className="material-icons is-size-7">edit</i>
+                          <i className="material-icons is-size-7">add_photo_alternate</i>
                         </span>
-                        <span>Edit Product</span>
+                        <span>Add Image</span>
                       </button>
                       <button className="button is-info is-size-7">
                         <span className="icon is-size-7">

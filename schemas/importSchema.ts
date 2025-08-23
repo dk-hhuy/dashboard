@@ -14,7 +14,18 @@ const VALIDATION_CONFIG = {
     'application/csv',
     'application/json' // .json
   ] as const,
-  
+
+  // Image Validation
+  MAX_IMAGE_SIZE: 10 * 1024 * 1024, // 10 MB
+  SUPPORTED_IMAGE_TYPES: [
+    'image/png',
+    'image/jpeg',
+    'image/jpg',
+    'image/webp',
+    'image/gif'
+  ] as const,
+
+
   // Product validation
   MIN_PRODUCTS: 1,
   MAX_PRODUCTS: 100,
@@ -92,6 +103,20 @@ export const ImportFileSchema = z.object({
       `File size must be less than ${VALIDATION_CONFIG.MAX_FILE_SIZE / (1024 * 1024)}MB`)
     .refine((file) => (VALIDATION_CONFIG.SUPPORTED_FILE_TYPES as readonly string[]).includes(file.type), 
       'File must be Excel (.xlsx, .xls), CSV, or JSON format'),
+})
+
+/**
+ * Schema cho image file validation
+ * Kiểm tra file size, type và format
+ */
+export const ImageFileSchema = z.object({
+  file: z.instanceof(File, { message: 'Please select a file' })
+
+  .refine((file) => file.size > 0, 'File cannot be empty')
+  .refine((file) => file.size <= VALIDATION_CONFIG.MAX_IMAGE_SIZE, 
+    `Image size must be less than ${VALIDATION_CONFIG.MAX_IMAGE_SIZE / (1024 * 1024)}MB`)
+  .refine((file) => (VALIDATION_CONFIG.SUPPORTED_IMAGE_TYPES as readonly string[]).includes(file.type),
+    'Image must be a valid type (png, jpg, webp, gif)'),
 })
 
 /**
@@ -176,6 +201,32 @@ export const validateImportFile = (file: File) => {
 }
 
 /**
+ * Validate image file
+ * @param file - Image file to validate
+ * @returns Validation result with success/error status
+ */
+export const validateImageFile = (file: File) => {
+  try {
+    ImageFileSchema.parse({file})
+    return { success: true, errors: {} }
+
+  } catch (error) {
+    if ( error instanceof z.ZodError) {
+      return {
+        success: false,
+        errors: {
+          file: (error as z.ZodError<any>).issues.map((e: any) => e.message)
+        }
+      }
+    }
+    return {
+      success: false,
+      errors: { file: ['Validation error occurred'] } 
+    }
+  }
+}
+
+/**
  * Validate imported products array
  * @param products - Array of products to validate
  * @returns Validation result with success/error status
@@ -227,6 +278,8 @@ export const validateImportedProducts = (products: any[]) => {
 export const getImportError = (errors: Record<string, string[]>, fieldName: string): string | null => {
   return errors[fieldName]?.[0] || null
 }
+
+
 
 /**
  * Check if field has error
