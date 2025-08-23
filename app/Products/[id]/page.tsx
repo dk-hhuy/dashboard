@@ -9,6 +9,7 @@ import ProtectedRoute from '@/components/Shared/ProtectedRoute'
 import { products } from '@/constants/index_product'
 import { Product } from '@/types/product'
 import { useToast } from '@/components/Shared/ToastProvider'
+import { productDetailImages } from '@/constants/index_producdetail'
 
 const ProductDetail = () => {
   const params = useParams()
@@ -18,6 +19,15 @@ const ProductDetail = () => {
   const [product, setProduct] = useState<Product | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isImageModalOpen, setIsImageModalOpen] = useState(false)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+
+  const handleBackImage = () => {
+    setCurrentImageIndex(currentImageIndex - 1)
+  }
+
+  const handleForwardImage = () => {
+    setCurrentImageIndex(currentImageIndex + 1)
+  }
 
   useEffect(() => {
     const productSku = params.id as string
@@ -63,23 +73,51 @@ const ProductDetail = () => {
               <div className="is-flex is-justify-content-center">
                 <div className="is-flex is-align-items-stretch" style={{ maxWidth: '800px' }}>
                   {/* Product Image */}
-                  <div className="is-flex-shrink-0 mr-6 is-flex is-flex-direction-column is-justify-content-center">
-                    <div className="has-text-centered">
-                      <figure className="image is-clickable" style={{ width: '350px', height: '350px' }} onClick={() => setIsImageModalOpen(true)}>
-                        <Image 
-                          src={product.mainimage || '/images/glass1.png'} 
-                          alt={product.name}
-                          width={350}
-                          height={350}
-                          className="has-shadow"
-                          style={{ 
-                            objectFit: 'cover',
-                            width: '100%',
-                            height: '100%'
-                          }}
-                        />
-                      </figure>
-                      <p className="help mt-2">Click to enlarge</p>
+                  <div className="is-flex-shrink-0" style={{ marginRight: '6rem' }}>
+                    <div className="is-flex is-flex-direction-column is-justify-content-center">
+                      <div className="is-flex is-flex-direction-row is-justify-content-center is-align-items-center">
+                        <button 
+                          className="button is-small is-white is-size-7" 
+                          style={{ border: 'none', background: 'transparent' }} 
+                          disabled={currentImageIndex === 0} 
+                          onClick={handleBackImage}
+                        >
+                          <span className="icon">
+                            <i className="material-icons is-size-6">chevron_left</i>
+                          </span>
+                        </button>
+                      
+                        <div className="has-text-centered is-flex is-flex-direction-column is-justify-content-center">
+                          <figure className="image is-clickable" style={{ width: '350px', height: '350px' }} onClick={() => setIsImageModalOpen(true)}>
+                            <Image 
+                              src={productDetailImages[currentImageIndex]}
+                              alt={`${product.name} - Image ${currentImageIndex + 1}`}
+                              width={350}
+                              height={350}
+                              className="has-shadow"
+                              style={{ 
+                                objectFit: 'cover',
+                                width: '100%',
+                                height: '100%',
+                                borderRadius: '12px'
+                              }}
+                            />
+                          </figure>
+                          <p className="help mt-2">Click to enlarge</p>
+                          <p className="help is-size-7">{currentImageIndex + 1} / {productDetailImages.length}</p>
+                        </div>
+
+                        <button 
+                          className="button is-small is-white is-size-7"
+                          style={{ border: 'none', background: 'transparent' }}
+                          onClick={handleForwardImage}
+                          disabled={currentImageIndex === productDetailImages.length - 1}
+                        >
+                          <span className="icon">
+                            <i className="material-icons is-size-6">chevron_right</i>
+                          </span>
+                        </button>
+                      </div>
                     </div>
                   </div>
 
