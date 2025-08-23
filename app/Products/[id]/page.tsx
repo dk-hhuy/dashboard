@@ -57,24 +57,23 @@ const ProductDetail = () => {
       <div className="is-size-7" style={{ minHeight: '100vh', paddingTop: '5rem' }}>
         <NavBar />
         
-        <div style={{ padding: '0 1rem', maxWidth: '70%', margin: '0 auto' }}>
+        <div className="container" style={{ maxWidth: '70%' }}>
           <div className="card">
             <div className="card-content">
               <div className="is-flex is-justify-content-center">
-                <div className="is-flex is-align-items-stretch" style={{ maxWidth: '800px', width: '100%' }}>
+                <div className="is-flex is-align-items-stretch" style={{ maxWidth: '800px' }}>
                   {/* Product Image */}
-                  <div className="is-flex-shrink-0" style={{ marginRight: '3rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <div className="is-flex-shrink-0 mr-6 is-flex is-flex-direction-column is-justify-content-center">
                     <div className="has-text-centered">
-                      <figure className="image" style={{ cursor: 'pointer', width: '350px', height: '350px' }} onClick={() => setIsImageModalOpen(true)}>
+                      <figure className="image is-clickable" style={{ width: '350px', height: '350px' }} onClick={() => setIsImageModalOpen(true)}>
                         <Image 
                           src={product.mainimage || '/images/glass1.png'} 
                           alt={product.name}
                           width={350}
                           height={350}
+                          className="has-shadow"
                           style={{ 
                             objectFit: 'cover',
-                            borderRadius: '12px',
-                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
                             width: '100%',
                             height: '100%'
                           }}
@@ -85,12 +84,12 @@ const ProductDetail = () => {
                   </div>
 
                   {/* Product Info */}
-                  <div className="content" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                    <div style={{ textAlign: 'right', width: '100%' }}>
+                  <div className="content is-flex is-flex-direction-column is-justify-content-space-between is-align-items-flex-end" style={{ flex: 1 }}>
+                    <div className="has-text-right" style={{ width: '100%' }}>
                       <h1 className="title is-2 is-size-7 mb-3">{product.name}</h1>
                       <p className="subtitle is-6 has-text-grey is-size-7 mb-4">SKU: {product.productSku}</p>
                       
-                      <div className="tags mb-4" style={{ justifyContent: 'flex-end' }}>
+                      <div className="tags mb-4 is-justify-content-flex-end">
                         <span className="tag is-info is-size-7">{product.category}</span>
                         <span className={`tag is-size-7 ${product.productStatus === 'In Stock' ? 'is-success' : 'is-danger'}`}>
                           {product.productStatus}
@@ -99,7 +98,7 @@ const ProductDetail = () => {
 
                       <p className="has-text-grey-dark mb-4 is-size-7">{product.description}</p>
 
-                      <div style={{ textAlign: 'right' }}>
+                      <div className="has-text-right">
                         <div className="field mb-3">
                           <label className="label is-size-7 has-text-weight-semibold">Fulfillment Time</label>
                           <div className="control">
@@ -109,7 +108,7 @@ const ProductDetail = () => {
                         <div className="field mb-3">
                           <label className="label is-size-7 has-text-weight-semibold">Suppliers</label>
                           <div className="control">
-                            <div className="tags" style={{ justifyContent: 'flex-end' }}>
+                            <div className="tags is-justify-content-flex-end">
                               {product.supplier.map((supplier, index) => (
                                 <span key={index} className="tag is-info is-light is-size-7 mb-1">{supplier}</span>
                               ))}
@@ -137,7 +136,7 @@ const ProductDetail = () => {
                       </div>
                     </div>
 
-                    <div className="buttons" style={{ justifyContent: 'flex-end' }}>
+                    <div className="buttons is-justify-content-flex-end">
                       <button className="button is-primary is-size-7">
                         <span className="icon is-size-7">
                           <i className="material-icons is-size-7">edit</i>
@@ -162,7 +161,7 @@ const ProductDetail = () => {
               </div>
 
               {/* Product Details Tabs */}
-              <div className="mt-6 pt-6" style={{ borderTop: '1px solid #f0f0f0' }}>
+              <div className="mt-6 pt-6" style={{ borderTop: '1px solid #dbdbdb' }}>
                 <Tab.Group>
                   <Tab.List className="tabs is-centered is-size-7">
                     <Tab className={({ selected }) => `tab is-size-7 ${selected ? 'is-active' : ''}`}>
@@ -183,7 +182,7 @@ const ProductDetail = () => {
                       <div className="content is-size-7">
                         <h4 className="title is-4 is-size-7">Price History</h4>
                         <div className="table-container">
-                          <table className="table is-fullwidth is-striped is-hoverable is-size-7" style={{ maxWidth: '600px', margin: '0 auto' }}>
+                          <table className="table is-fullwidth is-striped is-hoverable is-size-7 mx-auto" style={{ maxWidth: '600px' }}>
                             <thead>
                               <tr>
                                 <th className="is-size-7 has-text-centered">Date</th>
