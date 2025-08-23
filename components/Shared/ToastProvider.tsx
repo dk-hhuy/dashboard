@@ -19,8 +19,8 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   const [toasts, setToasts] = useState<ToastProps[]>([])
   const [toastCounter, setToastCounter] = useState(0)
 
-  // Show toast function
-  const showToast = (message: string, type: ToastProps['type'], duration = 6000) => {
+  // Show toast function - memoized to prevent unnecessary re-renders
+  const showToast = React.useCallback((message: string, type: ToastProps['type'], duration = 6000) => {
     const id = `toast-${Date.now()}-${toastCounter}`
     setToastCounter(prev => prev + 1)
     
@@ -41,17 +41,17 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
       }
       return updatedToasts
     })
-  }
+  }, [toastCounter])
 
-  // Hide specific toast
-  const hideToast = (id: string) => {
+  // Hide specific toast - memoized
+  const hideToast = React.useCallback((id: string) => {
     setToasts(prev => prev.filter(toast => toast.id !== id))
-  }
+  }, [])
 
-  // Hide all toasts
-  const hideAllToasts = () => {
+  // Hide all toasts - memoized
+  const hideAllToasts = React.useCallback(() => {
     setToasts([])
-  }
+  }, [])
 
   return (
     <ToastContext.Provider value={{ showToast, hideToast: hideAllToasts }}>

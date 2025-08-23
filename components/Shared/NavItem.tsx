@@ -5,13 +5,13 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { navLink, dropdownOptions } from '@/constants';
 
-const NavItem = () => {
+const NavItem = React.memo(() => {
   const pathname = usePathname();
 
-  // Check if a navigation item has dropdown options
-  const hasDropdown = (label: string) => {
+  // Check if a navigation item has dropdown options - memoized
+  const hasDropdown = React.useCallback((label: string) => {
     return dropdownOptions[label] && dropdownOptions[label].length > 0;
-  };
+  }, []);
 
   return (
     <>
@@ -64,6 +64,8 @@ const NavItem = () => {
       })}
     </>
   );
-};
+});
+
+NavItem.displayName = 'NavItem';
 
 export default NavItem; 

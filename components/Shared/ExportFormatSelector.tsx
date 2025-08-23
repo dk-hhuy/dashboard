@@ -7,16 +7,16 @@ interface ExportFormatSelectorProps {
   disabled?: boolean;
 }
 
-const ExportFormatSelector: React.FC<ExportFormatSelectorProps> = ({
+const ExportFormatSelector: React.FC<ExportFormatSelectorProps> = React.memo(({
   selectedFormat,
   onFormatChange,
   disabled = false
 }) => {
-  const formats: { value: ExportFormat; label: string; icon: string }[] = [
+  const formats: { value: ExportFormat; label: string; icon: string }[] = React.useMemo(() => [
     { value: 'json', label: 'JSON', icon: 'code' },
     { value: 'csv', label: 'CSV', icon: 'table_chart' },
     { value: 'excel', label: 'Excel', icon: 'grid_on' }
-  ];
+  ], []);
 
   return (
     <div className="field">
@@ -40,6 +40,8 @@ const ExportFormatSelector: React.FC<ExportFormatSelectorProps> = ({
       </div>
     </div>
   );
-};
+});
+
+ExportFormatSelector.displayName = 'ExportFormatSelector';
 
 export default ExportFormatSelector; 

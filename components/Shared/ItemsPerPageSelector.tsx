@@ -31,10 +31,10 @@ const ItemsPerPageSelector: React.FC<ItemsPerPageSelectorProps> = ({
     updateUrlParam('limit', itemsPerPage.toString());
   }, [itemsPerPage, updateUrlParam]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleChange = React.useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
     const newItemsPerPage = parseInt(event.target.value)
     onItemsPerPageChange(newItemsPerPage)
-  }
+  }, [onItemsPerPageChange])
 
   return (
     <div className="field has-addons">

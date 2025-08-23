@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
@@ -8,7 +9,7 @@ interface ProtectedRouteProps {
   children: React.ReactNode
 }
 
-const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+const ProtectedRoute = React.memo(({ children }: ProtectedRouteProps) => {
   const { isAuthenticated } = useAuth()
   const router = useRouter()
 
@@ -46,6 +47,8 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   }
 
   return <>{children}</>
-}
+});
+
+ProtectedRoute.displayName = 'ProtectedRoute';
 
 export default ProtectedRoute 

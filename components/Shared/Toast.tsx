@@ -29,7 +29,7 @@ const Toast: React.FC<ToastProps> = ({
 }) => {
   const [isVisible, setIsVisible] = useState(true)
 
-  // Auto hide after duration
+  // Auto hide after duration - memoized effect
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(false)
@@ -41,65 +41,28 @@ const Toast: React.FC<ToastProps> = ({
     return () => clearTimeout(timer)
   }, [duration, onClose])
 
-  // Manual close
-  const handleClose = () => {
+  // Manual close - memoized handler
+  const handleClose = React.useCallback(() => {
     setIsVisible(false)
     setTimeout(() => {
       onClose?.()
     }, 300)
-  }
+  }, [onClose])
 
-  // Get icon based on type
-  const getIcon = () => {
-    switch (type) {
-      case 'success':
-        return '✓'
-      case 'error':
-        return '✕'
-      case 'warning':
-        return '⚠'
-      case 'info':
-        return 'ℹ'
-      default:
-        return 'ℹ'
+  // Toast styling configuration - memoized to prevent recalculation
+  const toastConfig = React.useMemo(() => {
+    const configs = {
+      success: { icon: '✓', bg: 'has-background-success', text: 'has-text-white' },
+      error: { icon: '✕', bg: 'has-background-danger', text: 'has-text-white' },
+      warning: { icon: '⚠', bg: 'has-background-warning', text: 'has-text-dark' },
+      info: { icon: 'ℹ', bg: 'has-background-info', text: 'has-text-white' }
     }
-  }
-
-  // Get background color based on type
-  const getBackgroundColor = () => {
-    switch (type) {
-      case 'success':
-        return 'has-background-success'
-      case 'error':
-        return 'has-background-danger'
-      case 'warning':
-        return 'has-background-warning'
-      case 'info':
-        return 'has-background-info'
-      default:
-        return 'has-background-info'
-    }
-  }
-
-  // Get text color based on type
-  const getTextColor = () => {
-    switch (type) {
-      case 'success':
-        return 'has-text-white'
-      case 'error':
-        return 'has-text-white'
-      case 'warning':
-        return 'has-text-dark'
-      case 'info':
-        return 'has-text-white'
-      default:
-        return 'has-text-white'
-    }
-  }
+    return configs[type] || configs.info
+  }, [type])
 
   return (
     <div 
-      className={`notification ${getBackgroundColor()} ${getTextColor()} is-size-7`}
+      className={`notification ${toastConfig.bg} ${toastConfig.text} is-size-7`}
       style={{
         minWidth: '300px',
         maxWidth: '500px',
@@ -144,7 +107,7 @@ const Toast: React.FC<ToastProps> = ({
             lineHeight: '1'
           }}
         >
-          {getIcon()}
+          {toastConfig.icon}
         </span>
                     <p 
               className="is-size-7 mb-0" 

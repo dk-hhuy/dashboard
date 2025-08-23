@@ -34,16 +34,16 @@ const TableResult = ({ currentPage, setCurrentPage, itemsPerPage, startIndex, en
     updateUrlParam('page', currentPage.toString());
   }, [currentPage, updateUrlParam]);
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = React.useCallback((page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
     } else if ([10, 20, 30, 50, 100].includes(page) && totalPages >= page) {
       setCurrentPage(page);
     }
-  };
+  }, [totalPages, setCurrentPage]);
 
-  const handlePreviousPage = () => handlePageChange(currentPage - 1);
-  const handleNextPage = () => handlePageChange(currentPage + 1);
+  const handlePreviousPage = React.useCallback(() => handlePageChange(currentPage - 1), [handlePageChange, currentPage]);
+  const handleNextPage = React.useCallback(() => handlePageChange(currentPage + 1), [handlePageChange, currentPage]);
 
   return (
     <div className="level is-mobile p-4 has-shadow is-size-7">

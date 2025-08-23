@@ -12,9 +12,9 @@ const NavBar = () => {
   const { user } = useAuth();
   const [isNavDropdownOpen, setIsNavDropdownOpen] = useState(false);
 
-  const toggleNavDropdown = () => {
-    setIsNavDropdownOpen(!isNavDropdownOpen);
-  };
+  const toggleNavDropdown = React.useCallback(() => {
+    setIsNavDropdownOpen(prev => !prev);
+  }, []);
 
   return (
     <nav className="navbar has-shadow is-fixed-top is-size-7">
