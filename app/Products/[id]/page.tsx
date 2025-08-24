@@ -10,6 +10,7 @@ import ProtectedRoute from '@/components/Shared/ProtectedRoute'
 import { products } from '@/constants/index_product'
 import { Product } from '@/types/product'
 import { useToast } from '@/components/Shared/ToastProvider'
+import { DetailAddImageModal } from '@/components/Products'
 
 
 const ProductDetail = () => {
@@ -20,6 +21,7 @@ const ProductDetail = () => {
   const [product, setProduct] = useState<Product | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isImageModalOpen, setIsImageModalOpen] = useState(false)
+  const [isAddImageModalOpen, setIsAddImageModalOpen] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   
   // Use product images or fallback to main image
@@ -57,7 +59,43 @@ const ProductDetail = () => {
       showToast(`Product ${productSku} not found!`, 'error')
       router.push('/Products')
     }
-  }, [router])
+  }, [router, showToast])
+
+  // Handle add image modal
+  const handleOpenAddImageModal = () => {
+    setIsAddImageModalOpen(true)
+  }
+
+  const handleCloseAddImageModal = () => {
+    setIsAddImageModalOpen(false)
+  }
+
+  const handleUploadImages = (updatedProduct: Product) => {
+    // Update local state
+    setProduct(updatedProduct)
+    
+    // Update localStorage
+    try {
+      const storedProducts = localStorage.getItem('productsData')
+      if (storedProducts) {
+        const allProducts = JSON.parse(storedProducts)
+        const updatedProducts = allProducts.map((p: Product) => 
+          p.productSku === updatedProduct.productSku ? updatedProduct : p
+        )
+        localStorage.setItem('productsData', JSON.stringify(updatedProducts))
+      }
+    } catch (error) {
+      console.warn('Failed to update localStorage:', error)
+    }
+    
+    // Reset image index if needed
+    if (updatedProduct.productImages && updatedProduct.productImages.length > 0) {
+      setCurrentImageIndex(0)
+    }
+    
+    showToast('Images added successfully!', 'success')
+    setIsAddImageModalOpen(false)
+  }
 
   useEffect(() => {
     const productSku = params.id as string
@@ -243,7 +281,10 @@ const ProductDetail = () => {
                     </div>
 
                     <div className="buttons is-justify-content-flex-end">
-                      <button className="button is-primary is-size-7">
+                      <button 
+                        className="button is-primary is-size-7"
+                        onClick={handleOpenAddImageModal}
+                      >
                         <span className="icon is-size-7">
                           <i className="material-icons is-size-7">add_photo_alternate</i>
                         </span>
@@ -445,6 +486,16 @@ const ProductDetail = () => {
             </section>
           </Dialog.Panel>
         </Dialog>
+
+        {/* DetailAddImageModal */}
+        {product && (
+          <DetailAddImageModal
+            isVisible={isAddImageModalOpen}
+            product={product}
+            onClose={handleCloseAddImageModal}
+            onUpload={handleUploadImages}
+          />
+        )}
       </div>
     </ProtectedRoute>
   )

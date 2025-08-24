@@ -6,12 +6,14 @@ export { default as OutInStock } from './OutInStock'
 export { default as SearchProduct } from './SearchProduct'
 export { default as ConfigSupplier } from './ConfigSupplier'
 export { default as UpdatePrice } from './UpdatePrice'
+export { default as DetailAddImage } from './DetailAddImage'
 
 // Modal exports
 export { default as ProductFormModal } from './Modals/ProductFormModal'
 export { default as ImportProductModal } from './Modals/ImportProductModal'
 export { default as ConfigSupplierModal } from './Modals/ConfigSupplierModal'
 export { default as UpdatePriceModal } from './Modals/UpdatePriceModal'
+export { default as DetailAddImageModal } from './Modals/DetailAddImageModal'
 
 // Utility exports
 export { default as ImportProduct } from './ImportProduct' 

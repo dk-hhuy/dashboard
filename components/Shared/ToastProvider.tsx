@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useRef, ReactNode } from 'react'
 import Toast, { ToastProps, ToastContextType } from './Toast'
 
 // ============================================================================
@@ -17,12 +17,12 @@ interface ToastProviderProps {
 
 export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   const [toasts, setToasts] = useState<ToastProps[]>([])
-  const [toastCounter, setToastCounter] = useState(0)
+  const toastCounterRef = useRef(0)
 
   // Show toast function - memoized to prevent unnecessary re-renders
   const showToast = React.useCallback((message: string, type: ToastProps['type'], duration = 6000) => {
-    const id = `toast-${Date.now()}-${toastCounter}`
-    setToastCounter(prev => prev + 1)
+    toastCounterRef.current += 1
+    const id = `toast-${Date.now()}-${toastCounterRef.current}`
     
     const newToast: ToastProps = {
       id,
@@ -41,7 +41,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
       }
       return updatedToasts
     })
-  }, [toastCounter])
+  }, [])
 
   // Hide specific toast - memoized
   const hideToast = React.useCallback((id: string) => {
@@ -70,9 +70,9 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
         maxHeight: 'calc(100vh - 40px)',
         overflow: 'hidden'
       }}>
-        {toasts.map((toast, index) => (
+        {toasts.map((toast) => (
           <div 
-            key={toast.id || index}
+            key={toast.id}
             style={{ 
               pointerEvents: 'auto',
               marginBottom: '10px'
