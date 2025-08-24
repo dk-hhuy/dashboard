@@ -230,15 +230,12 @@ const DetailAddImage = ({ product, onUpload, onClose }: DetailAddImageProps) => 
   const renderDropzone = () => (
     <div 
       {...getRootProps()} 
-      className={`dropzone ${isDragActive ? 'is-active' : ''} ${errors.file ? 'has-error' : ''}`}
+      className="has-text-centered p-5 mt-4"
       style={{
-        border: `2px dashed ${errors.file ? '#ff3860' : '#ccc'}`,
+        border: `2px dashed ${errors.file ? '#ff3860' : isDragActive ? '#3273dc' : '#ccc'}`,
         borderRadius: '4px',
-        padding: '40px 20px',
-        textAlign: 'center',
         cursor: 'pointer',
-        backgroundColor: isDragActive ? '#f0f8ff' : '#fafafa',
-        marginTop: '20px',
+        backgroundColor: errors.file ? '#feecf0' : isDragActive ? '#f0f8ff' : '#fafafa',
         transition: 'all 0.3s ease'
       }}
     >
@@ -246,7 +243,7 @@ const DetailAddImage = ({ product, onUpload, onClose }: DetailAddImageProps) => 
       
       {/* Upload Icon */}
       <div className="icon is-large mb-3">
-        <i className="material-icons is-size-7" style={{ fontSize: '48px', color: '#666' }}>
+        <i className="material-icons is-size-1 has-text-grey">
           {isDragActive ? 'cloud_upload' : 'add_photo_alternate'}
         </i>
       </div>
@@ -348,14 +345,9 @@ const DetailAddImage = ({ product, onUpload, onClose }: DetailAddImageProps) => 
         <div className="columns is-multiline is-mobile">
           {images.map((image, index) => (
             <div key={index} className="column is-2-desktop is-3-tablet is-4-mobile">
-              <div 
-                className="box p-2 position-relative"
-                style={{ 
-                  position: 'relative',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
+                                      <div 
+              className="box p-2 position-relative is-clickable"
+                              onMouseEnter={(e) => {
                   const overlay = e.currentTarget.querySelector('.image-overlay') as HTMLElement
                   if (overlay) {
                     overlay.style.opacity = '1'
@@ -367,33 +359,29 @@ const DetailAddImage = ({ product, onUpload, onClose }: DetailAddImageProps) => 
                     overlay.style.opacity = '0'
                   }
                 }}
-              >
+            >
                 {/* Image */}
                 <img 
                   src={image} 
                   alt={`Product image ${index + 1}`}
+                  className="is-fullwidth"
                   style={{ 
-                    width: '100%', 
                     height: '80px', 
-                    objectFit: 'cover',
-                    borderRadius: '4px'
+                    objectFit: 'cover'
                   }}
                 />
 
                 {/* Overlay Modal with Delete Button */}
                 <div
-                  className="image-overlay"
+                  className="image-overlay is-absolute is-flex is-align-items-center is-justify-content-center"
                   style={{
                     position: 'absolute',
                     top: '8px',
                     left: '8px',
                     right: '8px',
-                    bottom: '8px', // Cover the entire box including text
+                    bottom: '8px',
                     backgroundColor: 'rgba(0, 0, 0, 0.7)',
                     borderRadius: '4px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
                     opacity: 0,
                     transition: 'opacity 0.3s ease',
                     cursor: 'pointer'
@@ -404,11 +392,8 @@ const DetailAddImage = ({ product, onUpload, onClose }: DetailAddImageProps) => 
                   }}
                 >
                   <i 
-                    className="material-icons is-size-7"
+                    className="material-icons is-size-5 has-text-danger"
                     style={{
-                      fontSize: '24px',
-                      color: '#ff3860',
-                      cursor: 'pointer',
                       textShadow: '0 2px 4px rgba(0,0,0,0.5)'
                     }}
                     title="Delete image"

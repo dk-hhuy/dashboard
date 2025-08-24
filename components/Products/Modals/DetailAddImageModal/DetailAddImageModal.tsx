@@ -26,7 +26,7 @@ const DetailAddImageModal = React.memo(({
     <div className="modal is-active">
       <div className="modal-background" onClick={handleModalClose}></div>
       <div className="modal-content" style={{ maxWidth: '900px', margin: '0 auto' }}>
-        <div className="box" style={{ maxHeight: '90vh', overflowY: 'auto', padding: '20px' }}>
+        <div className="box p-5" style={{ maxHeight: '90vh', overflowY: 'auto' }}>
           <DetailAddImage
             key={product.productSku} // Force re-render when product changes
             product={product}
