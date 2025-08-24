@@ -74,7 +74,7 @@ const ProductDetail = () => {
       // Only auto-fix if productImages field is completely missing (not just empty)
       const originalProduct = products.find(p => p.productSku === productSku)
       if (originalProduct && !foundProduct.hasOwnProperty('productImages')) {
-        console.log(`🔄 Product ${productSku} missing productImages field, using data from constants`)
+        console.log(` Product ${productSku} missing productImages field, using data from constants`)
         const updatedProduct = {
           ...foundProduct,
           productImages: originalProduct.productImages || []
@@ -87,7 +87,7 @@ const ProductDetail = () => {
             p.productSku === productSku ? updatedProduct : p
           )
           localStorage.setItem('productsData', JSON.stringify(updatedProducts))
-          console.log(`✅ Updated localStorage for product ${productSku}`)
+          console.log(` Updated localStorage for product ${productSku}`)
         } catch (error) {
           console.warn('Failed to update localStorage:', error)
         }
@@ -336,7 +336,7 @@ const ProductDetail = () => {
                         <span className="icon is-size-7">
                           <i className="material-icons is-size-7">history</i>
                         </span>
-                        <span>Update Price</span>
+                        <span>Upload Template</span>
                       </button>
                       <button className="button is-warning is-size-7">
                         <span className="icon is-size-7">

@@ -25,6 +25,17 @@ const VALIDATION_CONFIG = {
     'image/gif'
   ] as const,
 
+  // Template file validation
+  MAX_TEMPLATE_FILE_SIZE: 50 * 1024 * 1024, // 50MB
+  SUPPORTED_TEMPLATE_FILE_TYPES: [
+    'image/vnd.adobe.photoshop', // .psd
+    'application/postscript', // .ai
+    'image/png', // .png
+    'image/jpeg', // .jpg
+    'image/jpg', // .jpg
+    'application/pdf' // .pdf
+  ] as const,
+
 
   // Product validation
   MIN_PRODUCTS: 1,
@@ -117,6 +128,32 @@ export const ImageFileSchema = z.object({
     `Image size must be less than ${VALIDATION_CONFIG.MAX_IMAGE_SIZE / (1024 * 1024)}MB`)
   .refine((file) => (VALIDATION_CONFIG.SUPPORTED_IMAGE_TYPES as readonly string[]).includes(file.type),
     'Image must be a valid type (png, jpg, webp, gif)'),
+})
+
+/**
+ * Schema cho template file upload validation
+ * Hỗ trợ PSD, AI, PNG, JPG, PDF với size ≤ 50MB
+ */
+export const TemplateFileSchema = z.object({
+  file: z.instanceof(File, { message: 'Please select a template file' })
+    .refine((file) => file.size > 0, 'Template file cannot be empty')
+    .refine((file) => file.size <= VALIDATION_CONFIG.MAX_TEMPLATE_FILE_SIZE, 
+      `Template file size must be less than ${VALIDATION_CONFIG.MAX_TEMPLATE_FILE_SIZE / (1024 * 1024)}MB`)
+    .refine((file) => {
+      // Check file type by MIME type
+      const isValidMimeType = (VALIDATION_CONFIG.SUPPORTED_TEMPLATE_FILE_TYPES as readonly string[]).includes(file.type)
+      
+      // Also check file extension as fallback for some file types
+      const fileName = file.name.toLowerCase()
+      const isValidExtension = fileName.endsWith('.psd') || 
+                              fileName.endsWith('.ai') || 
+                              fileName.endsWith('.png') || 
+                              fileName.endsWith('.jpg') || 
+                              fileName.endsWith('.jpeg') || 
+                              fileName.endsWith('.pdf')
+      
+      return isValidMimeType || isValidExtension
+    }, 'Template file must be PSD, AI, PNG, JPG, or PDF format'),
 })
 
 /**
@@ -222,6 +259,31 @@ export const validateImageFile = (file: File) => {
     return {
       success: false,
       errors: { file: ['Validation error occurred'] } 
+    }
+  }
+}
+
+/**
+ * Validate template file upload
+ * @param file - Template file to validate (PSD, AI, PNG, JPG, PDF)
+ * @returns Validation result with success/error status
+ */
+export const validateTemplateFile = (file: File) => {
+  try {
+    TemplateFileSchema.parse({ file })
+    return { success: true, errors: {} }
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return {
+        success: false,
+        errors: {
+          file: (error as z.ZodError<any>).issues.map((e: any) => e.message)
+        }
+      }
+    }
+    return {
+      success: false,
+      errors: { file: ['Template file validation error occurred'] }
     }
   }
 }
