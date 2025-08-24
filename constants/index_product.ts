@@ -154,7 +154,16 @@ export const products = [
       {oldCost: "$9.99", effectiveDate: "2025-01-08"},
     ],
     supplier: ["ColorTech", "AluminumCraft"],
-    productStatus: "Out Stock"
+    productStatus: "Out Stock",
+    productImages: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ]
   },
   {
     mainimage: "/images/glass1.png",
@@ -208,7 +217,16 @@ export const products = [
       {oldCost: "$15.99", effectiveDate: "2025-01-08"},
     ],
     supplier: ["SparkleCraft", "Luxury Items"],
-    productStatus: "Out Stock"
+    productStatus: "Out Stock",
+    productImages: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ]
   },
   {
     mainimage: "/images/glass1.png",
@@ -326,6 +344,15 @@ export const products = [
     ],
     supplier: ["TravelGear Pro", "Compact Items"],
     productStatus: "In Stock",
+    productImages: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ],
     productVideos: [
       "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       "https://www.youtube.com/watch?v=9bZkp7q19f0", 
@@ -352,6 +379,15 @@ export const products = [
     ],
     supplier: ["ColorTech", "Small Items"],
     productStatus: "Out Stock",
+    productImages: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ],
     productVideos: [
       "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       "https://www.youtube.com/watch?v=9bZkp7q19f0", 
@@ -614,7 +650,16 @@ export const products = [
       {oldCost: "$4.99", effectiveDate: "2025-01-08"},
     ],
     supplier: ["TravelGear Pro", "Compact Items"],
-    productStatus: "In Stock", 
+    productStatus: "In Stock",
+    productImages: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ],
     action: ["Edit", "Delete"]
   },
   {

@@ -345,20 +345,25 @@ const DetailAddImage = ({ product, onUpload, onClose }: DetailAddImageProps) => 
         <div className="columns is-multiline is-mobile">
           {images.map((image, index) => (
             <div key={index} className="column is-2-desktop is-3-tablet is-4-mobile">
-                                      <div 
+              <div 
               className="box p-2 position-relative is-clickable"
-                              onMouseEnter={(e) => {
-                  const overlay = e.currentTarget.querySelector('.image-overlay') as HTMLElement
-                  if (overlay) {
-                    overlay.style.opacity = '1'
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  const overlay = e.currentTarget.querySelector('.image-overlay') as HTMLElement
-                  if (overlay) {
-                    overlay.style.opacity = '0'
-                  }
-                }}
+              style={{ 
+                position: 'relative',
+                cursor: 'pointer',
+                zIndex: 1
+              }}
+              onMouseEnter={(e) => {
+                const overlay = e.currentTarget.querySelector('.image-overlay') as HTMLElement
+                if (overlay) {
+                  overlay.style.opacity = '1'
+                }
+              }}
+              onMouseLeave={(e) => {
+                const overlay = e.currentTarget.querySelector('.image-overlay') as HTMLElement
+                if (overlay) {
+                  overlay.style.opacity = '0'
+                }
+              }}
             >
                 {/* Image */}
                 <img 
@@ -384,7 +389,9 @@ const DetailAddImage = ({ product, onUpload, onClose }: DetailAddImageProps) => 
                     borderRadius: '4px',
                     opacity: 0,
                     transition: 'opacity 0.3s ease',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    zIndex: 10,
+                    pointerEvents: 'auto'
                   }}
                   onClick={(e) => {
                     e.stopPropagation()

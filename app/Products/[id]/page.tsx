@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Dialog, Tab } from '@headlessui/react'
@@ -25,17 +25,35 @@ const ProductDetail = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   
   // Use product images or fallback to main image
-  const productImages = product?.productImages || [product?.mainimage || '/images/glass1.png']
+  const productImages = useMemo(() => {
+    if (!product) return ['/images/glass1.png']
+    
+    const images = product.productImages || [product.mainimage || '/images/glass1.png']
+    // Filter out empty strings and undefined values
+    const filteredImages = images.filter(img => img && img.trim() !== '')
+    
+    // Ensure we always have at least one image
+    return filteredImages.length > 0 ? filteredImages : ['/images/glass1.png']
+  }, [product])
+  
+  // Reset currentImageIndex when productImages changes
+  useEffect(() => {
+    setCurrentImageIndex(0)
+  }, [productImages])
+  
+  // Ensure currentImageIndex is within bounds
+  const safeImageIndex = Math.max(0, Math.min(currentImageIndex, productImages.length - 1))
+  
   const [direction, setDirection] = useState(0)
 
   const handleBackImage = () => {
     setDirection(-1)
-    setCurrentImageIndex(currentImageIndex - 1)
+    setCurrentImageIndex(prev => Math.max(0, prev - 1))
   }
 
   const handleForwardImage = () => {
     setDirection(1)
-    setCurrentImageIndex(currentImageIndex + 1)
+    setCurrentImageIndex(prev => Math.min(productImages.length - 1, prev + 1))
   }
 
   const loadProduct = useCallback((productSku: string) => {
@@ -53,7 +71,29 @@ const ProductDetail = () => {
     const foundProduct = allProducts.find(p => p.productSku === productSku)
     
     if (foundProduct) {
-      setProduct(foundProduct)
+      // Only auto-fix if productImages field is completely missing (not just empty)
+      const originalProduct = products.find(p => p.productSku === productSku)
+      if (originalProduct && !foundProduct.hasOwnProperty('productImages')) {
+        console.log(`🔄 Product ${productSku} missing productImages field, using data from constants`)
+        const updatedProduct = {
+          ...foundProduct,
+          productImages: originalProduct.productImages || []
+        }
+        setProduct(updatedProduct)
+        
+        // Update localStorage with the corrected data
+        try {
+          const updatedProducts = allProducts.map((p: Product) => 
+            p.productSku === productSku ? updatedProduct : p
+          )
+          localStorage.setItem('productsData', JSON.stringify(updatedProducts))
+          console.log(`✅ Updated localStorage for product ${productSku}`)
+        } catch (error) {
+          console.warn('Failed to update localStorage:', error)
+        }
+      } else {
+        setProduct(foundProduct)
+      }
       setIsLoading(false)
     } else {
       showToast(`Product ${productSku} not found!`, 'error')
@@ -90,6 +130,8 @@ const ProductDetail = () => {
     
     // Reset image index if needed
     if (updatedProduct.productImages && updatedProduct.productImages.length > 0) {
+      setCurrentImageIndex(0)
+    } else {
       setCurrentImageIndex(0)
     }
     
@@ -157,13 +199,13 @@ const ProductDetail = () => {
               <div className="is-flex is-justify-content-center">
                 <div className="is-flex is-align-items-stretch" style={{ maxWidth: '800px' }}>
                   {/* Product Image */}
-                  <div className="is-flex-shrink-0" style={{ marginRight: '6rem' }}>
+                  <div className="is-flex-shrink-0" style={{ marginRight: '4rem' }}>
                     <div className="is-flex is-flex-direction-column is-justify-content-center">
                       <div className="is-flex is-flex-direction-row is-justify-content-center is-align-items-center">
                         <motion.button 
                           className="button is-small is-white is-size-7" 
                           style={{ border: 'none', background: 'transparent' }} 
-                          disabled={currentImageIndex === 0} 
+                          disabled={safeImageIndex === 0} 
                           onClick={handleBackImage}
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.95 }}
@@ -191,8 +233,8 @@ const ProductDetail = () => {
                                 style={{ width: '100%', height: '100%' }}
                               >
                                 <Image 
-                                  src={productImages[currentImageIndex]}
-                                  alt={`${product.name} - Image ${currentImageIndex + 1}`}
+                                  src={productImages[safeImageIndex] || '/images/glass1.png'}
+                                  alt={`${product?.name || 'Product'} - Image ${safeImageIndex + 1}`}
                                   width={350}
                                   height={350}
                                   className="has-shadow"
@@ -207,14 +249,14 @@ const ProductDetail = () => {
                             </AnimatePresence>
                           </figure>
                           <p className="help mt-2">Click to enlarge</p>
-                          <p className="help is-size-7">{currentImageIndex + 1} / {productImages.length}</p>
+                          <p className="help is-size-7">{safeImageIndex + 1} / {productImages.length}</p>
                         </div>
 
                         <motion.button 
                           className="button is-small is-white is-size-7"
                           style={{ border: 'none', background: 'transparent' }}
                           onClick={handleForwardImage}
-                          disabled={currentImageIndex === productImages.length - 1}
+                          disabled={safeImageIndex === productImages.length - 1}
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.95 }}
                           transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -461,11 +503,12 @@ const ProductDetail = () => {
         </div>
 
         {/* Image Modal */}
-        <Dialog open={isImageModalOpen} onClose={() => setIsImageModalOpen(false)} className="modal is-active">
+        {product && (
+          <Dialog open={isImageModalOpen} onClose={() => setIsImageModalOpen(false)} className="modal is-active">
           <div className="modal-background" onClick={() => setIsImageModalOpen(false)}></div>
           <Dialog.Panel className="modal-card is-size-7">
             <header className="modal-card-head">
-              <Dialog.Title className="modal-card-title is-size-7">{product.name}</Dialog.Title>
+              <Dialog.Title className="modal-card-title is-size-7">{product?.name || 'Product Image'}</Dialog.Title>
               <button 
                 className="delete is-size-7" 
                 onClick={() => setIsImageModalOpen(false)}
@@ -473,8 +516,8 @@ const ProductDetail = () => {
             </header>
             <section className="modal-card-body has-text-centered is-size-7">
                        <Image
-           src={productImages[currentImageIndex]}
-           alt={`${product.name} - Image ${currentImageIndex + 1}`}
+           src={productImages[safeImageIndex] || '/images/glass1.png'}
+           alt={`${product?.name || 'Product'} - Image ${safeImageIndex + 1}`}
            width={400}
            height={400}
            style={{
@@ -482,10 +525,11 @@ const ProductDetail = () => {
              borderRadius: '8px'
            }}
          />
-         <p className="help mt-3 is-size-7">{currentImageIndex + 1} / {productImages.length}</p>
+         <p className="help mt-3 is-size-7">{safeImageIndex + 1} / {productImages.length}</p>
             </section>
           </Dialog.Panel>
         </Dialog>
+        )}
 
         {/* DetailAddImageModal */}
         {product && (
