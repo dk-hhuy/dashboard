@@ -9,6 +9,7 @@ import NavBar from '@/components/Shared/NavBar'
 import ProtectedRoute from '@/components/Shared/ProtectedRoute'
 import TemplateSection from '@/components/Products/TemplateSection'
 import VideoSection from '@/components/Products/VideoSection'
+import SupplierSection from '@/components/Products/SupplierSection'
 import { products } from '@/constants/index_product'
 import { Product } from '@/types/product'
 import { useToast } from '@/components/Shared/ToastProvider'
@@ -162,188 +163,58 @@ const ProductDetail = () => {
 
 
 
-  // Convert file to image function
-  const convertFileToImage = async (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      // Create a canvas to convert file to image
-      const canvas = document.createElement('canvas')
-      const ctx = canvas.getContext('2d')
-      
-      if (!ctx) {
-        reject(new Error('Canvas context not available'))
-        return
-      }
-      
-      // Set canvas size
-      canvas.width = 800
-      canvas.height = 600
-      
-      // Create a placeholder image for non-image files
-      ctx.fillStyle = '#f0f0f0'
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-      
-      // Add text to indicate file type
-      ctx.fillStyle = '#333'
-      ctx.font = '24px Arial'
-      ctx.textAlign = 'center'
-      ctx.fillText(`File: ${file.name}`, canvas.width / 2, canvas.height / 2 - 20)
-      
-      ctx.font = '16px Arial'
-      ctx.fillText(`Type: ${file.type}`, canvas.width / 2, canvas.height / 2 + 10)
-      ctx.fillText(`Size: ${(file.size / 1024).toFixed(1)} KB`, canvas.width / 2, canvas.height / 2 + 30)
-      
-      // Add a preview icon based on file type
-      ctx.font = '48px Arial'
-      if (file.type === 'application/pdf') {
-        ctx.fillText('📄', canvas.width / 2, canvas.height / 2 + 80)
-      } else if (file.type === 'image/vnd.adobe.photoshop') {
-        ctx.fillText('🎨', canvas.width / 2, canvas.height / 2 + 80)
-      } else if (file.type === 'application/postscript') {
-        ctx.fillText('📐', canvas.width / 2, canvas.height / 2 + 80)
-      } else {
-        ctx.fillText('📁', canvas.width / 2, canvas.height / 2 + 80)
-      }
-      
-      // Convert canvas to base64
-      const base64 = canvas.toDataURL('image/png')
-      resolve(base64)
-    })
-  }
 
-  // Handle upload template
-  const handleUploadTemplate = () => {
-    // Tạo input file element
-    const input = document.createElement('input')
-    input.type = 'file'
-    input.accept = '.psd,.ai,.png,.jpg,.jpeg,.pdf'
-    input.multiple = true
+
+    // Handle upload template
+  const handleUploadTemplate = (updatedProduct: Product) => {
+    // Update local state
+    setProduct(updatedProduct)
     
-    input.onchange = (e) => {
-      const files = (e.target as HTMLInputElement).files
-      if (files && files.length > 0) {
-        // Validate files
-        const validFiles = Array.from(files).filter(file => {
-          const isValidType = [
-            'image/vnd.adobe.photoshop', // PSD
-            'application/postscript',    // AI
-            'image/png',                 // PNG
-            'image/jpeg',                // JPEG
-            'image/jpg',                 // JPG
-            'application/pdf'            // PDF
-          ].includes(file.type)
-          
-          const isValidSize = file.size <= 5 * 1024 * 1024 // 5MB per file
-          
-          return isValidType && isValidSize
-        })
+    // Update localStorage
+    try {
+      const storedProducts = localStorage.getItem('productsData')
+      if (storedProducts) {
+        const allProducts = JSON.parse(storedProducts)
+        const updatedProducts = allProducts.map((p: Product) => 
+          p.productSku === updatedProduct.productSku ? updatedProduct : p
+        )
         
-        if (validFiles.length === 0) {
-          showToast('No valid template files found. Please select PSD, AI, PNG, JPG, or PDF files under 5MB each.', 'error')
-          return
-        }
-        
-        // Check total file size
-        const totalSize = validFiles.reduce((sum, file) => sum + file.size, 0)
-        const maxTotalSize = 5 * 1024 * 1024 // 5MB total
-        if (totalSize > maxTotalSize) {
-          showToast('Total file size exceeds 5MB limit. Please select smaller files.', 'error')
-          return
-        }
-        
-        // Convert files to base64 and update templates
-        const processFiles = async () => {
-          const newTemplates: string[] = []
-          
-          for (const file of validFiles) {
+        // Try to save to localStorage
+        try {
+          localStorage.setItem('productsData', JSON.stringify(updatedProducts))
+        } catch (quotaError) {
+          if (quotaError instanceof Error && quotaError.name === 'QuotaExceededError') {
+            console.warn('localStorage quota exceeded, trying to clean up...')
+            
+            // Try to remove old templates to free up space
+            const cleanedProduct = {
+              ...updatedProduct,
+              productTemplate: (updatedProduct.productTemplate || []).slice(-5) // Keep only last 5 templates
+            }
+            
+            const cleanedProducts = allProducts.map((p: Product) => 
+              p.productSku === updatedProduct.productSku ? cleanedProduct : p
+            )
+            
             try {
-              let convertedBase64: string
-              
-              // Convert different file types to displayable format
-              if (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/jpg') {
-                // Direct conversion for image files
-                convertedBase64 = await new Promise<string>((resolve) => {
-                  const reader = new FileReader()
-                  reader.onload = () => resolve(reader.result as string)
-                  reader.readAsDataURL(file)
-                })
-              } else {
-                // Convert PSD, AI, PDF to PNG using canvas
-                convertedBase64 = await convertFileToImage(file)
-              }
-              
-              newTemplates.push(convertedBase64)
-            } catch (error) {
-              console.error('Error processing file:', file.name, error)
-              showToast(`Failed to process ${file.name}. Skipping...`, 'warning')
+              localStorage.setItem('productsData', JSON.stringify(cleanedProducts))
+              showToast('Storage limit reached. Only keeping last 5 templates.', 'warning')
+            } catch (finalError) {
+              console.error('Failed to save even after cleanup:', finalError)
+              showToast('Storage limit exceeded. Please clear some templates first.', 'error')
             }
-          }
-          
-          // Update product with new templates
-          if (product) {
-            const updatedProduct = {
-              ...product,
-              productTemplate: [...(product.productTemplate || []), ...newTemplates]
-            }
-            
-            // Update local state
-            setProduct(updatedProduct)
-            
-            // Update localStorage
-            try {
-              const storedProducts = localStorage.getItem('productsData')
-              if (storedProducts) {
-                const allProducts = JSON.parse(storedProducts)
-                const updatedProducts = allProducts.map((p: Product) => 
-                  p.productSku === updatedProduct.productSku ? updatedProduct : p
-                )
-                
-                // Try to save to localStorage
-                try {
-                  localStorage.setItem('productsData', JSON.stringify(updatedProducts))
-                } catch (quotaError) {
-                  if (quotaError instanceof Error && quotaError.name === 'QuotaExceededError') {
-                    console.warn('localStorage quota exceeded, trying to clean up...')
-                    
-                    // Try to remove old templates to free up space
-                    const cleanedProduct = {
-                      ...updatedProduct,
-                      productTemplate: updatedProduct.productTemplate.slice(-5) // Keep only last 5 templates
-                    }
-                    
-                    const cleanedProducts = allProducts.map((p: Product) => 
-                      p.productSku === updatedProduct.productSku ? cleanedProduct : p
-                    )
-                    
-                    try {
-                      localStorage.setItem('productsData', JSON.stringify(cleanedProducts))
-                      showToast('Storage limit reached. Only keeping last 5 templates.', 'warning')
-                    } catch (finalError) {
-                      console.error('Failed to save even after cleanup:', finalError)
-                      showToast('Storage limit exceeded. Please clear some templates first.', 'error')
-                    }
-                  } else {
-                    throw quotaError
-                  }
-                }
-              }
-            } catch (error) {
-              console.warn('Failed to update localStorage:', error)
-              showToast('Failed to save templates. Please try again.', 'error')
-            }
-            
-            showToast(`${validFiles.length} template(s) uploaded successfully!`, 'success')
-            
-            // Force re-render TemplateSection component
-            setTemplateUpdateKey(prev => prev + 1)
-
+          } else {
+            throw quotaError
           }
         }
-        
-        processFiles()
       }
+    } catch (error) {
+      console.warn('Failed to update localStorage:', error)
+      showToast('Failed to save templates. Please try again.', 'error')
     }
     
-    input.click()
+    // Force re-render TemplateSection component
+    setTemplateUpdateKey(prev => prev + 1)
   }
 
   useEffect(() => {
@@ -541,12 +412,7 @@ const ProductDetail = () => {
                         </span>
                         <span>Add Image</span>
                       </button>
-                      <button className="button is-warning is-size-7">
-                        <span className="icon is-size-7">
-                          <i className="material-icons is-size-7">inventory</i>
-                        </span>
-                        <span>Stock Status</span>
-                      </button>
+
                     </div>
                   </div>
                 </div>
@@ -566,7 +432,7 @@ const ProductDetail = () => {
                       Videos
                     </Tab>
                     <Tab className={({ selected }) => `tab is-size-7 ${selected ? 'is-active' : ''}`}>
-                      Reviews
+                      Suppliers List
                     </Tab>
                   </Tab.List>
                   <Tab.Panels className="mt-4">
@@ -604,46 +470,7 @@ const ProductDetail = () => {
                       <VideoSection product={product} />
                     </Tab.Panel>
                     <Tab.Panel>
-                      <div className="content is-size-7">
-                        <div className="columns">
-                          <div className="column is-6">
-                            <table className="table is-fullwidth is-size-7">
-                              <tbody>
-                                <tr>
-                                  <td className="is-size-7"><strong>Product Name:</strong></td>
-                                  <td className="is-size-7">{product.name}</td>
-                                </tr>
-                                <tr>
-                                  <td className="is-size-7"><strong>SKU:</strong></td>
-                                  <td className="is-size-7">{product.productSku}</td>
-                                </tr>
-                                <tr>
-                                  <td className="is-size-7"><strong>Category:</strong></td>
-                                  <td className="is-size-7">{product.category}</td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                          <div className="column is-6">
-                            <table className="table is-fullwidth is-size-7">
-                              <tbody>
-                                <tr>
-                                  <td className="is-size-7"><strong>Status:</strong></td>
-                                  <td className="is-size-7">{product.productStatus}</td>
-                                </tr>
-                                <tr>
-                                  <td className="is-size-7"><strong>Fulfillment:</strong></td>
-                                  <td className="is-size-7">{product.fulfillmentTime}</td>
-                                </tr>
-                                <tr>
-                                  <td className="is-size-7"><strong>Suppliers:</strong></td>
-                                  <td className="is-size-7">{product.supplier.join(', ')}</td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                      </div>
+                      <SupplierSection product={product} />
                     </Tab.Panel>
                     <Tab.Panel>
                       <div className="content is-size-7">

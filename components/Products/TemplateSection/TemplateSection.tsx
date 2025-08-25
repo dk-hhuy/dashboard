@@ -2,10 +2,11 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import { createPortal } from 'react-dom'
 import { Product } from '@/types/product'
+import UploadTemplateModal from '@/components/Products/Modals/UploadTemplateModal'
 
 interface TemplateSectionProps {
   product: Product
-  onUploadTemplate: () => void
+  onUploadTemplate: (updatedProduct: Product) => void
 }
 
 const TemplateSection: React.FC<TemplateSectionProps> = ({ product, onUploadTemplate }) => {
@@ -15,6 +16,15 @@ const TemplateSection: React.FC<TemplateSectionProps> = ({ product, onUploadTemp
     x: number; 
     y: number 
   } | null>(null)
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
+
+  const handleOpenUploadModal = () => {
+    setIsUploadModalOpen(true)
+  }
+
+  const handleCloseUploadModal = () => {
+    setIsUploadModalOpen(false)
+  }
 
   return (
     <div className="content is-size-7">
@@ -27,7 +37,7 @@ const TemplateSection: React.FC<TemplateSectionProps> = ({ product, onUploadTemp
         </h4>
         <button 
           className="button is-primary is-small is-size-7"
-          onClick={onUploadTemplate}
+          onClick={handleOpenUploadModal}
         >
           <span className="icon is-small">
             <i className="material-icons is-size-7">upload_file</i>
@@ -98,7 +108,7 @@ const TemplateSection: React.FC<TemplateSectionProps> = ({ product, onUploadTemp
             <p className="has-text-grey-light is-size-7 mb-3">No templates available</p>
             <button 
               className="button is-primary is-small is-size-7"
-              onClick={onUploadTemplate}
+              onClick={handleOpenUploadModal}
             >
               <span className="icon is-small">
                 <i className="material-icons is-size-7">upload_file</i>
@@ -156,6 +166,14 @@ const TemplateSection: React.FC<TemplateSectionProps> = ({ product, onUploadTemp
           document.body
         )
       })()}
+
+      {/* Upload Template Modal */}
+      <UploadTemplateModal
+        isVisible={isUploadModalOpen}
+        product={product}
+        onClose={handleCloseUploadModal}
+        onUpload={onUploadTemplate}
+      />
     </div>
   )
 }

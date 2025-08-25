@@ -1,3 +1,11 @@
+export interface SupplierProduct {
+  supplierId: string
+  supplierName: string
+  supplierSku: string
+  price: number
+  quality: 'Premium' | 'Standard' | 'Economy'
+}
+
 export interface Product {
   mainimage: string
   productSku: string
@@ -11,6 +19,7 @@ export interface Product {
   productImages?: string[]
   productVideos?: string[]
   productTemplate?: string[]
+  supplierProducts?: SupplierProduct[]
 }
 
 export interface ProductFormData {
