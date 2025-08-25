@@ -43,11 +43,45 @@ const Products = () => {
     try {
       const storedProducts = localStorage.getItem('productsData')
       if (storedProducts) {
-        return JSON.parse(storedProducts) as Product[]
+        const parsedProducts = JSON.parse(storedProducts) as Product[]
+        
+        // Auto-fix missing fields from constants
+        const fixedProducts = parsedProducts.map(product => {
+          const originalProduct = products.find(p => p.productSku === product.productSku)
+          if (originalProduct) {
+            let needsUpdate = false
+            let updatedProduct = { ...product }
+            
+            // Check for missing productImages
+            if (!product.hasOwnProperty('productImages')) {
+              updatedProduct.productImages = originalProduct.productImages || []
+              needsUpdate = true
+            }
+            
+            // Check for missing productTemplate
+            if (!product.hasOwnProperty('productTemplate')) {
+              updatedProduct.productTemplate = originalProduct.productTemplate || []
+              needsUpdate = true
+            }
+            
+            if (needsUpdate) {
+              return updatedProduct
+            }
+          }
+          return product
+        })
+        
+        // Update localStorage if fixes were applied
+        if (JSON.stringify(fixedProducts) !== JSON.stringify(parsedProducts)) {
+          localStorage.setItem('productsData', JSON.stringify(fixedProducts))
+        }
+        
+        return fixedProducts
       }
     } catch (error) {
       console.warn('Failed to load products from localStorage:', error)
     }
+    
     return products
   })
   const [hoveredImage, setHoveredImage] = useState<string | null>(null)

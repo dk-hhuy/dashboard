@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import NavBar from '@/components/Shared/NavBar'
 import ProtectedRoute from '@/components/Shared/ProtectedRoute'
 import TemplateSection from '@/components/Products/TemplateSection'
+import VideoSection from '@/components/Products/VideoSection'
 import { products } from '@/constants/index_product'
 import { Product } from '@/types/product'
 import { useToast } from '@/components/Shared/ToastProvider'
@@ -24,6 +25,7 @@ const ProductDetail = () => {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false)
   const [isAddImageModalOpen, setIsAddImageModalOpen] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [templateUpdateKey, setTemplateUpdateKey] = useState(0)
 
   
   // Use product images or fallback to main image
@@ -36,15 +38,6 @@ const ProductDetail = () => {
     
     // Ensure we always have at least one image
     return filteredImages.length > 0 ? filteredImages : ['/images/glass1.png']
-  }, [product])
-
-  // Debug: Log templates for troubleshooting
-  useEffect(() => {
-    if (product) {
-      console.log(`🔍 Product ${product.productSku} templates:`, product.productTemplate)
-      console.log(`🔍 Product ${product.productSku} has templates:`, product.productTemplate && product.productTemplate.length > 0)
-      console.log(`🔍 Product ${product.productSku} templates count:`, product.productTemplate?.length || 0)
-    }
   }, [product])
   
   // Reset currentImageIndex when productImages changes
@@ -88,17 +81,21 @@ const ProductDetail = () => {
       let updatedProduct = { ...foundProduct }
       
       if (originalProduct) {
-        // Check for missing productImages
+        // Check for missing productImages field (not array)
         if (!foundProduct.hasOwnProperty('productImages')) {
-          console.log(` Product ${productSku} missing productImages field, using data from constants`)
           updatedProduct.productImages = originalProduct.productImages || []
           needsUpdate = true
         }
         
-        // Check for missing productTemplate
+        // Check for missing productTemplate field (not array)
         if (!foundProduct.hasOwnProperty('productTemplate')) {
-          console.log(` Product ${productSku} missing productTemplate field, using data from constants`)
           updatedProduct.productTemplate = originalProduct.productTemplate || []
+          needsUpdate = true
+        }
+        
+        // Check for missing productVideos field (not array)
+        if (!foundProduct.hasOwnProperty('productVideos')) {
+          updatedProduct.productVideos = originalProduct.productVideos || []
           needsUpdate = true
         }
       }
@@ -112,7 +109,6 @@ const ProductDetail = () => {
             p.productSku === productSku ? updatedProduct : p
           )
           localStorage.setItem('productsData', JSON.stringify(updatedProducts))
-          console.log(` Updated localStorage for product ${productSku}`)
         } catch (error) {
           console.warn('Failed to update localStorage:', error)
         }
@@ -164,6 +160,8 @@ const ProductDetail = () => {
     setIsAddImageModalOpen(false)
   }
 
+
+
   // Handle upload template
   const handleUploadTemplate = () => {
     // Tạo input file element
@@ -192,7 +190,15 @@ const ProductDetail = () => {
         })
         
         if (validFiles.length === 0) {
-          showToast('No valid template files found. Please select PSD, AI, PNG, JPG, or PDF files under 50MB.', 'error')
+          showToast('No valid template files found. Please select PSD, AI, PNG, JPG, or PDF files under 5MB.', 'error')
+          return
+        }
+        
+        // Check total file size
+        const totalSize = validFiles.reduce((sum, file) => sum + file.size, 0)
+        const maxTotalSize = 5 * 1024 * 1024 // 5MB total
+        if (totalSize > maxTotalSize) {
+          showToast('Total file size exceeds 5MB limit. Please select smaller files.', 'error')
           return
         }
         
@@ -227,16 +233,46 @@ const ProductDetail = () => {
                 const updatedProducts = allProducts.map((p: Product) => 
                   p.productSku === updatedProduct.productSku ? updatedProduct : p
                 )
-                localStorage.setItem('productsData', JSON.stringify(updatedProducts))
+                
+                // Try to save to localStorage
+                try {
+                  localStorage.setItem('productsData', JSON.stringify(updatedProducts))
+                } catch (quotaError) {
+                  if (quotaError instanceof Error && quotaError.name === 'QuotaExceededError') {
+                    console.warn('localStorage quota exceeded, trying to clean up...')
+                    
+                    // Try to remove old templates to free up space
+                    const cleanedProduct = {
+                      ...updatedProduct,
+                      productTemplate: updatedProduct.productTemplate.slice(-5) // Keep only last 5 templates
+                    }
+                    
+                    const cleanedProducts = allProducts.map((p: Product) => 
+                      p.productSku === updatedProduct.productSku ? cleanedProduct : p
+                    )
+                    
+                    try {
+                      localStorage.setItem('productsData', JSON.stringify(cleanedProducts))
+                      showToast('Storage limit reached. Only keeping last 5 templates.', 'warning')
+                    } catch (finalError) {
+                      console.error('Failed to save even after cleanup:', finalError)
+                      showToast('Storage limit exceeded. Please clear some templates first.', 'error')
+                    }
+                  } else {
+                    throw quotaError
+                  }
+                }
               }
             } catch (error) {
               console.warn('Failed to update localStorage:', error)
+              showToast('Failed to save templates. Please try again.', 'error')
             }
             
             showToast(`${validFiles.length} template(s) uploaded successfully!`, 'success')
-            console.log('✅ Templates updated for product:', updatedProduct.productSku)
-            console.log('📋 New templates count:', updatedProduct.productTemplate.length)
-            console.log('📋 All templates:', updatedProduct.productTemplate)
+            
+            // Force re-render TemplateSection component
+            setTemplateUpdateKey(prev => prev + 1)
+
           }
         }
         
@@ -307,7 +343,7 @@ const ProductDetail = () => {
           <div className="card">
             <div className="card-content">
               <div className="is-flex is-justify-content-center">
-                <div className="is-flex is-align-items-stretch" style={{ maxWidth: '800px' }}>
+                <div className="is-flex is-align-items-stretch" style={{ maxWidth: '900px' }}>
                   {/* Product Image */}
                   <div className="is-flex-shrink-0" style={{ marginRight: '4rem' }}>
                     <div className="is-flex is-flex-direction-column is-justify-content-center">
@@ -327,7 +363,7 @@ const ProductDetail = () => {
                         </motion.button>
                       
                         <div className="has-text-centered is-flex is-flex-direction-column is-justify-content-center">
-                          <figure className="image is-clickable" style={{ width: '350px', height: '350px', overflow: 'hidden' }} onClick={() => setIsImageModalOpen(true)}>
+                          <figure className="image is-clickable" style={{ width: '300px', height: '300px', overflow: 'hidden' }} onClick={() => setIsImageModalOpen(true)}>
                             <AnimatePresence mode="wait">
                               <motion.div
                                 key={currentImageIndex}
@@ -345,8 +381,8 @@ const ProductDetail = () => {
                                 <Image 
                                   src={productImages[safeImageIndex] || '/images/glass1.png'}
                                   alt={`${product?.name || 'Product'} - Image ${safeImageIndex + 1}`}
-                                  width={350}
-                                  height={350}
+                                  width={300}
+                                  height={300}
                                   className="has-shadow"
                                   style={{ 
                                     objectFit: 'cover',
@@ -464,7 +500,7 @@ const ProductDetail = () => {
                       Templates
                     </Tab>
                     <Tab className={({ selected }) => `tab is-size-7 ${selected ? 'is-active' : ''}`}>
-                      Fulfillment Info
+                      Videos
                     </Tab>
                     <Tab className={({ selected }) => `tab is-size-7 ${selected ? 'is-active' : ''}`}>
                       Reviews
@@ -494,15 +530,18 @@ const ProductDetail = () => {
                         </div>
                       </div>
                     </Tab.Panel>
-                                        <Tab.Panel>
-                      <TemplateSection 
-                        product={product}
-                        onUploadTemplate={handleUploadTemplate}
-                      />
+                                                    <Tab.Panel>
+              <TemplateSection 
+                key={templateUpdateKey}
+                product={product}
+                onUploadTemplate={handleUploadTemplate}
+              />
+            </Tab.Panel>
+                    <Tab.Panel>
+                      <VideoSection product={product} />
                     </Tab.Panel>
                     <Tab.Panel>
                       <div className="content is-size-7">
-                        <h4 className="title is-4 is-size-7">Specifications</h4>
                         <div className="columns">
                           <div className="column is-6">
                             <table className="table is-fullwidth is-size-7">
