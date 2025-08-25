@@ -24,6 +24,13 @@ const ProductRow = React.memo<ProductRowProps>(({
   isSelected = false,
   onSelect
 }) => {
+  // Debug: Log product data
+  console.log('🖼️ ProductRow rendering:', {
+    sku: product.productSku,
+    name: product.name,
+    mainimage: product.mainimage,
+    isUpdated
+  })
   const [isChecked, setIsChecked] = useState(isSelected);
 
   const handleActionClick = (action: string) => {

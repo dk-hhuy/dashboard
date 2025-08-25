@@ -104,6 +104,47 @@ const Products = () => {
     }
   }, [productsData])
 
+  // Force reload data when page becomes visible (user returns from detail page)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('🔄 Page became visible, checking for updates')
+        try {
+          const storedProducts = localStorage.getItem('productsData')
+          if (storedProducts) {
+            const allProducts = JSON.parse(storedProducts)
+            setProductsData(allProducts)
+            console.log('🔄 Reloaded products data from localStorage:', allProducts.length, 'products')
+          }
+        } catch (error) {
+          console.warn('Failed to reload products data:', error)
+        }
+      }
+    }
+
+    const handleFocus = () => {
+      console.log('🔄 Window focused, checking for updates')
+      try {
+        const storedProducts = localStorage.getItem('productsData')
+        if (storedProducts) {
+          const allProducts = JSON.parse(storedProducts)
+          setProductsData(allProducts)
+          console.log('🔄 Reloaded products data from localStorage:', allProducts.length, 'products')
+        }
+      } catch (error) {
+        console.warn('Failed to reload products data:', error)
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('focus', handleFocus)
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('focus', handleFocus)
+    }
+  }, [])
+
   // Custom hook for filtering and pagination
   const {
     activeStockFilter,
@@ -189,8 +230,9 @@ const Products = () => {
         }
         break
       case 'Detail':
-        // Open product detail page in new tab
-        window.open(`/Products/${productSku}`, '_blank');
+        // Open product detail page in new tab with timestamp to force reload
+        const timestamp = Date.now()
+        window.open(`/Products/${productSku}?t=${timestamp}`, '_blank');
         break
       default:
         console.warn(`Unknown action: ${action}`)
@@ -231,6 +273,31 @@ const Products = () => {
 
   const handleConfigClose = useCallback(() => {
     setShowConfigSupplier(false)
+  }, [])
+
+  const handleClearStorage = useCallback(() => {
+    if (confirm('Are you sure you want to clear all localStorage data? This will reset all products to their original state.')) {
+      try {
+        localStorage.removeItem('productsData')
+        console.log('🗑️ Cleared localStorage')
+        
+        // Reset productsData to constants
+        setProductsData(products)
+        
+        // Clear updatedProductSkus
+        setUpdatedProductSkus(new Set())
+        
+        showToast('localStorage cleared successfully! All products reset to original state.', 'success')
+        
+        // Force page reload to ensure clean state
+        setTimeout(() => {
+          window.location.reload()
+        }, 1000)
+      } catch (error) {
+        console.error('❌ Error clearing localStorage:', error)
+        showToast('Failed to clear localStorage. Please try again.', 'error')
+      }
+    }
   }, [])
 
   const handleUpdatePriceSave = useCallback((priceUpdates: PriceUpdate[]) => {
@@ -354,9 +421,21 @@ const Products = () => {
       const dateChanged = newEffectiveDate !== latestDate
       const shouldUpdatePriceHistory = priceChanged || dateChanged
       
-      updatedProducts[productIndex] = {
+      // Update productImages array if mainimage changed
+      let updatedProductImages = currentProduct.productImages || []
+      if (imageSource !== currentProduct.mainimage) {
+        // If new image is not already in productImages, add it
+        if (!updatedProductImages.includes(imageSource)) {
+          updatedProductImages = [imageSource, ...updatedProductImages]
+        }
+        // Ensure mainimage is always the first in productImages
+        updatedProductImages = [imageSource, ...updatedProductImages.filter(img => img !== imageSource)]
+      }
+      
+      const updatedProduct = {
         ...currentProduct,
-        mainimage: imageSource, // Update image
+        mainimage: imageSource, // Update main image
+        productImages: updatedProductImages, // Update productImages array
         name: productData.name,
         description: productData.description,
         category: productData.category,
@@ -373,6 +452,17 @@ const Products = () => {
             ]
           : currentProduct.priceHistory // Keep existing price history if no changes
       }
+      
+      console.log('🖼️ Updating product image:', {
+        sku: productData.productSku,
+        oldImage: currentProduct.mainimage,
+        newImage: imageSource,
+        oldProductImages: currentProduct.productImages,
+        newProductImages: updatedProductImages,
+        updatedProduct: updatedProduct
+      })
+      
+      updatedProducts[productIndex] = updatedProduct
       
       setProductsData(updatedProducts)
       
@@ -603,6 +693,7 @@ const Products = () => {
                           onExportSelected={handleExportSelected}
                           selectedCount={selectedProductSkus.size}
                           onConfig={handleConfig}
+                          onClearStorage={handleClearStorage}
                         />
                       </div>
                     </div>

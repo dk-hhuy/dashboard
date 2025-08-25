@@ -14,6 +14,7 @@ interface ProductActionProps {
   onExportSelected?: (format: ExportFormat) => void;
   selectedCount?: number;
   onConfig?: () => void;
+  onClearStorage?: () => void;
 }
 
 interface ActionButton {
@@ -34,15 +35,17 @@ const ProductAction = React.memo<ProductActionProps>(({
   onExport, 
   onExportSelected,
   selectedCount = 0,
-  onConfig 
+  onConfig,
+  onClearStorage 
 }) => {
   // Memoized action buttons configuration
   const actionButtons = useMemo<ActionButton[]>(() => [
     { icon: 'add', label: 'Add', color: 'is-primary', onClick: onAddProduct },
     { icon: 'sync', label: 'Update Price', color: 'is-warning', onClick: onUpdatePrice },
     { icon: 'import_export', label: 'Import', color: 'is-info', onClick: onImport },
-    { icon: 'settings', label: 'Config', color: 'is-success', onClick: onConfig }
-  ], [onAddProduct, onUpdatePrice, onImport, onConfig]);
+    { icon: 'settings', label: 'Config', color: 'is-success', onClick: onConfig },
+    { icon: 'clear_all', label: 'Clear Storage', color: 'is-danger', onClick: onClearStorage }
+  ], [onAddProduct, onUpdatePrice, onImport, onConfig, onClearStorage]);
 
   // Event handler
   const handleButtonClick = useCallback((onClick?: () => void) => {

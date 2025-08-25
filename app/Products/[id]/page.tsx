@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import { Dialog, Tab } from '@headlessui/react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -19,6 +19,7 @@ import { DetailAddImageModal } from '@/components/Products'
 const ProductDetail = () => {
   const params = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { showToast } = useToast()
   
   const [product, setProduct] = useState<Product | null>(null)
@@ -62,59 +63,87 @@ const ProductDetail = () => {
   }
 
   const loadProduct = useCallback((productSku: string) => {
-    // Try to get products from localStorage first, then fallback to constants
+    console.log('🔍 Loading product:', productSku)
+    
+    // Always try localStorage first
     let allProducts = products
+    let dataSource = 'constants'
+    
     try {
       const storedProducts = localStorage.getItem('productsData')
       if (storedProducts) {
         allProducts = JSON.parse(storedProducts)
+        dataSource = 'localStorage'
+        console.log('📦 Loaded from localStorage:', allProducts.length, 'products')
+      } else {
+        console.log('📦 No localStorage data, using constants')
       }
     } catch (error) {
       console.warn('Failed to load products from localStorage:', error)
     }
     
     const foundProduct = allProducts.find(p => p.productSku === productSku)
+    console.log('🔍 Found product:', foundProduct ? {
+      sku: foundProduct.productSku,
+      name: foundProduct.name,
+      mainimage: foundProduct.mainimage,
+      productImages: foundProduct.productImages?.length || 0,
+      dataSource: dataSource
+    } : 'NOT FOUND')
     
     if (foundProduct) {
-      // Auto-fix if productImages or productTemplate fields are missing
-      const originalProduct = products.find(p => p.productSku === productSku)
-      let needsUpdate = false
-      let updatedProduct = { ...foundProduct }
-      
-      if (originalProduct) {
-        // Check for missing productImages field (not array)
-        if (!foundProduct.hasOwnProperty('productImages')) {
-          updatedProduct.productImages = originalProduct.productImages || []
-          needsUpdate = true
-        }
-        
-        // Check for missing productTemplate field (not array)
-        if (!foundProduct.hasOwnProperty('productTemplate')) {
-          updatedProduct.productTemplate = originalProduct.productTemplate || []
-          needsUpdate = true
-        }
-        
-        // Check for missing productVideos field (not array)
-        if (!foundProduct.hasOwnProperty('productVideos')) {
-          updatedProduct.productVideos = originalProduct.productVideos || []
-          needsUpdate = true
-        }
-      }
-      
-      if (needsUpdate) {
-        setProduct(updatedProduct)
-        
-        // Update localStorage with the corrected data
-        try {
-          const updatedProducts = allProducts.map((p: Product) => 
-            p.productSku === productSku ? updatedProduct : p
-          )
-          localStorage.setItem('productsData', JSON.stringify(updatedProducts))
-        } catch (error) {
-          console.warn('Failed to update localStorage:', error)
-        }
-      } else {
+      // If data is from localStorage, use it directly (no auto-fix)
+      if (dataSource === 'localStorage') {
+        console.log('✅ Using product from localStorage (no auto-fix)')
         setProduct(foundProduct)
+      } else {
+        // Data is from constants, apply auto-fix if needed
+        console.log('🔧 Data from constants, checking for auto-fix')
+        const originalProduct = products.find(p => p.productSku === productSku)
+        let needsUpdate = false
+        let updatedProduct = { ...foundProduct }
+        
+        if (originalProduct) {
+          // Check for missing productImages field
+          if (!foundProduct.hasOwnProperty('productImages')) {
+            updatedProduct.productImages = originalProduct.productImages || []
+            needsUpdate = true
+            console.log('🔧 Auto-fix: Added missing productImages')
+          }
+          
+          // Check for missing productTemplate field
+          if (!foundProduct.hasOwnProperty('productTemplate')) {
+            updatedProduct.productTemplate = originalProduct.productTemplate || []
+            needsUpdate = true
+            console.log('🔧 Auto-fix: Added missing productTemplate')
+          }
+          
+          // Check for missing productVideos field
+          if (!foundProduct.hasOwnProperty('productVideos')) {
+            updatedProduct.productVideos = originalProduct.productVideos || []
+            needsUpdate = true
+            console.log('🔧 Auto-fix: Added missing productVideos')
+          }
+        }
+        
+        if (needsUpdate) {
+          console.log('🔧 Applying auto-fix and updating localStorage')
+          setProduct(updatedProduct)
+          
+          // Update localStorage with the corrected data
+          try {
+            const updatedProducts = allProducts.map((p: Product) => 
+              p.productSku === productSku ? updatedProduct : p
+            )
+            localStorage.setItem('productsData', JSON.stringify(updatedProducts))
+            console.log('💾 Updated localStorage with auto-fixed data')
+          } catch (error) {
+            console.warn('Failed to update localStorage:', error)
+          }
+        } else {
+          console.log('✅ Using product from constants (no auto-fix needed)')
+          setProduct(foundProduct)
+        }
       }
       setIsLoading(false)
     } else {
@@ -133,6 +162,8 @@ const ProductDetail = () => {
   }
 
   const handleUploadImages = (updatedProduct: Product) => {
+    console.log('🖼️ handleUploadImages called with:', updatedProduct)
+    
     // Update local state
     setProduct(updatedProduct)
     
@@ -145,6 +176,15 @@ const ProductDetail = () => {
           p.productSku === updatedProduct.productSku ? updatedProduct : p
         )
         localStorage.setItem('productsData', JSON.stringify(updatedProducts))
+        console.log('💾 Updated localStorage with new product data')
+        
+        // Signal that data has been updated
+        try {
+          sessionStorage.setItem('productUpdated', Date.now().toString())
+          console.log('💾 Set sessionStorage signal for Products page')
+        } catch (error) {
+          console.warn('Failed to set sessionStorage signal:', error)
+        }
       }
     } catch (error) {
       console.warn('Failed to update localStorage:', error)
@@ -157,7 +197,7 @@ const ProductDetail = () => {
       setCurrentImageIndex(0)
     }
     
-    showToast('Images added successfully!', 'success')
+    showToast('Images updated successfully!', 'success')
     setIsAddImageModalOpen(false)
   }
 
@@ -219,9 +259,41 @@ const ProductDetail = () => {
 
   useEffect(() => {
     const productSku = params.id as string
+    const timestamp = searchParams.get('t')
+    console.log('🔄 Component mounted/URL changed, loading product:', productSku, 'timestamp:', timestamp)
     setIsLoading(true)
-    loadProduct(productSku)
-  }, [params.id, loadProduct])
+    
+    // Force reload from localStorage when timestamp is present
+    if (timestamp) {
+      console.log('🔄 Timestamp detected, forcing fresh load from localStorage')
+      // Clear any potential cache by getting fresh data
+      try {
+        const storedProducts = localStorage.getItem('productsData')
+        if (storedProducts) {
+          const allProducts = JSON.parse(storedProducts)
+          const foundProduct = allProducts.find((p: Product) => p.productSku === productSku)
+          if (foundProduct) {
+            console.log('🔄 Found updated product in localStorage:', {
+              sku: foundProduct.productSku,
+              mainimage: foundProduct.mainimage,
+              productImages: foundProduct.productImages?.length || 0
+            })
+            setProduct(foundProduct)
+            setIsLoading(false)
+            return
+          }
+        }
+      } catch (error) {
+        console.warn('Failed to force load from localStorage:', error)
+      }
+    }
+    
+    // Add a small delay to ensure localStorage is updated
+    const delay = timestamp ? 100 : 0 // If timestamp exists, add delay
+    setTimeout(() => {
+      loadProduct(productSku)
+    }, delay)
+  }, [params.id, searchParams, loadProduct])
 
   // Listen for storage changes and window focus to update product data
   useEffect(() => {

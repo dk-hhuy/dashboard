@@ -21,6 +21,7 @@ const ProductImage = React.memo(({ src, alt, onHover, onLeave }: ProductImagePro
     }}
   >
     <Image 
+      key={src} // Force re-render when src changes
       src={src} 
       alt={alt} 
       width={40} 

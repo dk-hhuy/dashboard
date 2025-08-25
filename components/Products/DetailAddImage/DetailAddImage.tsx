@@ -16,6 +16,27 @@ interface DetailAddImageProps {
 // ============================================================================
 
 /**
+ * Normalize string for comparison (remove whitespace, trim)
+ * @param str - String to normalize
+ * @returns string - Normalized string
+ */
+const normalizeString = (str: string): string => {
+  return str ? str.trim() : ''
+}
+
+/**
+ * Compare two image paths for equality
+ * @param path1 - First image path
+ * @param path2 - Second image path
+ * @returns boolean - True if paths are equal
+ */
+const isSameImage = (path1: string, path2: string): boolean => {
+  const normalized1 = normalizeString(path1)
+  const normalized2 = normalizeString(path2)
+  return normalized1 === normalized2
+}
+
+/**
  * Convert file to base64 string
  * @param file - File to convert
  * @returns Promise<string> - Base64 string
@@ -285,22 +306,68 @@ const DetailAddImage = ({ product, onUpload, onClose }: DetailAddImageProps) => 
    * Handle delete image
    */
   const handleDeleteImage = (indexToDelete: number) => {
-    console.log('Deleting image at index:', indexToDelete)
-    console.log('Current images before delete:', currentProduct.productImages)
+    console.log('🗑️ Deleting image at index:', indexToDelete)
+    console.log('📸 Current images before delete:', currentProduct.productImages)
+    console.log('🎯 Current mainimage:', currentProduct.mainimage)
     
     const images = Array.isArray(currentProduct.productImages) ? currentProduct.productImages : []
     const updatedImages = images.filter((_, index) => index !== indexToDelete)
     
-    console.log('Updated images after delete:', updatedImages)
+    console.log('📸 Updated images after delete:', updatedImages)
     
-    const updatedProduct = {
+    // Check if the deleted image is the mainimage
+    const deletedImage = images[indexToDelete]
+    const isMainImageDeleted = isSameImage(currentProduct.mainimage, deletedImage)
+    
+    console.log('🎯 Deleted image:', deletedImage)
+    console.log('🎯 Is main image deleted:', isMainImageDeleted)
+    
+    let updatedProduct = {
       ...currentProduct,
       productImages: updatedImages
     }
     
+    // If mainimage was deleted, update it to the nearest available image
+    if (isMainImageDeleted && updatedImages.length > 0) {
+      // Find the nearest image index in the updated array
+      let newMainImageIndex = indexToDelete
+      
+      // If the deleted index is beyond the new array length, use the last image
+      if (newMainImageIndex >= updatedImages.length) {
+        newMainImageIndex = updatedImages.length - 1
+      }
+      
+      // Ensure we have a valid index
+      newMainImageIndex = Math.max(0, Math.min(newMainImageIndex, updatedImages.length - 1))
+      
+      const newMainImage = updatedImages[newMainImageIndex]
+      updatedProduct = {
+        ...updatedProduct,
+        mainimage: newMainImage
+      }
+      
+      console.log('✅ Main image updated to:', newMainImage, 'at index:', newMainImageIndex)
+      console.log('✅ Updated product mainimage:', updatedProduct.mainimage)
+      showToast(`Image ${indexToDelete + 1} deleted. Main image updated to image ${newMainImageIndex + 1}.`, 'success')
+    } else if (isMainImageDeleted && updatedImages.length === 0) {
+      // If no images left, use default image
+      updatedProduct = {
+        ...updatedProduct,
+        mainimage: '/images/glass1.png'
+      }
+      console.log('No images left, using default image')
+      showToast(`Image ${indexToDelete + 1} deleted. No images left, using default image.`, 'warning')
+    } else {
+      showToast(`Image ${indexToDelete + 1} deleted successfully!`, 'success')
+    }
+    
+    console.log('💾 Final updated product:', {
+      mainimage: updatedProduct.mainimage,
+      productImages: updatedProduct.productImages
+    })
+    
     setCurrentProduct(updatedProduct)
     setHasUnsavedChanges(true)
-    showToast(`Image ${indexToDelete + 1} deleted successfully!`, 'success')
   }
 
   /**
@@ -328,8 +395,22 @@ const DetailAddImage = ({ product, onUpload, onClose }: DetailAddImageProps) => 
    */
   const renderCurrentImages = () => {
     const images = Array.isArray(currentProduct.productImages) ? currentProduct.productImages : []
-    console.log('Rendering current images:', images)
-    console.log('Current product state:', currentProduct)
+    console.log('🎨 Rendering current images:', images)
+    // Count how many images are marked as main
+    const mainImageCount = images.filter(img => isSameImage(img, currentProduct.mainimage)).length
+    console.log('🎨 Current product state:', {
+      mainimage: currentProduct.mainimage,
+      productImagesLength: images.length,
+      productImages: images,
+      mainImageCount: mainImageCount
+    })
+    
+    if (mainImageCount > 1) {
+      console.warn('⚠️ WARNING: Multiple images are marked as main!', {
+        mainimage: currentProduct.mainimage,
+        matchingImages: images.filter(img => isSameImage(img, currentProduct.mainimage))
+      })
+    }
     
     if (images.length === 0) {
       return (
@@ -341,7 +422,12 @@ const DetailAddImage = ({ product, onUpload, onClose }: DetailAddImageProps) => 
     
     return (
       <div className="content is-size-7 mt-4">
-        <h5 className="title is-5 is-size-7">Current Images ({images.length}/10):</h5>
+        <h5 className="title is-5 is-size-7">
+          Current Images ({images.length}/10):
+          <span className="has-text-info ml-2 is-size-7">
+            (Main image: {images.findIndex(img => isSameImage(img, currentProduct.mainimage)) + 1})
+          </span>
+        </h5>
         <div className="columns is-multiline is-mobile">
           {images.map((image, index) => (
             <div key={index} className="column is-2-desktop is-3-tablet is-4-mobile">
@@ -375,6 +461,45 @@ const DetailAddImage = ({ product, onUpload, onClose }: DetailAddImageProps) => 
                     objectFit: 'cover'
                   }}
                 />
+                
+                {/* Main image indicator */}
+                {(() => {
+                  // Only show "M" for the first occurrence of the main image
+                  const isMain = isSameImage(image, currentProduct.mainimage) && 
+                    index === images.findIndex(img => isSameImage(img, currentProduct.mainimage))
+                  console.log(`🔍 Image ${index + 1}:`, {
+                    image: image,
+                    mainimage: currentProduct.mainimage,
+                    isMain: isMain,
+                    isFirstOccurrence: index === images.findIndex(img => isSameImage(img, currentProduct.mainimage)),
+                    normalizedImage: normalizeString(image),
+                    normalizedMain: normalizeString(currentProduct.mainimage)
+                  })
+                  return isMain
+                })() && (
+                  <div
+                    className="is-absolute"
+                    style={{
+                      position: 'absolute',
+                      top: '4px',
+                      right: '4px',
+                      backgroundColor: '#00d1b2',
+                      color: 'white',
+                      borderRadius: '50%',
+                      width: '20px',
+                      height: '20px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '12px',
+                      fontWeight: 'bold',
+                      zIndex: 5
+                    }}
+                    title="Main image"
+                  >
+                    M
+                  </div>
+                )}
 
                 {/* Overlay Modal with Delete Button */}
                 <div

@@ -28,6 +28,20 @@ const ProductsTable = React.memo<ProductsTableProps>(({
   onSelectionChange
 
 }) => {
+  // Debug: Log products data
+  console.log('📊 ProductsTable received products:', products.map(p => ({
+    sku: p.productSku,
+    name: p.name,
+    mainimage: p.mainimage
+  })))
+  
+  // Force re-render when products data changes
+  const [renderKey, setRenderKey] = useState(0)
+  
+  useEffect(() => {
+    setRenderKey(prev => prev + 1)
+  }, [products])
+  
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
   const [isSelectAll, setIsSelectAll] = useState(false);
 
@@ -67,7 +81,7 @@ const ProductsTable = React.memo<ProductsTableProps>(({
   }, [selectedProducts, onSelectionChange]);
 
   return (
-  <div className="is-size-7">
+  <div className="is-size-7" key={renderKey}>
     <table className="table is-fullwidth is-size-7 is-hoverable">
       <TableHeader 
         isSelectAll={isSelectAll}
@@ -76,7 +90,7 @@ const ProductsTable = React.memo<ProductsTableProps>(({
       <tbody>
         {products.map((product, index) => (
           <ProductRow 
-            key={`${product.productSku}-${index}`} 
+            key={`${product.productSku}-${product.mainimage}-${index}`} 
             product={product} 
             onImageHover={onImageHover}
             onImageLeave={onImageLeave}
