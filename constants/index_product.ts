@@ -32,6 +32,19 @@ export const products = [
       "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       "https://www.youtube.com/watch?v=9bZkp7q19f0", 
       "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ],
+    productTemplate: [
+      "/images/glass1.png",
+      "/images/double.png",
+      "/images/husble.png",
+      "/images/love.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
     ]
   },
   {
@@ -66,6 +79,13 @@ export const products = [
       "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       "https://www.youtube.com/watch?v=9bZkp7q19f0", 
       "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ],
+    productTemplate: [
+      "/images/double.png",
+      "/images/husble.png",
+      "/images/love.png",
+      "/images/glass1.png",
+      "/images/double.png"
     ]
   },
   {
@@ -100,6 +120,13 @@ export const products = [
       "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       "https://www.youtube.com/watch?v=9bZkp7q19f0", 
       "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ],
+    productTemplate: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
     ]
   },
   {
@@ -134,6 +161,13 @@ export const products = [
       "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       "https://www.youtube.com/watch?v=9bZkp7q19f0", 
       "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ],
+    productTemplate: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
     ]
   },
   {
@@ -158,6 +192,13 @@ export const products = [
     productImages: [
       "/images/glass1.png",
       "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ],
+    productTemplate: [
       "/images/glass1.png",
       "/images/glass1.png",
       "/images/glass1.png",
@@ -197,6 +238,13 @@ export const products = [
       "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       "https://www.youtube.com/watch?v=9bZkp7q19f0", 
       "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ],
+    productTemplate: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
     ]
   },
   {
@@ -255,6 +303,13 @@ export const products = [
       "/images/glass1.png",
       "/images/glass1.png",
       "/images/glass1.png"
+    ],
+    productTemplate: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
     ]
   },
   {
@@ -289,6 +344,13 @@ export const products = [
       "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       "https://www.youtube.com/watch?v=9bZkp7q19f0", 
       "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ],
+    productTemplate: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
     ]
   },
   {
@@ -323,6 +385,13 @@ export const products = [
       "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       "https://www.youtube.com/watch?v=9bZkp7q19f0", 
       "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ],
+    productTemplate: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
     ]
   },
   {
@@ -358,6 +427,13 @@ export const products = [
       "https://www.youtube.com/watch?v=9bZkp7q19f0", 
       "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
     ],
+    productTemplate: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ],
     action: ["Edit", "Delete"]
   },
   {
@@ -392,6 +468,13 @@ export const products = [
       "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       "https://www.youtube.com/watch?v=9bZkp7q19f0", 
       "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ],
+    productTemplate: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
     ]
   },
   {
@@ -426,6 +509,13 @@ export const products = [
       "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       "https://www.youtube.com/watch?v=9bZkp7q19f0", 
       "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ],
+    productTemplate: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
     ]
   },
   {
@@ -460,6 +550,13 @@ export const products = [
       "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       "https://www.youtube.com/watch?v=9bZkp7q19f0", 
       "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ],
+    productTemplate: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
     ]
   },
   {
@@ -494,6 +591,13 @@ export const products = [
       "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       "https://www.youtube.com/watch?v=9bZkp7q19f0", 
       "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ],
+    productTemplate: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
     ]
   },
   {
@@ -528,6 +632,13 @@ export const products = [
       "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       "https://www.youtube.com/watch?v=9bZkp7q19f0", 
       "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ],
+    productTemplate: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
     ]
   },
   {
@@ -562,6 +673,13 @@ export const products = [
       "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       "https://www.youtube.com/watch?v=9bZkp7q19f0", 
       "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ],
+    productTemplate: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
     ]
   },
   {
@@ -630,6 +748,13 @@ export const products = [
       "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       "https://www.youtube.com/watch?v=9bZkp7q19f0", 
       "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ],
+    productTemplate: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
     ]
   },
   {
@@ -654,6 +779,13 @@ export const products = [
     productImages: [
       "/images/glass1.png",
       "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
+    ],
+    productTemplate: [
       "/images/glass1.png",
       "/images/glass1.png",
       "/images/glass1.png",
@@ -694,6 +826,13 @@ export const products = [
       "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       "https://www.youtube.com/watch?v=9bZkp7q19f0", 
       "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+    ],
+    productTemplate: [
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png",
+      "/images/glass1.png"
     ]
   }
 ]

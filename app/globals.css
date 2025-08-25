@@ -89,6 +89,7 @@
   background: #888;
 }
 
-
-
-
+/* Templates section styles - minimal custom CSS */
+.templates-scroll {
+  scrollbar-width: thin;
+}

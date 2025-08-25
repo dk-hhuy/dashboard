@@ -10,6 +10,7 @@ export interface Product {
   productStatus: string
   productImages?: string[]
   productVideos?: string[]
+  productTemplate?: string[]
 }
 
 export interface ProductFormData {

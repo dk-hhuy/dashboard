@@ -7,6 +7,7 @@ import { Dialog, Tab } from '@headlessui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import NavBar from '@/components/Shared/NavBar'
 import ProtectedRoute from '@/components/Shared/ProtectedRoute'
+import TemplateSection from '@/components/Products/TemplateSection'
 import { products } from '@/constants/index_product'
 import { Product } from '@/types/product'
 import { useToast } from '@/components/Shared/ToastProvider'
@@ -23,6 +24,7 @@ const ProductDetail = () => {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false)
   const [isAddImageModalOpen, setIsAddImageModalOpen] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+
   
   // Use product images or fallback to main image
   const productImages = useMemo(() => {
@@ -34,6 +36,15 @@ const ProductDetail = () => {
     
     // Ensure we always have at least one image
     return filteredImages.length > 0 ? filteredImages : ['/images/glass1.png']
+  }, [product])
+
+  // Debug: Log templates for troubleshooting
+  useEffect(() => {
+    if (product) {
+      console.log(`🔍 Product ${product.productSku} templates:`, product.productTemplate)
+      console.log(`🔍 Product ${product.productSku} has templates:`, product.productTemplate && product.productTemplate.length > 0)
+      console.log(`🔍 Product ${product.productSku} templates count:`, product.productTemplate?.length || 0)
+    }
   }, [product])
   
   // Reset currentImageIndex when productImages changes
@@ -71,14 +82,28 @@ const ProductDetail = () => {
     const foundProduct = allProducts.find(p => p.productSku === productSku)
     
     if (foundProduct) {
-      // Only auto-fix if productImages field is completely missing (not just empty)
+      // Auto-fix if productImages or productTemplate fields are missing
       const originalProduct = products.find(p => p.productSku === productSku)
-      if (originalProduct && !foundProduct.hasOwnProperty('productImages')) {
-        console.log(` Product ${productSku} missing productImages field, using data from constants`)
-        const updatedProduct = {
-          ...foundProduct,
-          productImages: originalProduct.productImages || []
+      let needsUpdate = false
+      let updatedProduct = { ...foundProduct }
+      
+      if (originalProduct) {
+        // Check for missing productImages
+        if (!foundProduct.hasOwnProperty('productImages')) {
+          console.log(` Product ${productSku} missing productImages field, using data from constants`)
+          updatedProduct.productImages = originalProduct.productImages || []
+          needsUpdate = true
         }
+        
+        // Check for missing productTemplate
+        if (!foundProduct.hasOwnProperty('productTemplate')) {
+          console.log(` Product ${productSku} missing productTemplate field, using data from constants`)
+          updatedProduct.productTemplate = originalProduct.productTemplate || []
+          needsUpdate = true
+        }
+      }
+      
+      if (needsUpdate) {
         setProduct(updatedProduct)
         
         // Update localStorage with the corrected data
@@ -139,6 +164,89 @@ const ProductDetail = () => {
     setIsAddImageModalOpen(false)
   }
 
+  // Handle upload template
+  const handleUploadTemplate = () => {
+    // Tạo input file element
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.psd,.ai,.png,.jpg,.jpeg,.pdf'
+    input.multiple = true
+    
+    input.onchange = (e) => {
+      const files = (e.target as HTMLInputElement).files
+      if (files && files.length > 0) {
+        // Validate files
+        const validFiles = Array.from(files).filter(file => {
+          const isValidType = [
+            'image/vnd.adobe.photoshop',
+            'application/postscript',
+            'image/png',
+            'image/jpeg',
+            'image/jpg',
+            'application/pdf'
+          ].includes(file.type)
+          
+          const isValidSize = file.size <= 50 * 1024 * 1024 // 50MB
+          
+          return isValidType && isValidSize
+        })
+        
+        if (validFiles.length === 0) {
+          showToast('No valid template files found. Please select PSD, AI, PNG, JPG, or PDF files under 50MB.', 'error')
+          return
+        }
+        
+        // Convert files to base64 and update templates
+        const processFiles = async () => {
+          const newTemplates: string[] = []
+          
+          for (const file of validFiles) {
+            const base64 = await new Promise<string>((resolve) => {
+              const reader = new FileReader()
+              reader.onload = () => resolve(reader.result as string)
+              reader.readAsDataURL(file)
+            })
+            newTemplates.push(base64)
+          }
+          
+          // Update product with new templates
+          if (product) {
+            const updatedProduct = {
+              ...product,
+              productTemplate: [...(product.productTemplate || []), ...newTemplates]
+            }
+            
+            // Update local state
+            setProduct(updatedProduct)
+            
+            // Update localStorage
+            try {
+              const storedProducts = localStorage.getItem('productsData')
+              if (storedProducts) {
+                const allProducts = JSON.parse(storedProducts)
+                const updatedProducts = allProducts.map((p: Product) => 
+                  p.productSku === updatedProduct.productSku ? updatedProduct : p
+                )
+                localStorage.setItem('productsData', JSON.stringify(updatedProducts))
+              }
+            } catch (error) {
+              console.warn('Failed to update localStorage:', error)
+            }
+            
+            showToast(`${validFiles.length} template(s) uploaded successfully!`, 'success')
+            console.log('✅ Templates updated for product:', updatedProduct.productSku)
+            console.log('📋 New templates count:', updatedProduct.productTemplate.length)
+            console.log('📋 All templates:', updatedProduct.productTemplate)
+          }
+        }
+        
+        processFiles()
+      }
+    }
+    
+    input.click()
+  }
+
   useEffect(() => {
     const productSku = params.id as string
     setIsLoading(true)
@@ -178,11 +286,13 @@ const ProductDetail = () => {
               <div className="loader"></div>
               <p className="mt-4 is-size-7">Loading product details...</p>
             </div>
-          </div>
-        </div>
-      </ProtectedRoute>
-    )
-  }
+                  </div>
+      </div>
+      
+
+    </ProtectedRoute>
+  )
+}
 
   if (!product) {
     return null
@@ -332,12 +442,6 @@ const ProductDetail = () => {
                         </span>
                         <span>Add Image</span>
                       </button>
-                      <button className="button is-info is-size-7">
-                        <span className="icon is-size-7">
-                          <i className="material-icons is-size-7">history</i>
-                        </span>
-                        <span>Upload Template</span>
-                      </button>
                       <button className="button is-warning is-size-7">
                         <span className="icon is-size-7">
                           <i className="material-icons is-size-7">inventory</i>
@@ -357,7 +461,7 @@ const ProductDetail = () => {
                       Price History
                     </Tab>
                     <Tab className={({ selected }) => `tab is-size-7 ${selected ? 'is-active' : ''}`}>
-                      Specifications
+                      Templates
                     </Tab>
                     <Tab className={({ selected }) => `tab is-size-7 ${selected ? 'is-active' : ''}`}>
                       Fulfillment Info
@@ -389,6 +493,12 @@ const ProductDetail = () => {
                           </table>
                         </div>
                       </div>
+                    </Tab.Panel>
+                                        <Tab.Panel>
+                      <TemplateSection 
+                        product={product}
+                        onUploadTemplate={handleUploadTemplate}
+                      />
                     </Tab.Panel>
                     <Tab.Panel>
                       <div className="content is-size-7">
@@ -540,6 +650,8 @@ const ProductDetail = () => {
             onUpload={handleUploadImages}
           />
         )}
+        
+
       </div>
     </ProtectedRoute>
   )
