@@ -19,7 +19,12 @@ const TemplateSection: React.FC<TemplateSectionProps> = ({ product, onUploadTemp
   return (
     <div className="content is-size-7">
       <div className="is-flex is-justify-content-space-between is-align-items-center mb-4">
-        <h4 className="title is-4 is-size-7">Templates</h4>
+        <h4 className="title is-4 is-size-7">
+          Templates 
+          <span className="has-text-grey-light ml-2 is-size-7">
+            ({product.productTemplate?.length || 0} total)
+          </span>
+        </h4>
         <button 
           className="button is-primary is-small is-size-7"
           onClick={onUploadTemplate}
