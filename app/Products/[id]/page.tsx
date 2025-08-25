@@ -15,6 +15,18 @@ import { Product } from '@/types/product'
 import { useToast } from '@/components/Shared/ToastProvider'
 import { DetailAddImageModal } from '@/components/Products'
 
+// Utility function to normalize string for comparison
+const normalizeString = (str: string): string => {
+  return str ? str.trim() : ''
+}
+
+// Utility function to compare two image paths for equality
+const isSameImage = (path1: string, path2: string): boolean => {
+  const normalized1 = normalizeString(path1)
+  const normalized2 = normalizeString(path2)
+  return normalized1 === normalized2
+}
+
 
 const ProductDetail = () => {
   const params = useParams()
@@ -400,8 +412,61 @@ const ProductDetail = () => {
                               </motion.div>
                             </AnimatePresence>
                           </figure>
-                          <p className="help mt-2">Click to enlarge</p>
-                          <p className="help is-size-7">{safeImageIndex + 1} / {productImages.length}</p>
+                          <div className="is-flex is-justify-content-center is-align-items-center mt-2">
+                            <div className="buttons">
+                              <button 
+                                className="button is-primary is-small is-size-7"
+                                onClick={handleOpenAddImageModal}
+                              >
+                                <span className="icon is-small">
+                                  <i className="material-icons is-size-7">add_photo_alternate</i>
+                                </span>
+                                <span>Add Image ({safeImageIndex + 1} / {productImages.length})</span>
+                              </button>
+                              <button 
+                                className={`button is-small is-size-7 ${productImages[safeImageIndex] === product.mainimage ? 'is-light' : 'is-info'}`}
+                                onClick={() => {
+                                  // Set current image as main image
+                                  const currentImage = productImages[safeImageIndex]
+                                  if (currentImage) {
+                                    // Always allow setting any image as main, even if they look the same
+                                    const updatedProduct = {
+                                      ...product,
+                                      mainimage: currentImage
+                                    }
+                                    // Update local state
+                                    setProduct(updatedProduct)
+                                    // Update localStorage
+                                    try {
+                                      const storedProducts = localStorage.getItem('productsData')
+                                      if (storedProducts) {
+                                        const allProducts = JSON.parse(storedProducts)
+                                        const updatedProducts = allProducts.map((p: Product) => 
+                                          p.productSku === product.productSku ? updatedProduct : p
+                                        )
+                                        localStorage.setItem('productsData', JSON.stringify(updatedProducts))
+                                        // Signal update
+                                        sessionStorage.setItem('productUpdated', Date.now().toString())
+                                        showToast(`Image ${safeImageIndex + 1} set as main image!`, 'success')
+                                      }
+                                    } catch (error) {
+                                      console.warn('Failed to update localStorage:', error)
+                                      showToast('Failed to update main image. Please try again.', 'error')
+                                    }
+                                  }
+                                }}
+                                disabled={productImages[safeImageIndex] === product.mainimage}
+                              >
+                                <span className="icon is-small">
+                                  <i className="material-icons is-size-7">star</i>
+                                </span>
+                                <span>Main Image</span>
+                              </button>
+                              {productImages[safeImageIndex] === product.mainimage && (
+                                <p className="help is-size-7 mt-1 has-text-grey">This image is already the main image</p>
+                              )}
+                            </div>
+                          </div>
                         </div>
 
                         <motion.button 
@@ -474,18 +539,7 @@ const ProductDetail = () => {
                       </div>
                     </div>
 
-                    <div className="buttons is-justify-content-flex-end">
-                      <button 
-                        className="button is-primary is-size-7"
-                        onClick={handleOpenAddImageModal}
-                      >
-                        <span className="icon is-size-7">
-                          <i className="material-icons is-size-7">add_photo_alternate</i>
-                        </span>
-                        <span>Add Image</span>
-                      </button>
 
-                    </div>
                   </div>
                 </div>
               </div>
