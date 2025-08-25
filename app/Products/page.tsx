@@ -136,12 +136,30 @@ const Products = () => {
       }
     }
 
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'productUpdated') {
+        console.log('🔄 SessionStorage signal detected, reloading data')
+        try {
+          const storedProducts = localStorage.getItem('productsData')
+          if (storedProducts) {
+            const allProducts = JSON.parse(storedProducts)
+            setProductsData(allProducts)
+            console.log('🔄 Reloaded products data from localStorage:', allProducts.length, 'products')
+          }
+        } catch (error) {
+          console.warn('Failed to reload products data:', error)
+        }
+      }
+    }
+
     document.addEventListener('visibilitychange', handleVisibilityChange)
     window.addEventListener('focus', handleFocus)
+    window.addEventListener('storage', handleStorageChange)
     
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
       window.removeEventListener('focus', handleFocus)
+      window.removeEventListener('storage', handleStorageChange)
     }
   }, [])
 
@@ -225,6 +243,14 @@ const Products = () => {
             return newSet
           })
           
+          // Signal that data has been updated for detail page sync
+          try {
+            sessionStorage.setItem('productUpdated', Date.now().toString())
+            console.log('💾 Set sessionStorage signal for detail page sync (delete)')
+          } catch (error) {
+            console.warn('Failed to set sessionStorage signal:', error)
+          }
+          
           // Product deleted successfully
           showToast(`Product **${productSku}** deleted successfully!`, 'success')
         }
@@ -287,6 +313,14 @@ const Products = () => {
         // Clear updatedProductSkus
         setUpdatedProductSkus(new Set())
         
+        // Signal that data has been updated for detail page sync
+        try {
+          sessionStorage.setItem('productUpdated', Date.now().toString())
+          console.log('💾 Set sessionStorage signal for detail page sync (clear storage)')
+        } catch (error) {
+          console.warn('Failed to set sessionStorage signal:', error)
+        }
+        
         showToast('localStorage cleared successfully! All products reset to original state.', 'success')
         
         // Force page reload to ensure clean state
@@ -347,6 +381,14 @@ const Products = () => {
       const newSet = new Set([...prev, ...newlyUpdatedSkus])
       return newSet
     })
+    
+    // Signal that data has been updated for detail page sync
+    try {
+      sessionStorage.setItem('productUpdated', Date.now().toString())
+      console.log('💾 Set sessionStorage signal for detail page sync (price update)')
+    } catch (error) {
+      console.warn('Failed to set sessionStorage signal:', error)
+    }
     
     showToast(`Successfully updated prices for **${priceUpdates.length}** products!`, 'success')
     setShowUpdatePrice(false)
@@ -472,6 +514,14 @@ const Products = () => {
         return newSet
       })
       
+      // Signal that data has been updated for detail page sync
+      try {
+        sessionStorage.setItem('productUpdated', Date.now().toString())
+        console.log('💾 Set sessionStorage signal for detail page sync')
+      } catch (error) {
+        console.warn('Failed to set sessionStorage signal:', error)
+      }
+      
       showToast(`Product **${productData.productSku}** updated successfully!`, 'success')
     } else {
       // Add mode - multiple products
@@ -514,6 +564,10 @@ const Products = () => {
           supplier: productData.supplier,
           productStatus: productData.productStatus,
           fulfillmentTime: productData.fulfillmentTime,
+          productImages: [imageSource], // Initialize with the main image
+          productTemplate: [], // Initialize empty template array
+          productVideos: [], // Initialize empty videos array
+          supplierProducts: [], // Initialize empty supplier products array
           priceHistory: [{
             oldCost: newPrice,
             effectiveDate: newEffectiveDate
@@ -533,6 +587,14 @@ const Products = () => {
         const newSet = new Set([...prev, ...addedSkus])
         return newSet
       })
+      
+      // Signal that data has been updated for detail page sync
+      try {
+        sessionStorage.setItem('productUpdated', Date.now().toString())
+        console.log('💾 Set sessionStorage signal for detail page sync (add mode)')
+      } catch (error) {
+        console.warn('Failed to set sessionStorage signal:', error)
+      }
       
       if (newProducts.length === 1) {
         showToast(`Product **${addedSkus[0]}** added successfully!`, 'success')
@@ -621,6 +683,14 @@ const Products = () => {
       const newSet = new Set([...prev, ...Array.from(updatedSkus)])
       return newSet
     })
+    
+    // Signal that data has been updated for detail page sync
+    try {
+      sessionStorage.setItem('productUpdated', Date.now().toString())
+      console.log('💾 Set sessionStorage signal for detail page sync (import mode)')
+    } catch (error) {
+      console.warn('Failed to set sessionStorage signal:', error)
+    }
     
     // Show result toast
     if (successCount > 0 && failedCount > 0) {

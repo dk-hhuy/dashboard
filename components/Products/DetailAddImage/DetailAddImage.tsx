@@ -66,9 +66,12 @@ const validateAndUpload = async (
   setErrors: (errors: Record<string, string[]>) => void,
   setIsUploading: (uploading: boolean) => void,
   onUpload: (product: Product) => void,
-  showToast: (message: string, type: 'success' | 'error' | 'warning' | 'info') => void
+  showToast: (message: string, type: 'success' | 'error' | 'warning' | 'info') => void,
+  allowDuplicates: boolean = false
 ) => {
-  console.log(`Processing ${files.length} image files...`)
+  console.log(`🖼️ Processing ${files.length} image files...`)
+  console.log('📸 Current images:', currentImages.length, 'images')
+  console.log('📸 Current images array:', currentImages)
   
   try {
     const newImages: string[] = []
@@ -105,22 +108,62 @@ const validateAndUpload = async (
       return
     }
     
+    // Check for duplicate images using normalized comparison
+    const duplicateImages: string[] = []
+    const uniqueNewImages: string[] = []
+    
+    console.log('🔍 Checking for duplicates...')
+    newImages.forEach((newImage, index) => {
+      const isDuplicate = currentImages.some(existingImage => isSameImage(existingImage, newImage))
+      console.log(`🔍 Image ${index + 1}:`, {
+        newImage: newImage.substring(0, 50) + '...',
+        isDuplicate: isDuplicate,
+        normalizedNew: normalizeString(newImage)
+      })
+      if (isDuplicate) {
+        duplicateImages.push(newImage)
+      } else {
+        uniqueNewImages.push(newImage)
+      }
+    })
+    
+    // Determine which images to add based on allowDuplicates setting
+    const imagesToAdd = allowDuplicates ? newImages : uniqueNewImages
+    const totalImages = currentImages.length + imagesToAdd.length
+    
     // Check total image count limit
-    const totalImages = currentImages.length + newImages.length
     if (totalImages > 10) {
       setErrors({ 
-        general: [`Maximum 10 images allowed. You have ${currentImages.length} existing images and trying to add ${newImages.length} more.`] 
+        general: [`Maximum 10 images allowed. You have ${currentImages.length} existing images and trying to add ${imagesToAdd.length} images.`] 
       })
       setIsUploading(false)
       showToast(`Maximum 10 images allowed. Please remove some existing images first.`, 'warning')
       return
     }
     
-    // Success - update product
+    // Show appropriate message based on allowDuplicates setting
+    if (duplicateImages.length > 0) {
+      if (allowDuplicates) {
+        console.log('⚠️ Duplicate images will be added (allowDuplicates: true)')
+        showToast(`${duplicateImages.length} duplicate image(s) will be added.`, 'info')
+      } else {
+        console.log('⚠️ Duplicate images will be skipped (allowDuplicates: false)')
+        showToast(`${duplicateImages.length} duplicate image(s) will be skipped.`, 'warning')
+      }
+    }
+    
+    // Success - update product with selected images
     const updatedProduct = {
       ...currentProduct,
-      productImages: [...currentImages, ...newImages]
+      productImages: [...currentImages, ...imagesToAdd]
     }
+    
+    console.log('✅ Image upload summary:', {
+      totalProcessed: newImages.length,
+      uniqueAdded: uniqueNewImages.length,
+      duplicatesSkipped: duplicateImages.length,
+      finalCount: updatedProduct.productImages.length
+    })
     
     setIsUploading(false)
     onUpload(updatedProduct)
@@ -146,6 +189,7 @@ const DetailAddImage = ({ product, onUpload, onClose }: DetailAddImageProps) => 
   const [isUploading, setIsUploading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string[]>>({})
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [allowDuplicates, setAllowDuplicates] = useState(false)
   const { showToast } = useToast()
 
   // Sync currentProduct with product prop when it changes, but only if no unsaved changes
@@ -180,7 +224,8 @@ const DetailAddImage = ({ product, onUpload, onClose }: DetailAddImageProps) => 
         setHasUnsavedChanges(true)
         showToast(`Successfully added ${acceptedFiles.length} image(s). Click "Save Changes" to apply.`, 'success')
       },
-      showToast
+      showToast,
+      allowDuplicates
     )
   }, [currentProduct, onUpload, showToast])
 
@@ -286,6 +331,24 @@ const DetailAddImage = ({ product, onUpload, onClose }: DetailAddImageProps) => 
       <p className="is-size-7 has-text-info mt-2">
         Current images: {Array.isArray(currentProduct.productImages) ? currentProduct.productImages.length : 0}/10
       </p>
+      
+      {/* Allow Duplicates Toggle */}
+      <div className="field mt-3">
+        <label className="checkbox is-size-7">
+          <input 
+            type="checkbox" 
+            checked={allowDuplicates}
+            onChange={(e) => setAllowDuplicates(e.target.checked)}
+          />
+          <span className="ml-2">Allow duplicate images</span>
+        </label>
+        <p className="help is-size-7 has-text-grey-light">
+          {allowDuplicates 
+            ? 'Duplicate images will be added to the product' 
+            : 'Duplicate images will be skipped (recommended)'
+          }
+        </p>
+      </div>
       
       {/* Error Display */}
       {errors.file && (
