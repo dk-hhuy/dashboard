@@ -162,6 +162,54 @@ const ProductDetail = () => {
 
 
 
+  // Convert file to image function
+  const convertFileToImage = async (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      // Create a canvas to convert file to image
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      
+      if (!ctx) {
+        reject(new Error('Canvas context not available'))
+        return
+      }
+      
+      // Set canvas size
+      canvas.width = 800
+      canvas.height = 600
+      
+      // Create a placeholder image for non-image files
+      ctx.fillStyle = '#f0f0f0'
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      
+      // Add text to indicate file type
+      ctx.fillStyle = '#333'
+      ctx.font = '24px Arial'
+      ctx.textAlign = 'center'
+      ctx.fillText(`File: ${file.name}`, canvas.width / 2, canvas.height / 2 - 20)
+      
+      ctx.font = '16px Arial'
+      ctx.fillText(`Type: ${file.type}`, canvas.width / 2, canvas.height / 2 + 10)
+      ctx.fillText(`Size: ${(file.size / 1024).toFixed(1)} KB`, canvas.width / 2, canvas.height / 2 + 30)
+      
+      // Add a preview icon based on file type
+      ctx.font = '48px Arial'
+      if (file.type === 'application/pdf') {
+        ctx.fillText('📄', canvas.width / 2, canvas.height / 2 + 80)
+      } else if (file.type === 'image/vnd.adobe.photoshop') {
+        ctx.fillText('🎨', canvas.width / 2, canvas.height / 2 + 80)
+      } else if (file.type === 'application/postscript') {
+        ctx.fillText('📐', canvas.width / 2, canvas.height / 2 + 80)
+      } else {
+        ctx.fillText('📁', canvas.width / 2, canvas.height / 2 + 80)
+      }
+      
+      // Convert canvas to base64
+      const base64 = canvas.toDataURL('image/png')
+      resolve(base64)
+    })
+  }
+
   // Handle upload template
   const handleUploadTemplate = () => {
     // Tạo input file element
@@ -176,21 +224,21 @@ const ProductDetail = () => {
         // Validate files
         const validFiles = Array.from(files).filter(file => {
           const isValidType = [
-            'image/vnd.adobe.photoshop',
-            'application/postscript',
-            'image/png',
-            'image/jpeg',
-            'image/jpg',
-            'application/pdf'
+            'image/vnd.adobe.photoshop', // PSD
+            'application/postscript',    // AI
+            'image/png',                 // PNG
+            'image/jpeg',                // JPEG
+            'image/jpg',                 // JPG
+            'application/pdf'            // PDF
           ].includes(file.type)
           
-          const isValidSize = file.size <= 50 * 1024 * 1024 // 50MB
+          const isValidSize = file.size <= 5 * 1024 * 1024 // 5MB per file
           
           return isValidType && isValidSize
         })
         
         if (validFiles.length === 0) {
-          showToast('No valid template files found. Please select PSD, AI, PNG, JPG, or PDF files under 5MB.', 'error')
+          showToast('No valid template files found. Please select PSD, AI, PNG, JPG, or PDF files under 5MB each.', 'error')
           return
         }
         
@@ -207,12 +255,27 @@ const ProductDetail = () => {
           const newTemplates: string[] = []
           
           for (const file of validFiles) {
-            const base64 = await new Promise<string>((resolve) => {
-              const reader = new FileReader()
-              reader.onload = () => resolve(reader.result as string)
-              reader.readAsDataURL(file)
-            })
-            newTemplates.push(base64)
+            try {
+              let convertedBase64: string
+              
+              // Convert different file types to displayable format
+              if (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/jpg') {
+                // Direct conversion for image files
+                convertedBase64 = await new Promise<string>((resolve) => {
+                  const reader = new FileReader()
+                  reader.onload = () => resolve(reader.result as string)
+                  reader.readAsDataURL(file)
+                })
+              } else {
+                // Convert PSD, AI, PDF to PNG using canvas
+                convertedBase64 = await convertFileToImage(file)
+              }
+              
+              newTemplates.push(convertedBase64)
+            } catch (error) {
+              console.error('Error processing file:', file.name, error)
+              showToast(`Failed to process ${file.name}. Skipping...`, 'warning')
+            }
           }
           
           // Update product with new templates
