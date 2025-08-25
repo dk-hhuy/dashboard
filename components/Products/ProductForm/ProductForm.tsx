@@ -69,8 +69,11 @@ const useFormValidation = () => {
     
     if (typeof value === 'string') {
       const validation = validateField(field as keyof ProductFormData, value)
-      if (!validation.success && validation.errors[field]) {
-        setFieldError(fieldKey, validation.errors[field][0])
+      if (!validation.success && validation.errors && field in validation.errors) {
+        const fieldErrors = validation.errors[field as keyof typeof validation.errors]
+        if (Array.isArray(fieldErrors) && fieldErrors.length > 0) {
+          setFieldError(fieldKey, fieldErrors[0])
+        }
       } else {
         clearFieldError(fieldKey)
       }
@@ -81,7 +84,7 @@ const useFormValidation = () => {
     const newErrors: Record<string, string[]> = {}
     
     formData.forEach((data, index) => {
-      const { uploadedImage, ...dataWithoutFile } = data
+      const { uploadedImage: _, ...dataWithoutFile } = data
       const hasData = Object.values(dataWithoutFile).some(value => value.trim() !== '')
       
       if (!hasData) {
@@ -98,7 +101,7 @@ const useFormValidation = () => {
     })
     
     formData.forEach((data, index) => {
-      const { uploadedImage, ...dataWithoutFile } = data
+      const { uploadedImage: _, ...dataWithoutFile } = data
       const hasData = Object.values(dataWithoutFile).some(value => value.trim() !== '')
       
       if (!hasData) {
@@ -163,8 +166,8 @@ const useMultiForm = (initialData: FormData[], isEditMode: boolean) => {
       return validation.success
     }
     
-    return formData.every((data, index) => {
-      const { uploadedImage, ...dataWithoutFile } = data
+    return formData.every((data) => {
+      const { uploadedImage: _, ...dataWithoutFile } = data
       const hasData = Object.values(dataWithoutFile).some(value => value.trim() !== '')
       
       if (!hasData) {
